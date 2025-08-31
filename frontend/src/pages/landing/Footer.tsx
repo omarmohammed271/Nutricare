@@ -16,7 +16,7 @@ const Footer = () => {
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pb: 4 }}>
           <LogoBox defaultTheme={themeMode} />
           <Typography variant="caption" sx={{ textAlign: 'center', mx: 'auto', color: 'text.secondary', "&>a": { color: 'text.secondary', fontWeight: 600 } }}>
-            {new Date().getFullYear()} © Attex
+            {new Date().getFullYear()} © Nutricare
             <br />
             Crafted and Coded with <span> ❤️ </span> by &nbsp;
             <Link href="https://coderthemes.com/" target="_blank">

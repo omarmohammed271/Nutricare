@@ -41,7 +41,7 @@ const WhatYouGet = () => {
       {/*            children: (*/}
       {/*              <div className="absolute inset-0 flex items-center justify-center">*/}
       {/*                <h1 className="text-8xl text-white font-thin">Hello World!</h1>*/}
-      {/*                 /!* <SectionTitle name="Attex MUI" title="Working with Attex MUI" /> *!/*/}
+      {/*                 /!* <SectionTitle name="Nutricare MUI" title="Working with Nutricare MUI" /> *!/*/}
       {/*              </div>*/}
       {/*            ),*/}
       {/*          },*/}

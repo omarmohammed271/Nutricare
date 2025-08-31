@@ -14,7 +14,7 @@ export type StaticFileType = {
 export const staticAttachments: StaticFileType[] = [
   {
     preview: avatar5,
-    name: "Attex-sketch-design.zip",
+            name: "Nutricare-sketch-design.zip",
     formattedSize: "2.3 MB",
   },
   {

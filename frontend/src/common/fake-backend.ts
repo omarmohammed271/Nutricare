@@ -21,7 +21,7 @@ export function configureFakeBackend() {
       email: "demo@demo.com",
       username: "demo",
       password: "password",
-      firstName: "attex",
+              firstName: "nutricare",
       lastName: "coderthemes",
       role: "Admin",
       token:

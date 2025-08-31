@@ -52,7 +52,7 @@ const EmailRead = () => {
     attachments: [
       {
         id: 1,
-        name: "Attex-admin-design.zip",
+        name: "Nutricare-admin-design.zip",
         size: "2.3 MB",
         ext: ".zip",
       },

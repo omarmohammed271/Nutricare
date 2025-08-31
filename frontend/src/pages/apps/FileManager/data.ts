@@ -33,7 +33,7 @@ type RecentFileTypes = {
 const quickAccessFiles: QuickAccessFileTypes[] = [
   {
     icon: LuFileArchive,
-    name: "Attex-sketch.zip",
+            name: "Nutricare-sketch.zip",
     size: "2.3 MB",
   },
   {
@@ -64,7 +64,7 @@ const quickAccessFiles: QuickAccessFileTypes[] = [
   },
   {
     icon: LuFolderClosed,
-    name: "Attex Integrations",
+            name: "Nutricare Integrations",
     size: "874 MB",
   },
 ];
@@ -96,7 +96,7 @@ const recentFiles: RecentFileTypes[] = [
     ],
   },
   {
-    name: "Attex-sketch-design.zip",
+            name: "Nutricare-sketch-design.zip",
     modifiedDate: "Feb 13, 2023",
     modifiedBy: "Coderthemes",
     size: "521 MB",

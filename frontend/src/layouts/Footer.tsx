@@ -27,7 +27,7 @@ const Footer = () => {
   return (
     <FooterWrapper settings={settings} className="footer-do-not-remove">
       <Typography variant="subtitle2" color={"text.primary"}>
-        2016 - {new Date().getFullYear()} © Attex - Coderthemes
+        2016 - {new Date().getFullYear()} © Nutricare - Coderthemes
       </Typography>
       <Stack direction={"row"} spacing={2} sx={{ display: "flex" }}>
         <Typography variant="subtitle2" color={"text.primary"}>

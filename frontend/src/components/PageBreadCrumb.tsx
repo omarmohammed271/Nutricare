@@ -16,7 +16,7 @@ type BreadcrumbProps = {
 const PageBreadcrumb = ({ title, subName }: BreadcrumbProps) => {
   const breadcrumbItems = [
     <Link key="1" color="inherit" variant="subtitle2" underline="none" href="" sx={{ fontWeight: 600 }}>
-      Attex
+              Nutricare
     </Link>,
     <Link key="2" color="inherit" variant="body2" underline="none" href="">
       {subName}

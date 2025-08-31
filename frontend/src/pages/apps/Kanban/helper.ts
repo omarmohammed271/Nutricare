@@ -100,7 +100,7 @@ const tasks: TaskType[] = [
     section: "todo",
     priority: "medium",
     dueDate: "15 Dec 2023",
-    category: "Attex",
+    category: "Nutricare",
     comments: 28,
     userAvatar: [
       {
@@ -148,7 +148,7 @@ const tasks: TaskType[] = [
     section: "in_progress",
     priority: "medium",
     dueDate: "22 Jun 2023",
-    category: "Attex",
+    category: "Nutricare",
     comments: 17,
     userAvatar: [
       {
@@ -298,7 +298,7 @@ const tasks: TaskType[] = [
     section: "done",
     priority: "low",
     dueDate: "16 Jul 2023",
-    category: "Attex",
+    category: "Nutricare",
     comments: 287,
     userAvatar: [
       {

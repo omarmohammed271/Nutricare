@@ -129,7 +129,7 @@ const ElementsPreview = () => {
                     <Box sx={{ mx: 'auto', }}>
                       {/*<img style={{ height: 40 }} src={themeMode == 'light' ? logoDark : logo} />*/}
                       <Typography variant="h1" sx={{ mt: 8, maxWidth: '390px', lineHeight:1.5, color: 'text.primary', "&>span": { color: 'primary.main' } }}>
-                        Get <span> Attex MUI </span> for yourself to get started with your project now
+                        Get <span> Nutricare MUI </span> for yourself to get started with your project now
                       </Typography>
                     </Box>
 

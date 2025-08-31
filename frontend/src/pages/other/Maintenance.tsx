@@ -147,7 +147,7 @@ const Maintenance = () => {
                 height: "56px",
                 bgcolor: "transparent",
               }}>
-              <Typography component={"span"}>{new Date().getFullYear()} © Attex - Coderthemes.com</Typography>
+              <Typography component={"span"}>{new Date().getFullYear()} © Nutricare - Coderthemes.com</Typography>
             </Box>
           </Box>
         </Box>

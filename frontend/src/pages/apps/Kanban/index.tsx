@@ -377,7 +377,7 @@ const Kanban = () => {
         <DialogContent sx={{ overflowY: "auto" }} dividers>
           <form onSubmit={handleNewTask}>
             <SelectInput label="Project" name="category" containerSx={{ my: 1 }} control={control}>
-              <MenuItem value="Attex">Attex</MenuItem>
+                              <MenuItem value="Nutricare">Nutricare</MenuItem>
               <MenuItem value="CRM">CRM</MenuItem>
               <MenuItem value="Design">Design</MenuItem>
               <MenuItem value="iOS">iOS</MenuItem>

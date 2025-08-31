@@ -9,7 +9,7 @@ const SimpleBreadcrumb = () => {
       description="A breadcrumbs is a list of links that help visualize a page's location within a site's hierarchical structure, it allows navigation up to any of the ancestors.">
       <Breadcrumb aria-label="breadcrumb">
         <Link underline="hover" color="inherit" href="/">
-          Attex
+          Nutricare
         </Link>
         <Link underline="hover" color="inherit" href="/material-ui/getting-started/installation/">
           Base UI
@@ -23,7 +23,7 @@ const SimpleBreadcrumb = () => {
 const CustomSeparator = () => {
   const items = [
     <Link underline="hover" key="1" color="inherit" href="">
-      Attex
+      Nutricare
     </Link>,
     <Link underline="hover" key="2" color="inherit" href="">
       Base UI
@@ -79,7 +79,7 @@ const CollapsedBreadcrumb = () => {
       description="Collapseible Breadcrumb, which collapse once it reaches it's max items limit">
       <Breadcrumb itemsBeforeCollapse={1} itemsAfterCollapse={2} maxItems={3} aria-label="breadcrumb">
         <Link underline="hover" color="inherit" href="">
-          Attex
+          Nutricare
         </Link>
         <Link underline="hover" color="inherit" href="">
           UI

@@ -277,7 +277,7 @@ for (const user of users) {
       message: {
         type: "file",
         value: {
-          file: "Attex-sketch.zip",
+          file: "Nutricare-sketch.zip",
           size: "2.3MB",
         },
       },

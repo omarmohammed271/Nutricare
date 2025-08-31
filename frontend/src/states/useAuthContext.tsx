@@ -12,7 +12,7 @@ export function useAuthContext() {
   return context;
 }
 
-const authSessionKey = "_ATTEX_MUI_AUTH_";
+const authSessionKey = "_NUTRICARE_MUI_AUTH_";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | undefined>(undefined);

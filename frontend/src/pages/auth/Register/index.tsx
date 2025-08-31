@@ -35,7 +35,7 @@ const Register = () => {
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(registerFormSchema),
     defaultValues: {
-      fullName: "Attex Demo",
+              fullName: "Nutricare Demo",
       email: "demo@demo.com",
       password: "password",
     },

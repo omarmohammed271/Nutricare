@@ -61,7 +61,7 @@ const Timeline = () => {
     ],
     Yesterday: [
       {
-        title: "We released new version of our theme Attex.",
+        title: "We released new version of our theme Nutricare.",
         date: "22 July, 2019",
         text: "3 new photo Uploaded on facebook fan page",
         variant: "#ffbc00",
@@ -117,7 +117,7 @@ const Timeline = () => {
         ],
       },
       {
-        title: "First release of Attex admin dashboard template",
+        title: "First release of Nutricare admin dashboard template",
         date: "05 May, 2023",
         text: "Outdoor visit at California State Route 85 with John Boltana & Harry Piterson regarding to setup a new show room.",
         variant: "#3e60d5",

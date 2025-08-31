@@ -132,12 +132,12 @@ const ViewsPerMinute = () => {
                   <TableCell>87.5%</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell>/attex/dashboard-crm</TableCell>
+                  <TableCell>/nutricare/dashboard-crm</TableCell>
                   <TableCell>15</TableCell>
                   <TableCell>21.48%</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell>/attex/dashboard</TableCell>
+                  <TableCell>/nutricare/dashboard</TableCell>
                   <TableCell>10</TableCell>
                   <TableCell>63.59%</TableCell>
                 </TableRow>

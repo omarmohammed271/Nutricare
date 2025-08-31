@@ -22,7 +22,7 @@ const Hero = () => {
               <Grid item xl={5} xs={12} sx={{ order: { xl: 1, xs: 2 }, height: "100%" }}>
                 <Stack sx={{ justifyContent: "space-between" }} gap={6}>
                   <Typography variant="h1" sx={{ fontSize: "38px", lineHeight: 1.4, color: "text.primary" }}>
-                    Attex - React & Material UI (MUI) Admin & Dashboard Template
+                    Nutricare - React & Material UI (MUI) Admin & Dashboard Template
                   </Typography>
                   <Typography variant="h5" sx={{
                     color: "text.primary",
@@ -30,7 +30,7 @@ const Hero = () => {
                     lineHeight: 1.5,
                     "&>span": { color: "primary.main", fontWeight: 500 }
                   }}>
-                    The Attex MUI is built on top of latest MUI, following best practices.
+                    The Nutricare MUI is built on top of latest MUI, following best practices.
                     <br />
                     Provides you with ready to use Dashboards, Apps and <span>Many</span> UI Elements
                   </Typography>

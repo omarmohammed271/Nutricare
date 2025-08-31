@@ -53,22 +53,22 @@ const TextBadges = () => {
       description="Examples of badges containing text, using color variants."
       stackProps={{ direction: "row", sx: { gap: 3 } }}>
       <Badge badgeContent={4} color="primary">
-        <Typography variant="h4">Attex</Typography>
+        <Typography variant="h4">Nutricare</Typography>
       </Badge>
       <Badge badgeContent={4} color="secondary">
-        <Typography variant="h4">Attex</Typography>
+        <Typography variant="h4">Nutricare</Typography>
       </Badge>
       <Badge badgeContent={4} color="success">
-        <Typography variant="h4">Attex</Typography>
+        <Typography variant="h4">Nutricare</Typography>
       </Badge>
       <Badge badgeContent={4} color="error">
-        <Typography variant="h4">Attex</Typography>
+        <Typography variant="h4">Nutricare</Typography>
       </Badge>
       <Badge badgeContent={4} color="warning">
-        <Typography variant="h4">Attex</Typography>
+        <Typography variant="h4">Nutricare</Typography>
       </Badge>
       <Badge badgeContent={4} color="info">
-        <Typography variant="h4">Attex</Typography>
+        <Typography variant="h4">Nutricare</Typography>
       </Badge>
     </ComponentContainerCard>
   );
