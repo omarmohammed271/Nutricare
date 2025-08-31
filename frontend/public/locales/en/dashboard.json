@@ -1,0 +1,38 @@
+{
+  "overview": {
+    "title": "Dashboard Overview",
+    "welcome": "Welcome back!",
+    "totalUsers": "Total Users",
+    "totalRevenue": "Total Revenue",
+    "totalOrders": "Total Orders",
+    "growth": "Growth",
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "sales": "Sales",
+    "revenue": "Revenue",
+    "customers": "Customers",
+    "orders": "Orders",
+    "growth": "Growth",
+    "trends": "Trends",
+    "performance": "Performance"
+  },
+  "ecommerce": {
+    "title": "E-Commerce",
+    "products": "Products",
+    "categories": "Categories",
+    "inventory": "Inventory",
+    "sales": "Sales",
+    "customers": "Customers",
+    "orders": "Orders",
+    "revenue": "Revenue"
+  },
+  "charts": {
+    "salesChart": "Sales Chart",
+    "revenueChart": "Revenue Chart",
+    "customerChart": "Customer Chart",
+    "orderChart": "Order Chart"
+  }
+}

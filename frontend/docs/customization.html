@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard | Attex React - Tailwind CSS Admin & Dashboard Template</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description">
+  <meta content="coderthemes" name="author">
+
+  <!-- App favicon -->
+  <link rel="shortcut icon" href="assets/images/favicon.ico">
+
+  <!-- App css -->
+  <link href="assets/css/app.min.css" rel="stylesheet" type="text/css">
+
+  <!-- Icons css -->
+  <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css">
+
+  <!-- Theme Config Js -->
+  <script src="assets/js/config.js"></script>
+</head>
+
+<body>
+
+  <div class="flex wrapper">
+
+    <!-- Sidenav Menu -->
+    <div class="app-menu">
+
+      <!-- Sidenav Brand Logo -->
+      <a href="index.html" class="logo-box">
+        <!-- Light Brand Logo -->
+        <div class="logo-light">
+          <img src="assets/images/logo-light.png" class="logo-lg h-6" alt="Light logo">
+          <img src="assets/images/logo-sm.png" class="logo-sm" alt="Small logo">
+        </div>
+
+        <!-- Dark Brand Logo -->
+        <div class="logo-dark">
+          <img src="assets/images/logo-dark.png" class="logo-lg h-6" alt="Dark logo">
+          <img src="assets/images/logo-sm.png" class="logo-sm" alt="Small logo">
+        </div>
+      </a>
+
+      <!-- Sidenav Menu Toggle Button -->
+      <button id="button-hover-toggle" class="absolute top-5 end-2 rounded-full p-1.5">
+        <span class="sr-only">Menu Toggle Button</span>
+        <i class="mgc_round_line text-xl"></i>
+      </button>
+
+      <!--- Menu -->
+      <div class="srcollbar" data-simplebar>
+        <ul class="menu" data-fc-type="accordion">
+          <li class="menu-title">Documentation</li>
+
+          <li class="menu-item">
+            <a href="index.html" class="menu-link">
+              <span class="menu-icon"><i class="mgc_document_2_line"></i></span>
+              <span class="menu-text"> Introduction </span>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="installation.html" class="menu-link">
+              <span class="menu-icon"><i class="mgc_document_line"></i></span>
+              <span class="menu-text"> Installation </span>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="customization.html" class="menu-link">
+              <span class="menu-icon"><i class="mgc_target_line"></i></span>
+              <span class="menu-text"> Customization </span>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="changelog.html" class="menu-link">
+              <span class="menu-icon"><i class="mgc_repeat_line"></i></span>
+              <span class="menu-text"> Changelog </span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- Sidenav Menu End  -->
+
+    <!-- ============================================================== -->
+    <!-- Start Page Content here -->
+    <!-- ============================================================== -->
+
+    <div class="page-content">
+
+      <!-- Topbar Start -->
+      <header class="app-header flex items-center px-4 gap-3">
+        <!-- Sidenav Menu Toggle Button -->
+        <button id="button-toggle-menu" class="nav-link p-2">
+          <span class="sr-only">Menu Toggle Button</span>
+          <span class="flex items-center justify-center h-6 w-6">
+            <i class="mgc_menu_line text-xl"></i>
+          </span>
+        </button>
+
+        <!-- Topbar Brand Logo -->
+        <a href="index.html" class="logo-box">
+          <!-- Light Brand Logo -->
+          <div class="logo-light">
+            <img src="assets/images/logo-light.png" class="logo-lg h-6" alt="Light logo">
+            <img src="assets/images/logo-sm.png" class="logo-sm" alt="Small logo">
+          </div>
+
+          <!-- Dark Brand Logo -->
+          <div class="logo-dark">
+            <img src="assets/images/logo-dark.png" class="logo-lg h-6" alt="Dark logo">
+            <img src="assets/images/logo-sm.png" class="logo-sm" alt="Small logo">
+          </div>
+        </a>
+        <div class="ms-auto">
+          <span class="bg-danger text-white h-5 flex items-center justify-center px-2  py-1 font-medium text-sm rounded-md align-middle">Version 1.0</span>
+        </div>
+        <!-- Light/Dark Toggle Button -->
+        <div class="flex">
+          <button id="light-dark-mode" type="button" class="nav-link p-2">
+            <span class="sr-only">Light/Dark Mode</span>
+            <span class="flex items-center justify-center h-6 w-6">
+              <i class="mgc_moon_line text-2xl"></i>
+            </span>
+          </button>
+        </div>
+
+      </header>
+      <!-- Topbar End -->
+
+      <main class="flex-grow p-6">
+
+        <!-- Page Title Start -->
+        <div class="flex justify-between items-center mb-6">
+          <h4 class="text-slate-900 dark:text-slate-200 text-lg font-medium">Customization</h4>
+
+          <div class="md:flex hidden items-center gap-2.5 text-sm font-semibold">
+            <div class="flex items-center gap-2">
+              <a href="#" class="text-sm font-medium text-slate-700 dark:text-slate-400">Attex</a>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <i class="mgc_right_line text-lg flex-shrink-0 text-slate-400 rtl:rotate-180"></i>
+              <a href="#" class="text-sm font-medium text-slate-700 dark:text-slate-400">Documentation</a>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <i class="mgc_right_line text-lg flex-shrink-0 text-slate-400 rtl:rotate-180"></i>
+              <a href="#" class="text-sm font-medium text-slate-700 dark:text-slate-400" aria-current="page">Customization</a>
+            </div>
+          </div>
+        </div>
+        <!-- Page Title End -->
+
+        <div class="flex flex-col gap-6">
+
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">Customize Layout</h4>
+            </div>
+            <p class="p-6">Open <code>src/states/useLayoutContext.tsx</code> file, and search for
+              declaration of
+              <code>INIT_STATE</code>. Here as a default <code>theme</code> property
+            </p>
+
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Property</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+
+                <tr>
+                  <td class="px-6 py-4 text-sm font-medium text-gray-800 dark:text-gray-200">
+                    <code>{theme:'light'}</code> or <br>
+                    <code>{theme:'dark'}</code>
+                  </td>
+                  <td class="px-6 py-4 text-sm font-medium text-gray-800 dark:text-gray-200">
+                    Changes the default theme mode for the App, you can switch between <code>dark</code> or <code>light</code>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="px-6 py-4 text-sm font-medium text-gray-800 dark:text-gray-200">
+                    <code>{sidenav:{mode:'mobile'}}</code> or <br>
+                    <code>{sidenav:{mode:'default'}}</code>
+                  </td>
+                  <td class="px-6 py-4 text-sm font-medium text-gray-800 dark:text-gray-200">
+                    Changes the default mode of the Leftside menu, you can switch between <code>mobile</code> or <code>default</code>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="px-6 py-4 text-sm font-medium text-gray-800 dark:text-gray-200">
+                    <code>{sidenav:{theme:'light'}}</code> or <br>
+                    <code>{sidenav:{theme:'dark'}}</code>
+                  </td>
+                  <td class="px-6 py-4 text-sm font-medium text-gray-800 dark:text-gray-200">
+                    Changes the default theme mode left the Leftside menu, you can switch between <code>dark</code> or <code>light</code>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- Footer Start -->
+      <footer class="footer h-16 flex items-center px-6 bg-white shadow dark:bg-gray-800">
+        <div class="flex md:justify-between justify-center w-full gap-4">
+          <div>
+            <script>document.write(new Date().getFullYear())</script> © Attex - <a href="https://coderthemes.com/" target="_blank">Coderthemes</a>
+          </div>
+          <div class="md:flex hidden gap-4 item-center md:justify-end">
+            <a href="javascript: void(0);" class="text-sm leading-5 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white">About</a>
+            <span class="border-e border-gray-300 dark:border-gray-700"></span>
+            <a href="javascript: void(0);" class="text-sm leading-5 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white">Support</a>
+            <span class="border-e border-gray-300 dark:border-gray-700"></span>
+            <a href="javascript: void(0);" class="text-sm leading-5 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white">Contact Us</a>
+          </div>
+        </div>
+      </footer>
+      <!-- Footer End -->
+
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- End Page content -->
+    <!-- ============================================================== -->
+
+  </div>
+
+
+
+  <!-- Plugin Js -->
+  <script src="assets/libs/simplebar/simplebar.min.js"></script>
+  <script src="assets/libs/feather-icons/feather.min.js"></script>
+  <script src="assets/libs/@frostui/tailwindcss/frostui.js"></script>
+
+  <!-- App Js -->
+  <script src="assets/js/app.js"></script>
+
+</body>
+
+</html>

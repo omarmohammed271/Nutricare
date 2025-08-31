@@ -1,0 +1,38 @@
+{
+  "overview": {
+    "title": "نظرة عامة على لوحة التحكم",
+    "welcome": "مرحباً بعودتك!",
+    "totalUsers": "إجمالي المستخدمين",
+    "totalRevenue": "إجمالي الإيرادات",
+    "totalOrders": "إجمالي الطلبات",
+    "growth": "النمو",
+    "thisMonth": "هذا الشهر",
+    "lastMonth": "الشهر الماضي"
+  },
+  "analytics": {
+    "title": "التحليلات",
+    "sales": "المبيعات",
+    "revenue": "الإيرادات",
+    "customers": "العملاء",
+    "orders": "الطلبات",
+    "growth": "النمو",
+    "trends": "الاتجاهات",
+    "performance": "الأداء"
+  },
+  "ecommerce": {
+    "title": "التجارة الإلكترونية",
+    "products": "المنتجات",
+    "categories": "الفئات",
+    "inventory": "المخزون",
+    "sales": "المبيعات",
+    "customers": "العملاء",
+    "orders": "الطلبات",
+    "revenue": "الإيرادات"
+  },
+  "charts": {
+    "salesChart": "رسم بياني للمبيعات",
+    "revenueChart": "رسم بياني للإيرادات",
+    "customerChart": "رسم بياني للعملاء",
+    "orderChart": "رسم بياني للطلبات"
+  }
+}

@@ -1,0 +1,49 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap");
+
+/* libraries */
+@import "simplebar-react/dist/simplebar.min.css";
+
+/*@import "react-quill/dist/quill.snow.css";*/
+/*@import "react-quill/dist/quill.bubble.css";*/
+
+/* custom */
+@import "setup.css";
+
+/* plugins */
+@import "plugins/swiper.css";
+@import "plugins/simplebar.css";
+@import "plugins/apex-charts.css";
+@import "plugins/calendar.css";
+
+/* RTL Support for Arabic Language */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .MuiFormControl-root {
+  text-align: right;
+}
+
+[dir="rtl"] .MuiInputBase-input {
+  text-align: right;
+}
+
+[dir="rtl"] .MuiButton-startIcon {
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+[dir="rtl"] .MuiButton-endIcon {
+  margin-left: 0;
+  margin-right: 8px;
+}
+
+[dir="rtl"] .MuiListItemIcon-root {
+  margin-right: 0;
+  margin-left: 16px;
+}
+
+[dir="rtl"] .MuiListItemText-root {
+  margin-right: 0;
+  margin-left: 16px;
+}

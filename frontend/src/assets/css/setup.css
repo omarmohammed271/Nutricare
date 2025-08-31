@@ -1,0 +1,55 @@
+:root {
+  --font-family-base: "Poppins";
+  --font-weight-semibold: 600;
+  --stroke: #dee2e6;
+  --border-color: #dee2e6;
+  --background-color: #f1f1f1;
+  --text-color: #001930;
+}
+
+html[data-mode="dark"] {
+  color-scheme: dark;
+  --stroke: #3d454f;
+  --border-color: #3d454f;
+  --background-color: #181e26;
+  --text-color: #aab8c5;
+}
+
+body {
+  font-family: "Poppins", "Roboto", sans-serif, serif;
+}
+
+* {
+  list-style: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a {
+  text-decoration: none;
+}
+
+@media print {
+
+  .app-menu-do-not-remove,
+  .topbar-header-do-not-remove,
+  .footer-do-not-remove {
+    display: none;
+  }
+}
+
+
+.bg-primary{
+  background-color: #095fff;
+}
+.bg-info{
+  background-color: #20a3ff;
+}.bg-success{
+  background-color: #00b636;
+}.bg-warning{
+  background-color: #ff8d0a;
+}.bg-error{
+  background-color: #ff2c2c;
+}

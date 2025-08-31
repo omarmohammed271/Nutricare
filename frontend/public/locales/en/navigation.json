@@ -1,0 +1,31 @@
+{
+  "menu": {
+    "dashboard": "Dashboard",
+    "apps": "Apps",
+    "ui": "UI Components",
+    "forms": "Forms",
+    "tables": "Tables",
+    "charts": "Charts",
+    "maps": "Maps",
+    "pages": "Pages",
+    "extras": "Extras"
+  },
+  "sidebar": {
+    "collapse": "Collapse Sidebar",
+    "expand": "Expand Sidebar",
+    "search": "Search Menu"
+  },
+  "topbar": {
+    "notifications": "Notifications",
+    "messages": "Messages",
+    "profile": "Profile",
+    "settings": "Settings",
+    "help": "Help"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "settings": "Settings"
+  }
+}
