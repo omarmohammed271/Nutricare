@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Avatar, Box, Card, CardContent, IconButton, Typography } from "@mui/material";
+import { Avatar, Box, Card, CardContent, Button, Typography, Divider } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
@@ -8,11 +8,10 @@ import { useLayoutContext } from "@src/states";
 //images
 import logo from "@src/assets/images/nutricare-logo.svg";
 import logoDark from "@src/assets/images/nutricare-logo.svg";
-import bgAuth from "@src/assets/images/bg-auth.jpg";
-import { FiFacebook } from "react-icons/fi";
+import bgAuth from "@src/assets/images/BackgoundAuth.jpg";
 import { TbBrandGoogle } from "react-icons/tb";
-import { LuGithub, LuQuote, LuTwitter } from "react-icons/lu";
-
+import { LuQuote } from "react-icons/lu";
+import {GoogleIcon} from "./Componenets/CustomIcons"
 import "swiper/css";
 
 type AccountLayoutProps = {
@@ -22,6 +21,7 @@ type AccountLayoutProps = {
   bottomLinks?: ReactNode;
   children?: ReactNode;
   hasThirdPartyLogin?: boolean;
+  isRegister?: boolean;
 };
 
 const AuthLayout2 = ({
@@ -31,6 +31,7 @@ const AuthLayout2 = ({
   bottomLinks,
   children,
   hasThirdPartyLogin,
+  isRegister=false
 }: AccountLayoutProps) => {
   const { themeMode } = useLayoutContext();
 
@@ -38,29 +39,35 @@ const AuthLayout2 = ({
     <Box
       sx={{
         display: "flex",
-        alignItems: "stretch",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        position: "relative",
-        backgroundRepeat: "no-repeat",
-        backgroundImage: "url(" + bgAuth + ")",
+  
+        
+        flexDirection: 'row-reverse',
+        height: "100vh",
+        fontFamily: "'Inter', 'Roboto', sans-serif",
+        overflow: "hidden"
       }}>
-      <Card sx={{ zIndex: 10, width: "100%", maxWidth: { lg: "480px" }, height: "100vh" }}>
+      <Card sx={{ zIndex: 10, width: "100%", maxWidth: { lg: "35%" }, height: "100vh" }}>
         <CardContent
           sx={{
-            p: "48px",
+            p: "2rem",
             display: "flex",
             flexDirection: "column",
             height: "100%",
-            alignItems: "center",
-            justifyContent: "space-around",
+            
+           
+         
           }}>
           <Box
             sx={{
-              marginBottom: "32px",
-              textAlign: { lg: "start", xs: "center" },
+              widows: "100%",
+              marginBottom: "2rem",
+              display: "flex",
+
+              textAlign: { lg: "start", xs: "start" },
               "& > a": {
                 display: "flex",
+                justifyContent: "start",
+                alignItems: "center",
                 textAlign: {
                   lg: "start",
                   xs: "center",
@@ -69,13 +76,13 @@ const AuthLayout2 = ({
             }}>
             <Link to="/">
               {themeMode == "dark" ? (
-                <img src={logo} alt="logo" style={{ height: 24 }} />
+                <img src={logo} alt="logo" style={{ height: 80 }} />
               ) : (
-                <img src={logoDark} alt="logo" style={{ height: 24 }} />
+                <img src={logoDark} alt="logo" style={{ height: 65 }} />
               )}
             </Link>
           </Box>
-          <Box sx={{ textAlign: "center" }}>
+          <Box sx={{ textAlign: "center" ,px:6 ,py:4 }}>
             {pageImage && (
               <Avatar
                 src={pageImage}
@@ -85,61 +92,39 @@ const AuthLayout2 = ({
               />
             )}
 
-            <Typography variant="h4" sx={{ mb: 1 }}>
+            <Typography variant="h2" sx={{ mb: 1  , textAlign:'left' , color:'#4F4F4F', fontWeight:'700' ,fontSize:'2rem'}}>
               {authTitle}
             </Typography>
-            <Typography variant="body2" sx={{ mb: "36px" }} color={"text.secondary"}>
-              {helpText}
-            </Typography>
-
+     
             {children}
 
             {hasThirdPartyLogin && (
-              <Box sx={{ textAlign: "center", mt: "36px" }}>
-                <Typography variant="body1" sx={{ color: "grey.600", marginBottom: "24px" }}>
-                  Sign in with
-                </Typography>
+              <Box sx={{ textAlign: "center", mt: "16px" }}>
+             
+<Divider sx={{ my: 1.5 }} textAlign="center">or</Divider>
                 <Box sx={{ display: "flex", gap: "8px", justifyContent: "center" }}>
-                  <IconButton
-                    sx={{
-                      height: "32px",
-                      width: "32px",
-                      lineHeight: "28px",
-                      border: "2px solid #3e61d5",
-                      borderRadius: "100%",
-                    }}>
-                    <FiFacebook size={24} />
-                  </IconButton>
-                  <IconButton
-                    sx={{
-                      height: "32px",
-                      width: "32px",
-                      lineHeight: "28px",
-                      border: "2px solid #f15776",
-                      borderRadius: "100%",
-                    }}>
-                    <TbBrandGoogle size={24} />
-                  </IconButton>
-                  <IconButton
-                    sx={{
-                      height: "32px",
-                      width: "32px",
-                      lineHeight: "28px",
-                      border: "2px solid #16a6e9",
-                      borderRadius: "100%",
-                    }}>
-                    <LuTwitter size={24} />
-                  </IconButton>
-                  <IconButton
-                    sx={{
-                      height: "32px",
-                      width: "32px",
-                      lineHeight: "28px",
-                      border: "2px solid #6c757d",
-                      borderRadius: "100%",
-                    }}>
-                    <LuGithub size={24} />
-                  </IconButton>
+               
+              <Button
+              fullWidth
+              variant="outlined"
+              onClick={() => alert('Sign up with Google')}
+              endIcon={<GoogleIcon />}
+              sx={{
+                borderRadius: "8px",
+                p:1,
+                bgcolor: '#E1E1E2',
+                color:'#4F4F4F',
+                border: "1px solid #E0E0E0",
+                fontFamily: "Inter, sans-serif",
+    fontWeight: 600,
+    fontStyle: "normal",
+    fontSize: "18px",
+    lineHeight: "120%",
+    letterSpacing: "-0.5px",
+              }}
+            >
+             Continue with Google
+            </Button>
                 </Box>
               </Box>
             )}
@@ -157,7 +142,15 @@ const AuthLayout2 = ({
           position: "relative",
           display: { lg: "flex", xs: "hidden" },
           alignItems: "end",
+              
+          
+        backgroundPosition: "50% 28%",
+        backgroundRepeat: "no-repeat",
+        backgroundImage: "url(" + bgAuth + ")",
+        backgroundSize: "cover",
+        
         }}>
+          
         <Box
           sx={{
             position: "absolute",
@@ -167,52 +160,10 @@ const AuthLayout2 = ({
             marginTop: "auto",
             justifyContent: "center",
             textAlign: "center",
+            
           }}>
           <Box sx={{ width: { xl: "50%", xs: "100%" }, mx: "auto" }}>
-            <Swiper spaceBetween={50} slidesPerView={1} modules={[Autoplay]} loop={true} autoplay={{ delay: 5000 }}>
-              <SwiperSlide>
-                <Typography variant="h2" sx={{ color: "white", mb: "24px" }}>
-                  I love the color!
-                </Typography>
-                <Typography variant="subtitle1" sx={{ color: "white", mb: "20px", display: "flex", gap: 0.5 }}>
-                  <LuQuote size={16} style={{ transform: "scaleX(-1)" }} />
-                  Everything you need is in this template. Love the overall look and feel. Not too flashy, and still
-                  very professional and smart.
-                  <LuQuote size={16} />
-                </Typography>
-                <Typography variant="caption" sx={{ color: "white", mx: "auto" }}>
-                  - Admin User
-                </Typography>
-              </SwiperSlide>
-
-              <SwiperSlide>
-                <Typography variant="h2" sx={{ color: "white", mb: "24px" }}>
-                  Flexibility !
-                </Typography>
-                <Typography variant="subtitle1" sx={{ color: "white", mb: "20px", display: "flex", gap: 0.5 }}>
-                  <LuQuote size={16} style={{ transform: "scaleX(-1)" }} />
-                  Pretty nice theme, hoping you guys could add more features to this. Keep up the good work.
-                  <LuQuote size={16} />
-                </Typography>
-                <Typography variant="caption" sx={{ color: "white", mx: "auto" }}>
-                  - Admin User
-                </Typography>
-              </SwiperSlide>
-
-              <SwiperSlide>
-                <Typography variant="h2" sx={{ color: "white", mb: "24px" }}>
-                  Feature Availability!
-                </Typography>
-                <Typography variant="subtitle1" sx={{ color: "white", mb: "20px", display: "flex", gap: 0.5 }}>
-                  <LuQuote size={16} style={{ transform: "scaleX(-1)" }} />
-                  This is a great product, helped us a lot and very quick to work with and implement.
-                  <LuQuote size={16} />
-                </Typography>
-                <Typography variant="caption" sx={{ color: "white", mx: "auto" }}>
-                  - Admin User
-                </Typography>
-              </SwiperSlide>
-            </Swiper>
+          
           </Box>
         </Box>
       </Box>

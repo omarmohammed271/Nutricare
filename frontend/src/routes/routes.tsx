@@ -102,10 +102,10 @@ const authRoutes: RoutesProps[] = [
   { path: "/auth/login2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Login2"))} /> },
   { path: "/auth/register2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Register2"))} /> },
   { path: "/auth/logout2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Logout2"))} /> },
-  { path: "/auth/recover-password2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ResetPassword"))} />, },
+  { path: "/auth/recover-password2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ResetPassword2"))} />, },
   { path: "/auth/lock-screen2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/LockScreen"))} />, },
   { path: "/auth/confirm-mail2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ConfirmMail"))} />, },
-  // Simple test route
+  { path: "/auth/multi-step-form", element: <LoadComponent component={lazy(() => import("@src/pages/auth/MultiStepForm"))} /> },
   { path: "/simple-test", element: <div style={{ padding: '50px', fontSize: '24px', color: 'red' }}>SIMPLE TEST ROUTE IS WORKING!</div> },
 ]
 

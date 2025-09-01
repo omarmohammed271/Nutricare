@@ -8,9 +8,9 @@ import AuthLayout2 from "../AuthLayout2";
 
 const BottomLink = () => {
   return (
-    <Typography variant="body2" color={"text.secondary"} sx={{ display: "flex", flexWrap: "nowrap", gap: 0.5 }}>
+    <Typography variant="body2" color={"text.secondary"} sx={{ display: "flex", flexWrap: "nowrap", gap: 0.5 , justifyContent:'center' }}>
       Already have account?
-      <Link to="/auth/login">
+      <Link to="/auth/login2">
         <Typography variant="subtitle2" component={"span"}>
           Log In
         </Typography>
