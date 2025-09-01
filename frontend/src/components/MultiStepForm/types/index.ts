@@ -104,6 +104,8 @@ export interface StepNavigationProps {
   isSubmitting: boolean;
   showSkipOption?: boolean;
   onSkip?: () => void;
+  hideNextOnLastStep?: boolean;
+  billingFormCompleted?: boolean;
 }
 
 // Progress indicator props
