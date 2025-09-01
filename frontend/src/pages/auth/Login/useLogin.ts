@@ -20,7 +20,7 @@ export default function useLogin() {
   const loginFormSchema = yup.object({
     email: yup.string().email("Please enter valid email").required("Please enter email"),
     password: yup.string().required("Please enter password"),
-    rememberMe: yup.boolean().oneOf([true], "Checkbox must be checked").optional(),
+    rememberMe: yup.boolean().optional(),
   });
 
   const { control, handleSubmit } = useForm({

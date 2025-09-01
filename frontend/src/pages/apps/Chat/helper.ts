@@ -46,6 +46,7 @@ export interface ChatUser {
   location?: string;
   languages?: string;
   groups: string;
+  Password?: string;
 }
 
 export interface ChatMessage {

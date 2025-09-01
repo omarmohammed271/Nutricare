@@ -1,18 +1,29 @@
 import { Link } from "react-router-dom";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, Switch, FormControlLabel, TextField } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import AuthLayout2 from "../AuthLayout2";
 import useLogin from "../Login/useLogin";
-import { CheckboxInput, FormInput, PageMetaData, PasswordInput } from "@src/components";
+import { PageMetaData } from "@src/components";
+import { Controller } from "react-hook-form";
+
 
 const BottomLink = () => {
   const { t } = useTranslation('auth');
   
   return (
-    <Typography variant="body2" color={"text.secondary"} sx={{ display: "flex", flexWrap: "nowrap", gap: 0.5 }}>
+    <Typography 
+      variant="body2" 
+      color="text.secondary" 
+      sx={{ 
+        display: "flex", 
+        flexWrap: "nowrap", 
+        gap: 0.5, 
+        justifyContent: "center" 
+      }}
+    >
       {t('login.noAccount')}&nbsp;
       <Link to="/auth/register2">
-        <Typography variant="subtitle2" component={"span"}>
+        <Typography variant="subtitle2" component="span">
           {t('login.registerLink')}
         </Typography>
       </Link>
@@ -32,20 +43,122 @@ const Login2 = () => {
         authTitle={t('login.title')}
         helpText={t('login.subtitle')}
         hasThirdPartyLogin
-        bottomLinks={<BottomLink />}>
+        bottomLinks={<BottomLink />}
+      >
         <form onSubmit={login} style={{ textAlign: "left" }}>
-          <FormInput name="email" type="email" label={t('login.email')} control={control} />
+          {/* Email field with green styling */}
+          <Controller
+          
+            name="email"
+            control={control}
+            defaultValue=""
+            rules={{ 
+              required: t('validation.emailRequired'),
+           
+            }}
+            render={({ field, fieldState: { error } }) => (
+              <TextField
+                {...field}
+                label={t('login.email')}
+                type="email"
+           
+                error={!!error}
+                helperText={error?.message}
+                fullWidth
+                margin="normal"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#00C896',
+                      borderWidth: '2px',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#00C896',
+                      borderWidth: '2px',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#00C896',
+                      borderWidth: '2px',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#00C896',
+                    '&.Mui-focused': {
+                      color: '#00C896',
+                    },
+                  },
+                }}
+              />
+            )}
+          />
 
-          <Box sx={{ mt: 2 }}>
-            <PasswordInput name="password" type="password" label={t('login.password')} control={control} />
+          {/* Password field - default styling */}
+          <Controller
+            name="password"
+            control={control}
+            defaultValue=""
+            rules={{ 
+              required: t('validation.passwordRequired'),
+              minLength: {
+                value: 6,
+                message: t('validation.passwordMinLength')
+              }
+            }}
+            render={({ field, fieldState: { error } }) => (
+              <TextField
+                {...field}
+                label={t('login.password')}
+                type="password"
+           
+                error={!!error}
+                helperText={error?.message}
+                fullWidth
+                margin="normal"
+                autoComplete="current-password"
+              />
+            )}
+          />
+
+          {/* Remember Me Switch */}
+          <Box sx={{ mt: 1 ,display: "flex", alignItems: "center" , justifyContent: "space-between" }} >
+            <Controller
+              name="rememberMe"
+              control={control}
+              defaultValue={false}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      color="success"
+                    />
+                  }
+                  label={t('login.rememberMe')}
+                />
+              )}
+            />
+
+            <Typography >
+              <Link to="/auth/recover-password2">{t('login.forgotPassword')}</Link>
+           
+            </Typography>
+            
           </Box>
 
-          <Box sx={{ mt: 1 }}>
-            <CheckboxInput name="rememberMe" label={t('login.rememberMe')} control={control} />
-          </Box>
-
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-            <Button variant="contained" color="primary" type="submit" disabled={loading} size={"large"} fullWidth>
+          {/* Submit Button */}
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              type="submit" 
+              disabled={loading} 
+              size="large" 
+              fullWidth
+              sx={{
+                p:1
+              }}
+            >
               {t('login.loginButton')}
             </Button>
           </Box>

@@ -1,16 +1,16 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Box, Button, Typography } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { Box, Button, Typography, TextField, Checkbox, FormControlLabel } from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
-import { CheckboxInput, FormInput, PageMetaData, PasswordInput } from "@src/components";
+import { PageMetaData } from "@src/components";
 import AuthLayout2 from "../AuthLayout2";
 
 const BottomLink = () => {
   return (
     <Box sx={{ my: "16px", display: "flex", justifyContent: "center" }}>
       <Typography variant="body2" color={"text.secondary"} sx={{ display: "flex", flexWrap: "nowrap", gap: 0.5 }}>
-        Already have account?
+        Already have an account?
         <Link to="/auth/login2">
           <Typography variant="subtitle2" component={"span"}>
             Log In
@@ -23,42 +23,171 @@ const BottomLink = () => {
 
 const Register2 = () => {
   const registerFormSchema = yup.object({
-    fullName: yup.string().required("Name is required"),
-    email: yup.string().email("Please enter valid email").required("Please enter email"),
-    password: yup.string().required("Please enter password"),
-    rememberMe: yup.boolean().oneOf([true], "Checkbox must be checked").optional(),
+    fullName: yup.string().required("Full name is required"),
+    email: yup
+      .string()
+      .email("Please enter a valid email address")
+      .required("Email is required"),
+    password: yup
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .required("Password is required"),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref('password')], "Passwords must match")
+      .required("Please confirm your password"),
+    agreeToTerms: yup
+      .boolean()
+      .oneOf([true], "You must agree to terms and conditions")
+      .required("You must agree to terms and conditions"),
   });
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: yupResolver(registerFormSchema),
     defaultValues: {
-              fullName: "Nutricare Demo",
+      fullName: "Nutricare Demo",
       email: "demo@demo.com",
       password: "password",
+      confirmPassword: "password",
+      agreeToTerms: false,
     },
   });
+
+  const onSubmit = (data:any) => {
+    console.log("Registration data:", data);
+    // هنا تضيف الـ registration logic
+  };
 
   return (
     <>
       <PageMetaData title={"Register"} />
 
       <AuthLayout2
-        authTitle="Free Register"
+        authTitle="Sign Up"
         helpText="Don't have an account? Create your account, it takes less than a minute."
         bottomLinks={<BottomLink />}
-        hasThirdPartyLogin>
-        <form onSubmit={handleSubmit(() => null)} style={{ textAlign: "left" }}>
-          <FormInput name="fullName" type="text" label="Full Name" control={control} />
+        hasThirdPartyLogin
+      >
+        <form onSubmit={handleSubmit(onSubmit)} style={{ textAlign: "left" }}>
+          {/* Full Name Field */}
+          <Controller
+            name="fullName"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <TextField
+                {...field}
+                label="Full Name"
+                type="text"
+                error={!!error}
+                helperText={error?.message}
+                fullWidth
+                margin="normal"
+              />
+            )}
+          />
 
-          <FormInput name="email" type="email" label="Email Address" containerSx={{ mt: 2 }} control={control} />
+          {/* Email Field - with green styling */}
+          <Controller
+            name="email"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <TextField
+                {...field}
+                label="Email Address"
+                type="email"
+                error={!!error}
+                helperText={error?.message}
+                fullWidth
+                margin="normal"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#00C896',
+                      borderWidth: '2px',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#00C896',
+                      borderWidth: '2px',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#00C896',
+                      borderWidth: '2px',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#00C896',
+                    '&.Mui-focused': {
+                      color: '#00C896',
+                    },
+                  },
+                }}
+              />
+            )}
+          />
 
-          <PasswordInput name="password" type="password" label={"Password"} containerSx={{ mt: 2 }} control={control} />
+          {/* Password Field */}
+          <Controller
+            name="password"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <TextField
+                {...field}
+                label="Password"
+                type="password"
+                error={!!error}
+                helperText={error?.message}
+                fullWidth
+                margin="normal"
+                autoComplete="new-password"
+              />
+            )}
+          />
 
-          <CheckboxInput name="rememberMe" label="Remember me" control={control} labelSx={{ mt: 1 }} />
 
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-            <Button variant="contained" color="primary" type="submit" size={"large"} fullWidth>
-              Login
+
+          {/* Terms and Conditions Checkbox */}
+          <Box sx={{ mt: 2 }}>
+            <Controller
+              name="agreeToTerms"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      color="primary"
+                    />
+                  }
+                  label={
+                    <Typography variant="body2">
+                      I agree to the{" "}
+                      <Link to="/terms" style={{ color: "inherit", textDecoration: "underline" }}>
+                        Terms and Conditions
+                      </Link>
+                    </Typography>
+                  }
+                />
+              )}
+            />
+            {errors.agreeToTerms && (
+              <Typography variant="caption" color="error" sx={{ mt: 1, display: "block" }}>
+                {errors.agreeToTerms.message}
+              </Typography>
+            )}
+          </Box>
+
+          {/* Submit Button */}
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              type="submit" 
+              size="large" 
+              fullWidth
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Creating Account..." : "Create Account"}
             </Button>
           </Box>
         </form>
