@@ -112,7 +112,6 @@ const authRoutes: RoutesProps[] = [
 const adminRoutes: RoutesProps[] = [
   { path: "/ecommerce", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ecommerce/"))} /> },
 
-  { path: "/analytics", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/Analytics"))} /> },
   { path: "/meal-plan", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/MealPlan"))} /> },
   { path: "error-404-alt", element: <LoadComponent component={lazy(() => import("@src/pages/error/Error404Alt"))} /> },
 
