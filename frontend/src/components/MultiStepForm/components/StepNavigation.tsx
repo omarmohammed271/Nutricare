@@ -15,6 +15,8 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
   isSubmitting,
   showSkipOption = false,
   onSkip,
+  hideNextOnLastStep = false,
+  billingFormCompleted = false,
 }) => {
   const isLastStep = activeStep === totalSteps - 1;
 
@@ -22,6 +24,9 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
     if (isLastStep) return 'Process Payment';
     return 'Next';
   };
+
+  // In the final billing step, hide skip button if billing form is completed
+  const shouldShowSkipOption = showSkipOption && !billingFormCompleted;
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 4 }}>
@@ -38,7 +43,7 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
       
       {isLastStep ? (
         <Box sx={{ display: 'flex', gap: 2 }}>
-          {showSkipOption && onSkip && (
+          {shouldShowSkipOption && onSkip && (
             <NextButton
               variant="outlined"
               onClick={onSkip}
@@ -64,14 +69,17 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
           </NextButton>
         </Box>
       ) : (
-        <NextButton
-          variant="contained"
-          onClick={onNext}
-          endIcon={<ArrowForward />}
-          disabled={isNextDisabled || isSubmitting}
-        >
-          Next
-        </NextButton>
+        // Hide Next button on last step if hideNextOnLastStep is true
+        !hideNextOnLastStep && (
+          <NextButton
+            variant="contained"
+            onClick={onNext}
+            endIcon={<ArrowForward />}
+            disabled={isNextDisabled || isSubmitting}
+          >
+            Next
+          </NextButton>
+        )
       )}
     </Box>
   );

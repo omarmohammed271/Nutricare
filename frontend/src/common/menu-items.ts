@@ -48,7 +48,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
     icon: LuHome,
     badge: {
       variant: "bg-success rounded-full",
-      text: "2",
+      text: "3",
     },
     children: [
       {
@@ -63,6 +63,12 @@ const MENU_ITEMS: MenuItemTypes[] = [
         url: "/ecommerce",
         parentKey: "dashboard",
       },
+      {
+        key: "dashboard-meal-plan",
+        label: "Meal Plan",
+        url: "/meal-plan/overview",
+        parentKey: "dashboard",
+      },
     ],
   },
   {
@@ -70,6 +76,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
     label: "Apps",
     isTitle: true,
   },
+  
   {
     key: "apps-calendar",
     label: "Calendar",
@@ -77,6 +84,16 @@ const MENU_ITEMS: MenuItemTypes[] = [
     icon: LuCalendar,
     url: "/apps/calendar",
   },
+
+    {
+    key: "Meal Plan",
+    label: "Meal Plan",
+    isTitle: false,
+    icon: LuCalendar,
+    url: "/Meal-plan",
+  },
+
+  
   {
     key: "apps-chat",
     label: "Chat",
