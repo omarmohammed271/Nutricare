@@ -48,14 +48,18 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth="lg"
       fullWidth
+      fullScreen={false}
       PaperProps={{
         sx: {
           borderRadius: 3,
           backgroundColor: "#ffffff",
           boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-          minHeight: "800px"
+          minHeight: "90vh",
+          maxHeight: "90vh",
+          width: "95vw",
+          maxWidth: "95vw"
         }
       }}
     >
@@ -64,7 +68,8 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
         borderBottom: "1px solid #f0f0f0",
         display: "flex",
         justifyContent: "space-between",
-        alignItems: "center"
+        alignItems: "center",
+        mb:5
       }}>
         <Typography variant="h5" sx={{ 
           fontWeight: 700, 
@@ -78,7 +83,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3 }}>
+      <DialogContent sx={{ p: 3, overflow: "visible", flex: 1 }}>
         {/* Screening Tools Dropdown */}
         <Box sx={{ mb: 4 }}>
           <FormControl fullWidth>
@@ -87,7 +92,6 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
               value={formData.screeningTools}
               onChange={(e) => handleInputChange("screeningTools", e.target.value)}
               label="Screening Tools"
-              endAdornment={<LuChevronDown size={20} />}
               sx={{
                 borderRadius: 2,
                 "& .MuiOutlinedInput-root": {

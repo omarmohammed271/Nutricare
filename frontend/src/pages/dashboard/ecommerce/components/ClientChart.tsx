@@ -93,10 +93,11 @@ const ClientChart = () => {
     <Card sx={{
       p: 3,
       height: "100%",
-      backgroundColor: "#ffffff",
+      backgroundColor: "background.paper",
       borderRadius: 3,
       boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-      border: "1px solid #f0f0f0"
+      border: "1px solid",
+      borderColor: "divider"
     }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
         <Typography variant="h6" sx={{ fontWeight: 600, color: "#2c3e50" }}>

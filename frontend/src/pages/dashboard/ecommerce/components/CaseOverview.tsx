@@ -70,10 +70,11 @@ const CaseOverview = () => {
     <Card sx={{
       p: 3,
       height: "100%",
-      backgroundColor: "#ffffff",
+      backgroundColor: "background.paper",
       borderRadius: 3,
       boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-      border: "1px solid #f0f0f0"
+      border: "1px solid",
+      borderColor: "divider"
     }}>
       <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: "#2c3e50" }}>
         Case Overview

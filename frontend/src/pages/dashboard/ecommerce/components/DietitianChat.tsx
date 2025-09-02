@@ -10,10 +10,11 @@ const DietitianChat = ({ onOpenChat }: DietitianChatProps) => {
     <Card sx={{ 
       p: 2, 
       height: "100%",
-      backgroundColor: "#ffffff",
+      backgroundColor: "background.paper",
       borderRadius: 3,
       boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-      border: "1px solid #f0f0f0",
+      border: "1px solid",
+      borderColor: "divider",
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",

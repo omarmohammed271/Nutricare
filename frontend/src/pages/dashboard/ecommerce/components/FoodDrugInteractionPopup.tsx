@@ -79,7 +79,8 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
         borderBottom: "1px solid #f0f0f0",
         display: "flex",
         justifyContent: "space-between",
-        alignItems: "center"
+        alignItems: "center",
+        mb:5
       }}>
         <Typography variant="h5" sx={{ 
           fontWeight: 700, 

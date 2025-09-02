@@ -53,10 +53,11 @@ const QuickActions = () => {
   return (
     <Box sx={{
       p: 2,
-      backgroundColor: "#ffffff",
+      backgroundColor: "background.paper",
       borderRadius: 3,
       boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-      border: "1px solid #f0f0f0"
+      border: "1px solid",
+      borderColor: "divider"
     }}>
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "#2c3e50" }}>
         Quick Actions

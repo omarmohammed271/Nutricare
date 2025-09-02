@@ -71,7 +71,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         type: "Weight Loss",
         time: "09:00 AM",
         status: "upcoming",
-        profilePic: "/src/assets/images/avatars/avatar-1.png",
+        profilePic: "/src/assets/images/landing/Group 1171275335.svg",
         phone: "+1 (555) 123-4567",
         email: "sarah.johnson@email.com",
         notes: "Focus on Mediterranean diet and portion control"
@@ -82,7 +82,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         type: "Diabetes Management",
         time: "10:30 AM",
         status: "upcoming",
-        profilePic: "/src/assets/images/avatars/avatar-2.png",
+        profilePic: "/src/assets/images/landing/Group 1171275335.svg",
         phone: "+1 (555) 234-5678",
         email: "michael.chen@email.com",
         notes: "Monitor blood sugar levels and carbohydrate counting"
@@ -93,7 +93,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         type: "Sports Nutrition",
         time: "02:00 PM",
         status: "completed",
-        profilePic: "/src/assets/images/avatars/avatar-3.png",
+        profilePic: "/src/assets/images/landing/Group 1171275335.svg",
         phone: "+1 (555) 345-6789",
         email: "emily.rodriguez@email.com",
         notes: "Post-workout meal planning and protein requirements"
@@ -104,7 +104,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         type: "Heart Health",
         time: "03:30 PM",
         status: "upcoming",
-        profilePic: "/src/assets/images/avatars/avatar-4.png",
+        profilePic: "/src/assets/images/landing/Group 1171275335.svg",
         phone: "+1 (555) 456-7890",
         email: "david.thompson@email.com",
         notes: "Low-sodium diet and omega-3 rich foods"
@@ -117,7 +117,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         type: "Prenatal Nutrition",
         time: "09:30 AM",
         status: "upcoming",
-        profilePic: "/src/assets/images/avatars/avatar-5.png",
+        profilePic: "/src/assets/images/landing/Group 1171275335.svg",
         phone: "+1 (555) 567-8901",
         email: "lisa.wang@email.com",
         notes: "Pregnancy nutrition and supplements"
@@ -128,7 +128,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         type: "Gastrointestinal Health",
         time: "11:00 AM",
         status: "upcoming",
-        profilePic: "/src/assets/images/avatars/avatar-6.png",
+        profilePic: "/src/assets/images/landing/Group 1171275335.svg",
         phone: "+1 (555) 678-9012",
         email: "james.wilson@email.com",
         notes: "IBS-friendly diet and gut health"
@@ -139,7 +139,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         type: "Kidney Disease",
         time: "01:30 PM",
         status: "upcoming",
-        profilePic: "/src/assets/images/avatars/avatar-7.png",
+        profilePic: "/src/assets/images/landing/Group 1171275335.svg",
         phone: "+1 (555) 789-0123",
         email: "maria.garcia@email.com",
         notes: "Low-potassium and low-phosphorus diet"
@@ -152,7 +152,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         type: "Cancer Support",
         time: "10:00 AM",
         status: "upcoming",
-        profilePic: "/src/assets/images/avatars/avatar-8.png",
+        profilePic: "/src/assets/images/landing/Group 1171275335.svg",
         phone: "+1 (555) 890-1234",
         email: "robert.brown@email.com",
         notes: "Nutrition during chemotherapy"
@@ -163,7 +163,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         type: "Eating Disorders",
         time: "02:30 PM",
         status: "upcoming",
-        profilePic: "/src/assets/images/avatars/avatar-9.png",
+        profilePic: "/src/assets/images/landing/Group 1171275335.svg",
         phone: "+1 (555) 901-2345",
         email: "jennifer.lee@email.com",
         notes: "Recovery meal planning and support"
@@ -176,7 +176,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         type: "Senior Nutrition",
         time: "09:00 AM",
         status: "upcoming",
-        profilePic: "/src/assets/images/avatars/avatar-10.png",
+        profilePic: "/src/assets/images/landing/Group 1171275335.svg",
         phone: "+1 (555) 012-3456",
         email: "thomas.anderson@email.com",
         notes: "Age-appropriate nutrition and supplements"
@@ -187,7 +187,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         type: "Food Allergies",
         time: "11:30 AM",
         status: "upcoming",
-        profilePic: "/src/assets/images/avatars/avatar-1.png",
+        profilePic: "/src/assets/images/landing/Group 1171275335.svg",
         phone: "+1 (555) 123-4567",
         email: "amanda.taylor@email.com",
         notes: "Gluten-free and dairy-free meal planning"
@@ -198,7 +198,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         type: "Athletic Performance",
         time: "03:00 PM",
         status: "upcoming",
-        profilePic: "/src/assets/images/avatars/avatar-2.png",
+        profilePic: "/src/assets/images/landing/Group 1171275335.svg",
         phone: "+1 (555) 234-5678",
         email: "christopher.martinez@email.com",
         notes: "Pre-competition nutrition strategy"
@@ -314,7 +314,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         id: newId,
         ...newAppointment,
         status: 'upcoming',
-        profilePic: `/src/assets/images/avatars/avatar-${(newId % 10) + 1}.png`
+        profilePic: "/src/assets/images/landing/Group 1171275335.svg"
       };
       setAppointments(prev => [...prev, newApt]);
       setSnackbar({ open: true, message: 'Appointment added successfully!', severity: 'success' });
@@ -344,10 +344,11 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
       <Card sx={{
         p: 2,
         height: "100%",
-        backgroundColor: "#ffffff",
+        backgroundColor: "background.paper",
         borderRadius: 3,
         boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-        border: "1px solid #f0f0f0"
+        border: "1px solid",
+        borderColor: "divider"
       }}>
         {/* Header */}
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
@@ -420,7 +421,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                 display: "grid",
                 gridTemplateColumns: "repeat(7, 1fr)",
                 gap: 0.5,
-                backgroundColor: "#f8f9fa",
+                backgroundColor: "background.default",
                 p: 1,
                 borderRadius: 2
               }}>
@@ -462,7 +463,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                       border: day && appointmentDates.includes(day) && day !== selectedDate ?
                              "2px solid #02BE6A" : "none",
                       "&:hover": day ? {
-                        backgroundColor: day === selectedDate ? "#029e56" : "#e8f5e8",
+                        backgroundColor: day === selectedDate ? "primary.main" : "success.light",
                       } : {},
                       transition: "all 0.2s ease",
                     }}
@@ -495,7 +496,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
               <Chip
                 label={`${appointments.length} appointments`}
                 size="small"
-                sx={{ backgroundColor: "#e8f5e8", color: "#02BE6A" }}
+                sx={{ backgroundColor: "success.light", color: "primary.main" }}
               />
             </Box>
 
@@ -504,7 +505,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                 textAlign: "center", 
                 py: 4, 
                 color: "#7f8c8d",
-                backgroundColor: "#f8f9fa",
+                backgroundColor: "background.default",
                 borderRadius: 2
               }}>
                 <LuCalendar size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
@@ -553,7 +554,18 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                     >
                       <Avatar
                         src={appointment.profilePic}
-                        sx={{ width: 45, height: 45 }}
+                        sx={{ 
+                          width: 45, 
+                          height: 45,
+                          objectFit: "contain",
+                          backgroundColor: "transparent",
+                          padding: 0.5,
+                          "& img": {
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "contain"
+                          }
+                        }}
                       />
                     </Badge>
 
@@ -755,7 +767,19 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
               <Grid item xs={12} sx={{ textAlign: "center" }}>
                 <Avatar
                   src={selectedAppointment.profilePic}
-                  sx={{ width: 80, height: 80, margin: "0 auto 16px" }}
+                  sx={{ 
+                    width: 80, 
+                    height: 80, 
+                    margin: "0 auto 16px",
+                    objectFit: "contain",
+                    backgroundColor: "transparent",
+                    padding: 1,
+                    "& img": {
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain"
+                    }
+                  }}
                 />
                 <Typography variant="h6" sx={{ fontWeight: 600, color: "#2c3e50" }}>
                   {selectedAppointment.name}
@@ -763,7 +787,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                 <Chip
                   label={selectedAppointment.type}
                   sx={{
-                    backgroundColor: "#e8f5e8",
+                    backgroundColor: "success.light",
                     color: "#02BE6A",
                     mt: 1
                   }}
@@ -922,7 +946,8 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
             p: 2,
             borderRadius: 2,
             mb: 2,
-            border: "1px solid #e9ecef"
+            border: "1px solid",
+            borderColor: "divider"
           }}>
             <Typography variant="body2" color="text.secondary">
               Welcome! I'm here to help with your nutrition questions. How can I assist you today?
@@ -931,7 +956,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
 
           {/* Chat messages would go here */}
           <Box sx={{
-            backgroundColor: "#e8f5e8",
+            backgroundColor: "success.light",
             p: 2,
             borderRadius: 2,
             mb: 2,
