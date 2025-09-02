@@ -19,7 +19,7 @@ const SideBarContent = () => <AppMenu menuItems={getMenuItems()} />;
 
 const LeftSideBarWrapper = styled("div")<WithSetting>(({ settings }) => {
   return {
-    backgroundColor: settings.sidenav.theme == "light" ? "#fff " : "#212428",
+    backgroundColor: settings.sidenav.theme == "light" ? "#fff " : "#F9F4F2",
     width: 240,
     minWidth: 240,
     height: "100vh",

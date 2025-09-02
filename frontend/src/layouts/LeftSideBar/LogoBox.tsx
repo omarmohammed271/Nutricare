@@ -15,7 +15,7 @@ const LogoBox = ({ defaultTheme, backgroundColor }: { defaultTheme?: "light" | "
 
   const LogoBoxWrapper = styled("div")<WithSetting>(({ settings }) => {
     return {
-      backgroundColor: backgroundColor ? (settings.sidenav.theme == "light" ? "#fff " : "#212428") : "transparent",
+      backgroundColor: backgroundColor ? (settings.sidenav.theme == "light" ? "#fff " : "#F9F4F2") : "transparent",
       height: "70px",
       position: "sticky",
       top: 0,
@@ -34,7 +34,7 @@ const LogoBox = ({ defaultTheme, backgroundColor }: { defaultTheme?: "light" | "
           justifyContent: "center",
           display: "flex",
         }}>
-        <img src={(defaultTheme ?? theme) == "light" ? logoDark : logo} height={22} width={94} />
+        <img src={(defaultTheme ?? theme) == "light" ? logoDark : logo} height={70} width={94} />
       </Link>
     </LogoBoxWrapper>
   );

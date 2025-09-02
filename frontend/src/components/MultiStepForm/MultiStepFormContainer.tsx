@@ -382,8 +382,6 @@ const MultiStepFormContainer: React.FC = () => {
               isSubmitting={false}
               showSkipOption={false}
               onSkip={handleSkipBilling}
-              hideNextOnLastStep={true}
-              billingFormCompleted={validateBillingForm()}
             />
           )}
         </Paper>
