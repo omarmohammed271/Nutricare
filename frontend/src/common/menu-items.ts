@@ -43,27 +43,10 @@ const MENU_ITEMS: MenuItemTypes[] = [
   },
   {
     key: "dashboard",
-    label: "Dashboards",
+    label: "NutriCare Dashboard",
     isTitle: false,
     icon: LuHome,
-    badge: {
-      variant: "bg-success rounded-full",
-      text: "2",
-    },
-    children: [
-      {
-        key: "dashboard-analytics",
-        label: "Analytics",
-        url: "/analytics",
-        parentKey: "dashboard",
-      },
-      {
-        key: "dashboard-ecommerce",
-        label: "Ecommerce",
-        url: "/ecommerce",
-        parentKey: "dashboard",
-      },
-    ],
+    url: "/ecommerce",
   },
   {
     key: "apps",

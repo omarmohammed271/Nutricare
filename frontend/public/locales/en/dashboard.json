@@ -9,16 +9,7 @@
     "thisMonth": "This Month",
     "lastMonth": "Last Month"
   },
-  "analytics": {
-    "title": "Analytics",
-    "sales": "Sales",
-    "revenue": "Revenue",
-    "customers": "Customers",
-    "orders": "Orders",
-    "growth": "Growth",
-    "trends": "Trends",
-    "performance": "Performance"
-  },
+
   "ecommerce": {
     "title": "E-Commerce",
     "products": "Products",
