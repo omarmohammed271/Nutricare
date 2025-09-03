@@ -3,7 +3,7 @@ import { Box, Grid } from "@mui/material";
 import { ContainerBox } from './Navbar'
 import { SectionTitle, DemoCard } from "./components";
 import heroImg from "@src/assets/images/landing/hero.png";
-import dashboardAnalytics from "@src/assets/images/landing/dashboard-analytics.png";
+
 import dashboardEcom from "@src/assets/images/landing/dashboard-ecom.png";
 
 const DashboardDemos = () => {
@@ -26,13 +26,7 @@ const DashboardDemos = () => {
             />
           </Grid>
 
-          <Grid item md={6}>
-            <DemoCard
-              link='analytics'
-              image={dashboardAnalytics}
-              name="Analytics"
-            />
-          </Grid>
+
         </Grid>
       </ContainerBox>
     </Box>
