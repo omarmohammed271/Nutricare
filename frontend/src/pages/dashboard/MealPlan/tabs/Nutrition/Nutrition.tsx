@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
-import FloatingLeaf from '../components/FloatingLeaf';
-import RecipeOvenCard from '../components/RecipeOvenCard';
-import CreateRecipePage from '../recipes/CreateRecipe';
-import RecipeDetail from '../recipes/RecipeDetail';
-import RecipeCard from '../recipes/components/RecipeCard';
-import { MENU_PROPS, DEMO_NAMES, RECIPES_DATA } from '../constants/nutritionConstants';
-import { recipeStore } from '../utils/recipeStore';
-import { Recipe } from '../types/recipeStore';
-import { addSampleRecipes } from '../utils/sampleData';
+import FloatingLeaf from './components/FloatingLeaf';
+import RecipeOvenCard from './components/RecipeOvenCard';
+import CreateRecipePage from '../../recipes/CreateRecipe';
+import RecipeDetail from '../../recipes/RecipeDetail';
+import RecipeCard from '../../recipes/components/RecipeCard';
+import { MENU_PROPS, DEMO_NAMES, RECIPES_DATA } from './constants';
+import { recipeStore } from '../../utils/recipeStore';
+import { Recipe } from '../../types/recipeStore';
+import { addSampleRecipes } from '../../utils/sampleData';
 
-const NutritionTab = () => {
+const Nutrition = () => {
   const [personName, setPersonName] = useState([]);
   const [showCreateRecipePage, setShowCreateRecipePage] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
@@ -128,9 +128,10 @@ const NutritionTab = () => {
       <Box sx={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
+        gap: 3,
         pt: 4,
         position: 'relative',
-        zIndex: 2
+        
       }}>
         {RECIPES_DATA.map((data, index) => (
           <RecipeOvenCard 
@@ -172,4 +173,4 @@ const NutritionTab = () => {
   );
 };
 
-export default NutritionTab;
+export default Nutrition;

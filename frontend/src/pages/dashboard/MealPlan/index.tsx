@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { Box, Tabs, Tab, Card } from '@mui/material';
 import { PageBreadcrumb } from '@src/components';
 import Mealplan from './tabs/Mealplan';
-import MealPlanTemplatesTab from './tabs/WeeklyPlanTab';
-import NutritionTab from './tabs/NutritionTab';
-import RecipesTab from './tabs/ClientMealPlan';
+import WeeklyPlan from './tabs/WeeklyPlan';
+import Nutrition from './tabs/Nutrition'; // This is the Recipes tab
+import ClientMealPlan from './tabs/ClientMealPlan';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -102,13 +102,13 @@ const MealPlan = () => {
           <Mealplan />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <MealPlanTemplatesTab />
+          <WeeklyPlan />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <NutritionTab />
+          <Nutrition /> {/* Recipes functionality */}
         </TabPanel>
         <TabPanel value={value} index={3}>
-          <RecipesTab />
+          <ClientMealPlan /> {/* Client templates */}
         </TabPanel>
       </Box>
     </>

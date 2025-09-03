@@ -63,12 +63,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
         url: "/ecommerce",
         parentKey: "dashboard",
       },
-      {
-        key: "dashboard-meal-plan",
-        label: "Meal Plan",
-        url: "/meal-plan/overview",
-        parentKey: "dashboard",
-      },
+  
     ],
   },
   {

@@ -50,7 +50,7 @@ const AddEditEvent = ({
   const methods = useForm<FormValues>({
     defaultValues: {
       title: event.title,
-      className: event.className ? String(event.className) : "error",
+      className: event.className ? String(event.className) : "event-completed",
     },
     resolver: schemaResolver,
   });
@@ -90,11 +90,9 @@ const AddEditEvent = ({
               control={control}
             />
             <SelectInput type="select" label="Category" name="className" containerSx={{ mt: 1 }} control={control}>
-              <MenuItem value="bg-primary">Primary</MenuItem>
-              <MenuItem value="bg-warning">Warning</MenuItem>
-              <MenuItem value="bg-success">Success</MenuItem>
-              <MenuItem value="bg-danger">Error</MenuItem>
-              <MenuItem value="bg-info">Info</MenuItem>
+              <MenuItem value="event-completed">Completed</MenuItem>
+              <MenuItem value="event-canceled">Canceled</MenuItem>
+              <MenuItem value="event-next">Next</MenuItem>
             </SelectInput>
           </Box>
 
