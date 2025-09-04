@@ -15,7 +15,7 @@ const GoogleMaps = () => {
             <BasicGoogleMap />
           </Grid>
           <Grid item xs={12} lg={6}>
-            <MapWithMarkers />
+         
           </Grid>
           <Grid item xs={12} lg={6}>
             <StreetViewMap />
@@ -27,7 +27,7 @@ const GoogleMaps = () => {
             <LightStyledMap />
           </Grid>
           <Grid item xs={12} lg={6}>
-            <DarkStyledMap />
+     
           </Grid>
         </Grid>
       </LoadScript>

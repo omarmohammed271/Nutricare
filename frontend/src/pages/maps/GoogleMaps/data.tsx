@@ -17,24 +17,8 @@ const polyline = [
 
 const BasicGoogleMap = () => {
   return (
-    <Card>
-      <CardHeader title={"Basic"} />
-      <CardContent sx={{ pt: 0, pb: "16px !important" }}>
-        <Box sx={{ position: "relative", height: "400px", overflow: "hidden" }}>
-          <GoogleMap
-            mapContainerStyle={{ width: "100%", height: "100%" }}
-            center={{ lat: -12.043333, lng: -77.028333 }}
-            zoom={10}
-            options={{
-              zoomControl: true,
-              zoomControlOptions: {
-                position: google.maps.ControlPosition.LEFT_TOP,
-              },
-            }}
-          />
-        </Box>
-      </CardContent>
-    </Card>
+    <>
+    </>
   );
 };
 
@@ -74,15 +58,9 @@ const MapWithMarkers = ({ google }: MapContainerProps) => {
             zoomControlOptions={{
               position: google.maps.ControlPosition.LEFT_TOP,
             }}>
-            <Marker
-              title={"This is sweet home."}
-              position={{ lat: 21.569874, lng: 71.5893798 }}
-              onClick={onBasicMarkerClick}></Marker>
+         
 
-            <Marker
-              title={"Marker with InfoWindow"}
-              position={{ lat: 21.56969, lng: 71.5893798 }}
-              onClick={onMarkerClick}></Marker>
+          
             {/*// @ts-ignore*/}
             <InfoWindow marker={activeMarker} onClose={onInfoWindowClose} visible={showingInfoWindow}>
               <div>
@@ -115,16 +93,7 @@ const StreetViewMap = () => {
       <CardHeader title={"Street View Panoramas "} />
       <CardContent sx={{ pt: 0, pb: "16px !important" }}>
         <Box sx={{ position: "relative", height: "400px", overflow: "hidden" }}>
-          <Map
-            google={google}
-            ref={(map: any) => (mapRef = map)}
-            zoom={14}
-            initialCenter={{ lat: 40.7295174, lng: -73.9986496 }}
-            style={{ width: "100%", height: "100%", position: "relative" }}
-            streetViewControl={true}
-            onReady={() => {
-              activateStreetView({ lat: 40.7295174, lng: -73.9986496 });
-            }}></Map>
+        
         </Box>
       </CardContent>
     </Card>
@@ -133,31 +102,8 @@ const StreetViewMap = () => {
 
 const PolyLineMap = () => {
   return (
-    <Card>
-      <CardHeader title={"Map Types"} />
-      <CardContent sx={{ pt: 0, pb: "16px !important" }}>
-        <Box sx={{ position: "relative", height: "400px", overflow: "hidden" }}>
-          {/*// @ts-ignore*/}
-          <Map
-            className="map"
-            google={google}
-            style={{ height: "100%", position: "relative", width: "100%" }}
-            zoom={14}
-            zoomControlOptions={{
-              position: google.maps.ControlPosition.LEFT_TOP,
-            }}>
-            <Polyline
-              fillColor="#0000FF"
-              fillOpacity={0.35}
-              path={polyline}
-              strokeColor="#0000FF"
-              strokeOpacity={0.8}
-              strokeWeight={2}
-            />
-          </Map>
-        </Box>
-      </CardContent>
-    </Card>
+   <>
+   </>
   );
 };
 
@@ -234,14 +180,7 @@ const LightStyledMap = () => {
       <CardHeader title={"Ultra Light With Labels"} />
       <CardContent sx={{ pt: 0, pb: "16px !important" }}>
         <Box sx={{ position: "relative", height: "400px", overflow: "hidden" }}>
-          <Map
-            google={google}
-            initialCenter={{ lat: -12.043333, lng: -77.028333 }}
-            style={{ width: "100%", height: "100%", position: "relative" }}
-            styles={mapStyles}
-            zoomControlOptions={{
-              position: google.maps.ControlPosition.LEFT_TOP,
-            }}></Map>
+      
         </Box>
       </CardContent>
     </Card>
@@ -377,15 +316,7 @@ const DarkStyledMap = ({ google }: MapContainerProps) => {
       <CardHeader title={"Dark"} />
       <CardContent sx={{ pt: 0, pb: "16px !important" }}>
         <Box sx={{ position: "relative", height: "400px", overflow: "hidden" }}>
-          <Map
-            google={google}
-            initialCenter={{ lat: -12.043333, lng: -77.028333 }}
-            style={{ width: "100%", height: "100%", position: "relative" }}
-            styles={mapStyles}
-            zoomControlOptions={{
-              position: google.maps.ControlPosition.LEFT_TOP,
-            }}
-          />
+  
         </Box>
       </CardContent>
     </Card>
