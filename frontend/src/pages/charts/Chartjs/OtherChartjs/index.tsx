@@ -55,21 +55,21 @@ const OtherChartjs = () => {
       <Grid container spacing={3}>
         <Grid item xl={6} xs={12}>
           <ComponentContainerCard title="Bubble">
-            <Box height={"320px"} width={"100%"}>
+            <Box height={"200px"} width={"100%"}>
               <canvas id="bubble-example" data-colors="#3e60d5,#47ad77"></canvas>
             </Box>
           </ComponentContainerCard>
         </Grid>
         <Grid item xl={6} xs={12}>
           <ComponentContainerCard title="Donut">
-            <Box height={"320px"} width={"100%"}>
+            <Box height={"200px"} width={"100%"}>
               <canvas id="donut-example" data-colors="#3e60d5,#fa5c7c,#47ad77,#ebeff2"></canvas>
             </Box>
           </ComponentContainerCard>
         </Grid>
         <Grid item xl={6} xs={12}>
           <ComponentContainerCard title="Pie">
-            <Box height={"320px"} width={"100%"}>
+            <Box height={"200px"} width={"100%"}>
               <canvas id="pie-example" data-colors="#3e60d5,#fa5c7c,#47ad77,#ebeff2, #f56f36"></canvas>
             </Box>
           </ComponentContainerCard>

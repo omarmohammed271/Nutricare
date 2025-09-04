@@ -1,37 +1,11 @@
-import React, { useState } from 'react';
-
-import { Box, Tabs, Tab, Card } from '@mui/material';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Box, Tabs, Tab } from '@mui/material';
 import { PageBreadcrumb } from '@src/components';
 import Mealplan from './tabs/Mealplan';
 import WeeklyPlan from './tabs/WeeklyPlan';
 import Nutrition from './tabs/Nutrition'; // This is the Recipes tab
 import ClientMealPlan from './tabs/ClientMealPlan';
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`meal-plan-tabpanel-${index}`}
-      aria-labelledby={`meal-plan-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          {children}
-        </Box>
-      )}
-    </div>
-  );
-}
 
 function a11yProps(index: number) {
   return {
@@ -41,10 +15,33 @@ function a11yProps(index: number) {
 }
 
 const MealPlan = () => {
-  const [value, setValue] = useState(0);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  // Define the tab routes and their corresponding components
+  const tabRoutes = [
+    { path: '/meal-plan', label: 'Meal Plan', component: <Mealplan /> },
+    { path: '/meal-plan/templates', label: 'Meal Plan Templates', component: <WeeklyPlan /> },
+    { path: '/meal-plan/recipes', label: 'Recipes', component: <Nutrition /> },
+    { path: '/meal-plan/client-plans', label: 'Client Meal Plan', component: <ClientMealPlan /> }
+  ];
+
+  // Determine current tab based on the URL
+  const getCurrentTab = () => {
+    const currentPath = location.pathname;
+    const tabIndex = tabRoutes.findIndex(route => route.path === currentPath);
+    return tabIndex >= 0 ? tabIndex : 0;
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    navigate(tabRoutes[newValue].path);
+  };
+
+  // Get the current component to render
+  const getCurrentComponent = () => {
+    const currentPath = location.pathname;
+    const currentRoute = tabRoutes.find(route => route.path === currentPath);
+    return currentRoute ? currentRoute.component : tabRoutes[0].component;
   };
 
   return (
@@ -54,8 +51,8 @@ const MealPlan = () => {
       <Box sx={{  }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs 
-            value={value} 
-            onChange={handleChange} 
+            value={getCurrentTab()} 
+            onChange={handleTabChange} 
             aria-label="meal plan tabs"
             variant="fullWidth"
             sx={{
@@ -98,18 +95,10 @@ const MealPlan = () => {
           </Tabs>
         </Box>
 
-        <TabPanel value={value} index={0}>
-          <Mealplan />
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-          <WeeklyPlan />
-        </TabPanel>
-        <TabPanel value={value} index={2}>
-          <Nutrition /> {/* Recipes functionality */}
-        </TabPanel>
-        <TabPanel value={value} index={3}>
-          <ClientMealPlan /> {/* Client templates */}
-        </TabPanel>
+        {/* Render current component based on route */}
+        <Box sx={{ p: 3 }}>
+          {getCurrentComponent()}
+        </Box>
       </Box>
     </>
   );

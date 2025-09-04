@@ -45,6 +45,8 @@ import {
   defaultMealCounters
 } from './data';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
+import GraphCard from './componenets/graphcard';
+import FoodListingCard from './componenets/FoodListingCard';
 
 const Mealplan = () => {
   const [formData, setFormData] = useState<FormData>(defaultFormData);
@@ -122,20 +124,17 @@ const Mealplan = () => {
   };
 
   return (
-
-
-
-
     <Box sx={{ width: '100%', p: 0.5 }}>
-
-      
-      {/* Form Section */}
-      <Card sx={{ mb: 4, borderRadius: 3, boxShadow: 2 ,bgcolor:'#F9F4F2', width:'60%' }}>
-        <CardContent sx={{ p: 2 }}>
-            <Box sx={{display:'flex', flexDirection:'column', gap:1}}>
-          <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, textAlign: 'left' }}>
-            Create New Plan
-          </Typography>
+      {/* Main Layout with Form on Left and Chart on Right */}
+      <Grid container spacing={3}>
+        {/* Form Section - Left Side */}
+        <Grid item xs={12} md={7}>
+          <Card sx={{ mb: 4, borderRadius: 3, boxShadow: 2, bgcolor:'#F9F4F2' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Box sx={{display:'flex', flexDirection:'column', gap:1}}>
+                <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, textAlign: 'left' }}>
+                  Create New Plan
+                </Typography>
     <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="meal plan tabs" 
@@ -400,14 +399,23 @@ const Mealplan = () => {
       </TabContext>
              </Box>
         </CardContent>
-  
-        {/* Generated Meals Section */}
-        {planGenerated && (
-          <Grid container spacing={2} sx={{ p: 4 }}>
-            {generatedMeals.map((meal) => (
-              <Grid item xs={12} md={12} key={meal.id}>
-                <Card sx={{ borderRadius: 2, boxShadow: 2, p: 1, bgcolor: '#F9F4F2' }}>
-                  <CardContent>
+      </Card>
+        </Grid>
+
+        {/* Chart Section - Right Side */}
+        <Grid item xs={12} md={5}>
+          <FoodListingCard />
+          <GraphCard />
+        </Grid>
+      </Grid>
+
+      {/* Generated Meals Section */}
+      {planGenerated && (
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          {generatedMeals.map((meal) => (
+            <Grid item xs={12} md={12} key={meal.id}>
+              <Card sx={{ borderRadius: 2, boxShadow: 2, p: 1, bgcolor: '#F9F4F2' }}>
+                <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <Typography variant="h6" sx={{ fontWeight: 600, flexGrow: 1 }}>
                         {meal.type}
@@ -473,8 +481,6 @@ const Mealplan = () => {
             ))}
           </Grid>
         )}
-
-      </Card>
 
       {/* Note Dialog */}
       <Dialog open={noteDialog.open} onClose={() => setNoteDialog({ open: false, mealId: '', currentNote: '' })} maxWidth="sm" fullWidth>

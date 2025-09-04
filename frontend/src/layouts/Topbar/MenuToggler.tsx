@@ -4,7 +4,7 @@
  * Author: Coderthemes
  */
 
-import { IconButton } from "@mui/material";
+import { IconButton, Box, Typography } from "@mui/material";
 import { useLayoutContext } from "@src/states";
 import { LuMenu } from "react-icons/lu";
 
@@ -16,9 +16,36 @@ const MenuToggler = () => {
   };
 
   return (
-    <IconButton color={"inherit"} onClick={showSideNavMobile}>
-      <LuMenu />
-    </IconButton>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <IconButton color={"inherit"} onClick={showSideNavMobile}>
+        <LuMenu />
+      </IconButton>
+      
+      {/* NutriCare Logo */}
+      <Box sx={{ display: { xs: "none", sm: "block" } }}>
+        <Typography 
+          variant="h5" 
+          sx={{ 
+            fontWeight: 700, 
+            color: "#02BE6A",
+            fontSize: "1.5rem"
+          }}
+        >
+          NutriCare
+        </Typography>
+        <Typography 
+          variant="caption" 
+          sx={{ 
+            color: "text.secondary",
+            fontSize: "0.7rem",
+            display: "block",
+            lineHeight: 1
+          }}
+        >
+          Nutrition & Health
+        </Typography>
+      </Box>
+    </Box>
   );
 };
 

@@ -1,36 +1,54 @@
 import { Grid } from "@mui/material";
 import { PageBreadcrumb } from "@src/components";
-import Statistics from "./components/Statistics";
-import RevenueChart from "./components/RevenueChart";
-import TotalSalesChart from "./components/TotalSalesChart";
-import TopSellingProducts from "./components/TopSellingProducts";
-import RevenueByLocation from "./components/RevenueByLocation";
+import QuickActions from "./components/QuickActions";
+import ClientChart from "./components/ClientChart";
+import CaseOverview from "./components/CaseOverview";
+import Appointments from "./components/Appointments";
+import DietitianChat from "./components/DietitianChat";
+import { useState } from "react";
+import { Box } from "@mui/material";
 
-const Ecommerce = () => {
+const NutriCareDashboard = () => {
+  const [chatOpen, setChatOpen] = useState(false);
+
+  const handleOpenChat = () => {
+    setChatOpen(true);
+  };
+
+  const handleCloseChat = () => {
+    setChatOpen(false);
+  };
+
   return (
-    <>
-      <PageBreadcrumb title="Dashboard" subName="Ecommerce" />
+    <Box sx={{ p: 2 }}>
+      <PageBreadcrumb title="NutriCare Dashboard" subName="Nutrition & Health Management" />
 
-      <Statistics />
+      {/* Quick Action Buttons */}
+      <Box sx={{ mb: 6 }}>
+        <QuickActions />
+      </Box>
 
-      <Grid container spacing={3} sx={{ mt: 0 }}>
-        <Grid item lg={8} xs={12}>
-          <RevenueChart />
+      {/* Charts Row - Case Distribution and Total Number of Clients (50% each) */}
+      <Grid container spacing={4} sx={{ mb: 8 }}>
+        <Grid item lg={6} xs={12}>
+          <ClientChart />
         </Grid>
-        <Grid item lg={4} xs={12}>
-          <TotalSalesChart />
+        <Grid item lg={6} xs={12}>
+          <CaseOverview />
         </Grid>
       </Grid>
-      <Grid container spacing={3} sx={{ mt: 0 }}>
-        <Grid item lg={5} xs={12}>
-          <TopSellingProducts />
+
+      {/* Appointments and Chat Row - Appointments 70%, Chat 30% */}
+      <Grid container spacing={4} sx={{ mb: 6 }}>
+        <Grid item lg={8.4} xs={12}>
+          <Appointments chatOpen={chatOpen} onChatClose={handleCloseChat} />
         </Grid>
-        <Grid item lg={7} xs={12}>
-          <RevenueByLocation />
+        <Grid item lg={3.6} xs={12}>
+          <DietitianChat onOpenChat={handleOpenChat} />
         </Grid>
       </Grid>
-    </>
+    </Box>
   );
 };
 
-export default Ecommerce;
+export default NutriCareDashboard;

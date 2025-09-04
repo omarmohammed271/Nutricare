@@ -57,6 +57,7 @@ const UserProfile = () => {
     {
       icon: LuUserCircle2,
       label: "My Account",
+      link: "/my-profile",
     },
     {
       icon: LuSettings,
@@ -87,7 +88,7 @@ const UserProfile = () => {
           paddingRight: "8px",
           display: "flex",
           alignItems: "center",
-          width: "140px",
+          width: "160px",
           borderLeft: 1,
           borderRight: 1,
           borderColor: theme == "dark" ? "#374151" : "divider",
@@ -95,13 +96,24 @@ const UserProfile = () => {
           backgroundColor: "#0000000d",
           justifyContent: "space-around",
         }}>
-        <Avatar src={avatar2} alt="avatar" sx={{ height: 32, width: 32 }} />
+        <Avatar 
+          sx={{ 
+            height: 32, 
+            width: 32,
+            backgroundColor: "#02BE6A",
+            color: "white",
+            fontWeight: "bold",
+            fontSize: "14px",
+          }}
+        >
+          DO
+        </Avatar>
         <div>
           <Typography variant="subtitle2" color={"text.primary"}>
-            Tosha Minner
+            Dr. Octavius
           </Typography>
           <Typography variant="caption" color={"text.primary"}>
-            Founder & CEO
+            Dietitian
           </Typography>
         </div>
       </Box>

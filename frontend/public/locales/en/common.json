@@ -28,7 +28,7 @@
   },
   "navigation": {
     "dashboard": "Dashboard",
-    "analytics": "Analytics",
+
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Logout",

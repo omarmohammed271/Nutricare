@@ -44,67 +44,103 @@ const Calendar = ({ onDateClick, onEventClick, events, currentView, onCalendarRe
     const { event } = eventInfo;
     const { extendedProps } = event;
     
+    // Format start and end times
+    const startTime = event.start ? event.start.toLocaleTimeString('en-US', { 
+      hour: 'numeric', 
+      minute: '2-digit', 
+      hour12: true 
+    }) : '';
+    const endTime = event.end ? event.end.toLocaleTimeString('en-US', { 
+      hour: 'numeric', 
+      minute: '2-digit', 
+      hour12: true 
+    }) : '';
+    
     return (
       <Box sx={{
-        p: 1.5,
+        p: 0.5,
         borderRadius: 1,
         height: '100%',
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        gap: 0.5,
+        gap: 0.3,
         border: `2px solid ${getEventColor(extendedProps.status).border}`,
         backgroundColor: getEventColor(extendedProps.status).bg,
-        minHeight: 'auto',
-        maxHeight: 'none',
-        overflow: 'visible'
+        overflow: 'hidden',
+        boxSizing: 'border-box'
       }}>
+        {/* Prominent Time Display at Top */}
         <Box sx={{
           backgroundColor: getEventColor(extendedProps.status).border,
           color: 'white',
-          px: 1,
-          py: 0.5,
+          px: 0.5,
+          py: 0.3,
           borderRadius: 0.5,
-          fontSize: '0.75rem',
+          fontSize: '0.7rem',
           fontWeight: 600,
           textAlign: 'center',
-          mb: 0.5
+          lineHeight: 1,
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        }}>
+          {startTime} - {endTime}
+        </Box>
+        
+        {/* Status Badge */}
+        <Box sx={{
+          backgroundColor: getEventColor(extendedProps.status).border,
+          color: 'white',
+          px: 0.5,
+          py: 0.2,
+          borderRadius: 0.3,
+          fontSize: '0.6rem',
+          fontWeight: 600,
+          textAlign: 'center',
+          alignSelf: 'center',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          maxWidth: '100%'
         }}>
           {extendedProps.status?.toUpperCase() || 'EVENT'}
         </Box>
-        <Typography 
-          variant="body2" 
-          sx={{ 
-            fontWeight: 600, 
-            fontSize: '0.8rem',
-            lineHeight: 1.2,
-            color: '#333',
-            mb: 0.5
-          }}
-        >
-          Time: {eventInfo.timeText}
-        </Typography>
-        <Typography 
-          variant="body2" 
-          sx={{ 
-            fontSize: '0.8rem',
-            color: '#333',
-            mb: 0.5
-          }}
-        >
-          Client: {extendedProps.clientName || 'N/A'}
-        </Typography>
+        
+        {/* Client Name */}
         <Typography 
           variant="caption" 
           sx={{ 
-            fontSize: '0.7rem',
-            color: '#666',
-            lineHeight: 1.2,
-            wordWrap: 'break-word'
+            fontWeight: 600, 
+            fontSize: '0.75rem',
+            lineHeight: 1.1,
+            color: '#333',
+            textAlign: 'center',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            width: '100%'
           }}
         >
-          Session Type: {extendedProps.sessionType || event.title}
-          <br />
-          (Scheduled from client dashboard)
+          {extendedProps.clientName || 'N/A'}
+        </Typography>
+        
+        {/* Session Type */}
+        <Typography 
+          variant="caption" 
+          sx={{ 
+            fontSize: '0.65rem',
+            color: '#555',
+            fontWeight: 400,
+            textAlign: 'center',
+            lineHeight: 1.1,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            width: '100%'
+          }}
+        >
+          {extendedProps.sessionType || event.title}
         </Typography>
       </Box>
     );
@@ -144,6 +180,15 @@ const Calendar = ({ onDateClick, onEventClick, events, currentView, onCalendarRe
       <Box 
         id="calendar" 
         sx={{
+          '& .fc-v-event ':{
+            background:'none'
+          },
+          '& .css-1eq835z':{
+            width: '100%',
+            height: `${height - 100}px`,
+            borderRadius: '8px',
+       
+          },
           '& .fc': {
             fontFamily: 'Inter, sans-serif'
           },
@@ -151,15 +196,17 @@ const Calendar = ({ onDateClick, onEventClick, events, currentView, onCalendarRe
             border: '1px solid #e0e0e0'
           },
           '& .fc-timegrid-slot': {
-            height: '160px !important',
-            minHeight: '160px !important',
-            maxHeight: '160px !important'
+            height: '120px !important',
+            minHeight: '120px !important'
           },
           '& .fc-timegrid-axis': {
             width: '80px !important'
           },
           '& .fc-timegrid-col': {
-            minWidth: '200px !important'
+            minWidth: '250px !important'
+          },
+          '& .fc-daygrid-day': {
+            minHeight: '180px !important'
           },
           '& .fc-timegrid-body': {
             minHeight: '100% !important'
@@ -173,10 +220,10 @@ const Calendar = ({ onDateClick, onEventClick, events, currentView, onCalendarRe
           '& .fc-event': {
             borderRadius: '8px !important',
             border: 'none !important',
-            margin: '2px 4px !important',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1) !important',
-            minHeight: 'auto !important',
-            height: 'auto !important'
+            margin: '3px 6px !important',
+            boxShadow: '0 3px 6px rgba(0,0,0,0.15) !important',
+            minHeight: '100px !important',
+            width: '100% !important',
           },
           '& .fc-event.bg-success': {
             backgroundColor: 'rgba(53, 194, 130, 0.3) !important',

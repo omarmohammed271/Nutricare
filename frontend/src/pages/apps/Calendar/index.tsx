@@ -42,6 +42,7 @@ const CalendarIndex = () => {
     setShow(false);
     setEventData({});
     setDateInfo({});
+    setIsEditable(false);
   };
   const onOpenModal = () => setShow(true);
   const [isEditable, setIsEditable] = useState<boolean>(false);
@@ -69,8 +70,11 @@ const CalendarIndex = () => {
       id: String(arg.event.id),
       title: arg.event.title,
       className: arg.event.classNames[0],
+      start: arg.event.start || undefined,
+      end: arg.event.end || undefined,
+      extendedProps: arg.event.extendedProps
     };
-    setEventData(event);
+    setEventData(event as EventInput);
     setIsEditable(true);
     onOpenModal();
   };
@@ -81,10 +85,12 @@ const CalendarIndex = () => {
   const onAddEvent = (data: any) => {
     const modifiedEvents = [...events];
     const event = {
-      id: String(modifiedEvents.length + 1),
+      id: String(Date.now()), // Use timestamp for unique ID
       title: data.title,
-      start: Object.keys(dateInfo).length !== 0 ? dateInfo.date : new Date(),
+      start: data.start,
+      end: data.end,
       className: data.className,
+      extendedProps: data.extendedProps
     };
     modifiedEvents.push(event);
     setEvents(modifiedEvents);
@@ -97,11 +103,24 @@ const CalendarIndex = () => {
   const onUpdateEvent = (data: any) => {
     const modifiedEvents = [...events];
     const idx = modifiedEvents.findIndex((e: any) => e["id"] === eventData!.id);
-    modifiedEvents[idx]["title"] = data.title;
-    modifiedEvents[idx]["className"] = data.className;
-    setEvents(modifiedEvents);
+    
+    if (idx !== -1) {
+      modifiedEvents[idx] = {
+        ...modifiedEvents[idx],
+        title: data.title,
+        className: data.className,
+        start: data.start,
+        end: data.end,
+        extendedProps: data.extendedProps
+      };
+      setEvents(modifiedEvents);
+    } else {
+      console.error('Event not found for update:', eventData?.id);
+    }
+    
     onCloseModal();
     setIsEditable(false);
+    setEventData({});
   };
 
   /*
@@ -110,9 +129,17 @@ const CalendarIndex = () => {
   const onRemoveEvent = () => {
     const modifiedEvents = [...events];
     const idx = modifiedEvents.findIndex((e: any) => e["id"] === eventData!.id);
-    modifiedEvents.splice(idx, 1);
-    setEvents(modifiedEvents);
+    
+    if (idx !== -1) {
+      modifiedEvents.splice(idx, 1);
+      setEvents(modifiedEvents);
+    } else {
+      console.error('Event not found for deletion:', eventData?.id);
+    }
+    
     onCloseModal();
+    setIsEditable(false);
+    setEventData({});
   };
 
   /**
@@ -352,6 +379,7 @@ const CalendarIndex = () => {
         onUpdateEvent={onUpdateEvent}
         onRemoveEvent={onRemoveEvent}
         onAddEvent={onAddEvent}
+        dateInfo={dateInfo}
       />
     </Box>
   );
