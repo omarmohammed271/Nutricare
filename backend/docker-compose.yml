@@ -1,8 +1,7 @@
 version: '3.9'
 
 services:
-  web2:
-    container_name: web2
+  web:
     build: .
     command: daphne -b 0.0.0.0 -p 8000 project.asgi:application
     volumes:
@@ -21,8 +20,7 @@ services:
     networks:
       - backend_network
 
-  db2:
-    container_name: db2
+  db:
     image: postgres:14
     restart: always
     environment:
@@ -40,7 +38,6 @@ services:
       - backend_network
 
   redis:
-    container_name: redis-cache2
     image: redis:7-alpine
     command: [
       "redis-server",
