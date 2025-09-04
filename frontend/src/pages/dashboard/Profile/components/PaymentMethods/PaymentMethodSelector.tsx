@@ -91,6 +91,9 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
                   border: selectedMethod === method.id ? '2px solid #4CAF50' : '1px solid #E0E0E0',
                   backgroundColor: selectedMethod === method.id ? '#E8F5E8' : 'white',
                   transition: 'all 0.3s ease',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
                   '&:hover': {
                     boxShadow: 2,
                     transform: 'translateY(-2px)'
