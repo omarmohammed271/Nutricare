@@ -119,7 +119,7 @@ const adminRoutes: RoutesProps[] = [
   { path: "/clients/onboarding", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientOnboarding"))} /> },
   { path: "/test-clients", element: <div style={{ padding: '50px', fontSize: '24px', color: 'green' }}>CLIENT ONBOARDING TEST ROUTE IS WORKING!</div> },
   { path: "error-404-alt", element: <LoadComponent component={lazy(() => import("@src/pages/error/Error404Alt"))} /> },
-
+  
   { path: "/pages/starter", element: <LoadComponent component={lazy(() => import("@src/pages/other/Starter"))} /> },
   { path: "/pages/profile", element: <LoadComponent component={lazy(() => import("@src/pages/other/Profile/"))} /> },
   { path: "/pages/timeline", element: <LoadComponent component={lazy(() => import("@src/pages/other/Timeline"))} /> },
