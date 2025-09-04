@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+  web2:
+    container_name: web2
+    build: .
+    command: daphne -b 0.0.0.0 -p 8000 project.asgi:application
+    volumes:
+      - .:/app
+      - static:/app/static
+      - media:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+    networks:
+      - backend_network
+
+  db2:
+    container_name: db2
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: mychatdb
+      POSTGRES_USER: mychatuser
+      POSTGRES_PASSWORD: mysecretpassword
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mychatuser -d mychatdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend_network
+
+  redis:
+    container_name: redis-cache2
+    image: redis:7-alpine
+    command: [
+      "redis-server",
+      "--maxmemory", "512mb",
+      "--maxmemory-policy", "allkeys-lru",
+      "--save", "60", "1"  # Persistence option
+    ]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - redis_data:/data
+    networks:
+      backend_network:
+        aliases:
+          - redis-cache  # Additional DNS alias
+
+volumes:
+  redis_data:
+  pgdata:
+  static:
+  media:
+
+networks:
+  backend_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.0.1  # Optional explicit gateway
