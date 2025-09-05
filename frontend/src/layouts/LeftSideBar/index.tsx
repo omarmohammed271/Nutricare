@@ -16,7 +16,7 @@ import { useEffect } from "react";
 
 /* Sidemenu content */
 const SideBarContent = () => <AppMenu menuItems={getMenuItems()} />;
-
+d
 const LeftSideBarWrapper = styled("div")<WithSetting>(({ settings }) => {
   return {
     backgroundColor: settings.sidenav.theme == "light" ? "#fff " : "#F9F4F2",

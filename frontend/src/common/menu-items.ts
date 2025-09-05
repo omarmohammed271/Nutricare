@@ -115,4 +115,14 @@ const MENU_ITEMS: MenuItemTypes[] = [
   },
 ]
 
-export { MENU_ITEMS }
+const ADMING_DASHBOARD_MENU_ITEMS: MenuItemTypes[] = [
+  {
+    key: "dashboard",
+    label: "Dashboard",
+    isTitle: false,
+    icon: LuHome,
+    url: "/ecommerce",
+  },
+]
+
+export { MENU_ITEMS, ADMING_DASHBOARD_MENU_ITEMS }

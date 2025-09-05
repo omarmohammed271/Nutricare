@@ -140,6 +140,11 @@ const adminRoutes: RoutesProps[] = [
   { path: "/tables/data-grid", element: <LoadComponent component={lazy(() => import("@src/pages/tables/DataGrid"))} /> },
 ]
 
+const adminDashboardRoutes: RoutesProps[] = [
+  { path: "/admin/user", element: <LoadComponent component={lazy(() => import("@src/pages/admin/dashboard/UserManagement"))} /> },
+  // Removed the conflicting catch-all route that was overriding auth routes
+]
+
 export const defaultLayoutRoutes = [
   ...otherRotes,
   ...authRoutes,
@@ -151,4 +156,8 @@ export const verticalLayoutRoutes = [
   ...adminRoutes,
   ...appsRoutes,
   ...uiComponentRoutes,
+]
+
+export const verticalAdminDashboardLayoutRoutes = [
+  ...adminDashboardRoutes,
 ]
