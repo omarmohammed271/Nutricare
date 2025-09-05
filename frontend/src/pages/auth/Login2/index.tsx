@@ -29,8 +29,7 @@ const BottomLink = () => {
         flexWrap: "nowrap",
         gap: 0.5,
         justifyContent: "center",
-      }}
-    >
+      }}>
       {t("login.noAccount")}&nbsp;
       <Link to="/auth/register2">
         <Typography variant="subtitle2" component="span">
@@ -58,8 +57,7 @@ const Login2 = () => {
         authTitle={t("login.title")}
         helpText={t("login.subtitle")}
         hasThirdPartyLogin
-        bottomLinks={<BottomLink />}
-      >
+        bottomLinks={<BottomLink />}>
         <form onSubmit={login} style={{ textAlign: "left" }}>
           {/* Email field with green styling */}
           <Controller
@@ -80,6 +78,7 @@ const Login2 = () => {
                 margin="normal"
                 sx={{
                   "& .MuiOutlinedInput-root": {
+                    borderRadius: "10px",
                     "& fieldset": {
                       borderColor: "#00C896",
                       borderWidth: "2px",
@@ -118,6 +117,11 @@ const Login2 = () => {
             }}
             render={({ field, fieldState: { error } }) => (
               <TextField
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "10px",
+                  },
+                }}
                 {...field}
                 label={t("login.password")}
                 type={showPassword ? "text" : "password"}
@@ -146,8 +150,7 @@ const Login2 = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-            }}
-          >
+            }}>
             <Controller
               name="rememberMe"
               control={control}
@@ -155,11 +158,7 @@ const Login2 = () => {
               render={({ field }) => (
                 <FormControlLabel
                   control={
-                    <Switch
-                      checked={field.value}
-                      onChange={(e) => field.onChange(e.target.checked)}
-                      color="success"
-                    />
+                    <Switch checked={field.value} onChange={(e) => field.onChange(e.target.checked)} color="success" />
                   }
                   label={t("login.rememberMe")}
                 />
@@ -167,9 +166,7 @@ const Login2 = () => {
             />
 
             <Typography>
-              <Link to="/auth/recover-password2">
-                {t("login.forgotPassword")}
-              </Link>
+              <Link to="/auth/recover-password2">{t("login.forgotPassword")}</Link>
             </Typography>
           </Box>
 
@@ -182,10 +179,7 @@ const Login2 = () => {
               disabled={loading}
               size="large"
               fullWidth
-              sx={{
-                p: 1,
-              }}
-            >
+              sx={{ borderRadius: "0.5rem", padding: "12px" }}>
               {t("login.loginButton")}
             </Button>
           </Box>
