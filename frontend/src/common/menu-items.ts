@@ -25,6 +25,8 @@ import {
   LuBarChart3,
   LuShare2,
   LuUtensils,
+  LuDollarSign,
+  LuPenTool,
 } from "react-icons/lu"
 
 export type MenuItemTypes = {
@@ -117,11 +119,39 @@ const MENU_ITEMS: MenuItemTypes[] = [
 
 const ADMING_DASHBOARD_MENU_ITEMS: MenuItemTypes[] = [
   {
-    key: "dashboard",
-    label: "Dashboard",
+    key: "user-management",
+    label: "User Management",
     isTitle: false,
-    icon: LuHome,
-    url: "/ecommerce",
+    icon: LuUsers,
+    url: "/admin/user",
+  },
+  {
+    key: "content-management",
+    label: "Content Management",
+    isTitle: false,
+    icon: LuMessageSquare,
+    url: "/admin/content-management",
+  },
+  {
+    key: "subscription",
+    label: "Subscription",
+    isTitle: false,
+    icon: LuDollarSign,
+    url: "/admin/subscription",
+  },
+  {
+    key: "blogs",
+    label: "Blogs",
+    isTitle: false,
+    icon: LuPenTool,
+    url: "/admin/blogs",
+  },
+  {
+    key: "reporting",
+    label: "Reporting",
+    isTitle: false,
+    icon: LuFileText,
+    url: "/admin/reporting",
   },
 ]
 

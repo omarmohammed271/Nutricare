@@ -2,7 +2,7 @@ import { ADMING_DASHBOARD_MENU_ITEMS, MENU_ITEMS, MenuItemTypes } from "@src/com
 
 const getMenuItems = () => {
   // NOTE - You can fetch from server and return here as well
-  if (window.location.pathname.split("/")[0] == "admin"){
+  if (window.location.pathname.slice(1).split("/")[0] == "admin"){
     return ADMING_DASHBOARD_MENU_ITEMS
   }
   return MENU_ITEMS;

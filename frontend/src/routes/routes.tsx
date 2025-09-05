@@ -154,10 +154,8 @@ export const defaultLayoutRoutes = [
 export const verticalLayoutRoutes = [
   { path: "/", element: <Navigate to="/auth/login2" /> },
   ...adminRoutes,
+  ...adminDashboardRoutes,
   ...appsRoutes,
   ...uiComponentRoutes,
 ]
 
-export const verticalAdminDashboardLayoutRoutes = [
-  ...adminDashboardRoutes,
-]
