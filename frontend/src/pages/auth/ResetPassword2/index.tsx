@@ -8,21 +8,21 @@ import AuthLayout2 from "../AuthLayout2";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 
-const BottomLink = () => {
-  return (
-    <Typography
-      variant="body2"
-      color={"text.secondary"}
-      sx={{ display: "flex", flexWrap: "nowrap", gap: 0.5, justifyContent: "center" }}>
-      Already have an account?
-      <Link to="/auth/login2">
-        <Typography variant="subtitle2" component={"span"}>
-          Log In
-        </Typography>
-      </Link>
-    </Typography>
-  );
-};
+// const BottomLink = () => {
+//   return (
+//     <Typography
+//       variant="body2"
+//       color={"text.secondary"}
+//       sx={{ display: "flex", flexWrap: "nowrap", gap: 0.5, justifyContent: "center" }}>
+//       Already have an account?
+//       <Link to="/auth/login2">
+//         <Typography variant="subtitle2" component={"span"}>
+//           Log In
+//         </Typography>
+//       </Link>
+//     </Typography>
+//   );
+// };
 
 const ResetPassword2 = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -55,7 +55,9 @@ const ResetPassword2 = () => {
       <AuthLayout2
         authTitle="Reset Password"
         helpText="Enter your new password below to reset your account password."
-        bottomLinks={<BottomLink />}>
+        // bottomLinks={<BottomLink />}
+        >
+
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Password */}
           <FormInput
@@ -67,7 +69,7 @@ const ResetPassword2 = () => {
             endAdornment={
               <InputAdornment position="end">
                 <IconButton onClick={() => setShowPassword(!showPassword)} edge="start">
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
                 </IconButton>
               </InputAdornment>
             }
@@ -83,7 +85,7 @@ const ResetPassword2 = () => {
             endAdornment={
               <InputAdornment position="end">
                 <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="start">
-                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                  {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
                 </IconButton>
               </InputAdornment>
             }
