@@ -8,6 +8,7 @@ import { PaletteOptions } from "@mui/material/styles/createPalette";
 
 export const getColorVariants = (color: string, contrastText: string) => {
   return {
+    extraLighter: lighten(color, 0.85),
     lighter: lighten(color, 0.6),
     light: lighten(color, 0.35),
     main: color,

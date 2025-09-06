@@ -145,6 +145,10 @@ const adminRoutes: RoutesProps[] = [
   { path: "/tables/data-grid", element: <LoadComponent component={lazy(() => import("@src/pages/tables/DataGrid"))} /> },
 ]
 
+const adminDashboardRoutes: RoutesProps[] = [
+  { path: "/admin/user", element: <LoadComponent component={lazy(() => import("@src/pages/admin/dashboard/UserManagement"))} /> },
+]
+
 export const defaultLayoutRoutes = [
   ...otherRotes,
   ...authRoutes,
@@ -154,6 +158,8 @@ export const defaultLayoutRoutes = [
 export const verticalLayoutRoutes = [
   { path: "/", element: <Navigate to="/auth/login2" /> },
   ...adminRoutes,
+  ...adminDashboardRoutes,
   ...appsRoutes,
   ...uiComponentRoutes,
 ]
+
