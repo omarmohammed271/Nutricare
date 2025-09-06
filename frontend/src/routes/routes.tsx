@@ -147,6 +147,7 @@ const adminRoutes: RoutesProps[] = [
 
 const adminDashboardRoutes: RoutesProps[] = [
   { path: "/admin/user", element: <LoadComponent component={lazy(() => import("@src/pages/admin/dashboard/UserManagement"))} /> },
+  { path: "/admin/content-management", element: <LoadComponent component={lazy(() => import("@src/pages/admin/ContentManagement/ContentManagement"))} /> },
 ]
 
 export const defaultLayoutRoutes = [
