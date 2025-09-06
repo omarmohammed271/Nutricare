@@ -43,7 +43,10 @@ INSTALLED_APPS = [
     "corsheaders",
     'drf_spectacular',
     'users',
-    'subscriptions','chat'
+    'subscriptions','chat',
+    'nutrition',
+    'channels',
+    
 ]
 
 MIDDLEWARE = [

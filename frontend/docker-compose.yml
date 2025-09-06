@@ -1,58 +1,11 @@
-version: '3.8'
-
 services:
-  # Development service
-  nutricare-frontend-dev:
+  react-vite-app2:
     build:
       context: .
       dockerfile: Dockerfile
-      target: development
-    container_name: nutricare-frontend-dev
+      args:
+        VITE_APP_API_URL: "https://dashboard.makkahhc.sa/api"  
     ports:
-      - "5173:5173"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-      - CHOKIDAR_USEPOLLING=true
-    networks:
-      - nutricare-network
-    profiles:
-      - dev
-
-  # Production service
-  nutricare-frontend-prod:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
-    container_name: nutricare-frontend-prod
-    ports:
-      - "80:80"
-    environment:
-      - NODE_ENV=production
-    networks:
-      - nutricare-network
-    profiles:
-      - prod
-
-  # Production service with custom port
-  nutricare-frontend-prod-custom:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
-    container_name: nutricare-frontend-prod-custom
-    ports:
-      - "3000:80"
-    environment:
-      - NODE_ENV=production
-    networks:
-      - nutricare-network
-    profiles:
-      - prod-custom
-
-networks:
-  nutricare-network:
-    driver: bridge
+      - '3000:80' 
+    container_name: react-vite-app2
+    restart: unless-stopped
