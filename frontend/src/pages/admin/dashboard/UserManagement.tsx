@@ -20,19 +20,27 @@ import {
   Pagination,
   useTheme,
   Chip,
+  Button,
+  Menu,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import LogoutIcon from "@mui/icons-material/Logout";
+import SettingsIcon from "@mui/icons-material/Settings";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { ChevronDown } from "lucide-react";
 
 type User = {
   id: number;
   name: string;
   email: string;
   active: boolean;
-  approval: string;
+  approval: boolean;
 };
 
 const demoUsers: User[] = Array.from({ length: 19 }).map((_, i) => ({
@@ -40,7 +48,7 @@ const demoUsers: User[] = Array.from({ length: 19 }).map((_, i) => ({
   name: "Dr. Saba",
   email: "saba@gmail.com",
   active: true,
-  approval: i % 2 === 0 ? "Accepted" : "Pending",
+  approval: i % 2 === 0 ? true : false,
 }));
 
 function CustomPagination({
@@ -105,6 +113,60 @@ function CustomPagination({
   );
 }
 
+// Approval dropdown menu
+type BasicMenuProps = {
+    userId: number;
+    handleApproval: (id: number, val: boolean) => void;
+  };
+  
+const BasicMenu: React.FC<BasicMenuProps> = ({ userId, handleApproval }) => {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+  
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      setAnchorEl(event.currentTarget);
+    };
+  
+    const handleClose = (decision?: boolean) => {
+        if (decision !== undefined){
+            handleApproval(userId, decision);
+        }
+        setAnchorEl(null);
+    };
+  
+    return (
+      <div>
+        <Button
+          id="basic-button"
+          aria-controls={open ? "basic-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? "true" : undefined}
+          onClick={handleClick}
+          sx={{ width: "100%" }}
+        >
+          <ChevronDown />
+        </Button>
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={() => handleClose()}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+        >
+          <MenuItem onClick={() => handleClose(true)}>Approve</MenuItem>
+          <MenuItem onClick={() => handleClose(false)}>Reject</MenuItem>
+        </Menu>
+      </div>
+    );
+  };
+
 export default function UserManagement() {
   const [users, setUsers] = useState<User[]>(demoUsers);
   const [page, setPage] = useState(0); // 0-based
@@ -137,6 +199,11 @@ export default function UserManagement() {
       prev.map((u) => (u.id === id ? { ...u, active: !u.active } : u))
     );
 
+  const handleApproval = (id: number, val: boolean) =>
+    setUsers((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, approval: val } : u))
+    );
+
   const CustomTableCell = styled(TableCell)(({ theme }) => ({
     borderColor: theme.palette.primary.main,
     padding: "10px"
@@ -148,7 +215,7 @@ export default function UserManagement() {
   
 
   return (
-    <Paper sx={{ p: 2, boxShadow: "none" }}>
+    <Paper sx={{ p: 2, boxShadow: "none", background: "transparent" }}>
       {/* Top bar: search + filter */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mb: 2 }}>
         <TextField
@@ -211,14 +278,16 @@ export default function UserManagement() {
                   {u.active ? "Active" : "Inactive"}
                 </CustomTableCell>
                 <BorderedCell>
-                <Typography
-                    sx={{
-                      color: u.approval === "Accepted" ? "green" : "orange",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {u.approval}
-                  </Typography>
+                  {
+                    u.approval == true ? (
+                        <Chip label="Accepted" sx={{
+                            color: (theme) => theme.palette.primary.main,
+                            fontWeight: (theme) => theme.typography.h6
+                        }} />
+                    ) : (
+                        <BasicMenu userId={u.id} handleApproval={handleApproval} />
+                    )
+                  }
                 </BorderedCell>
                 <CustomTableCell>
                   <IconButton color="success">
