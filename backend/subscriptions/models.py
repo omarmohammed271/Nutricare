@@ -59,7 +59,7 @@ class UserSubscription(models.Model):
     ]
     
     
-    user = models.OneToOneField('AuthUser', on_delete=models.CASCADE, related_name='subscription')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='subscription')
     plan = models.ForeignKey(SubscriptionPlan, on_delete=models.CASCADE, related_name='subscriptions')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     current_period_start = models.DateTimeField()
