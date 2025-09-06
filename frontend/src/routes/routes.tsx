@@ -142,7 +142,6 @@ const adminRoutes: RoutesProps[] = [
 
 const adminDashboardRoutes: RoutesProps[] = [
   { path: "/admin/user", element: <LoadComponent component={lazy(() => import("@src/pages/admin/dashboard/UserManagement"))} /> },
-  // Removed the conflicting catch-all route that was overriding auth routes
 ]
 
 export const defaultLayoutRoutes = [
