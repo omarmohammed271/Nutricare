@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { Box, Tabs, Tab, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
-// Local imports
-import { TabPanel } from '../components/TabPanel';
-import { myTemplatesData, readyToUseData, filterCategories } from '../data/mealPlanData';
-import { filterTemplatesByCategory, getTabA11yProps, getDataGridColumns } from '../utils/mealPlanUtils';
-import { FilterCategory } from '../types/mealPlanTypes';
-import { THEME_COLORS, DATAGRID_CONFIG, TAB_CONFIG } from '../constants/mealPlanConstants';
+import { TabPanel } from './components/TabPanel';
+import { myTemplatesData, readyToUseData, filterCategories } from './data';
+import { filterTemplatesByCategory, getTabA11yProps, getDataGridColumns } from './utils';
+import { FilterCategory } from './types';
+import { THEME_COLORS, DATAGRID_CONFIG, TAB_CONFIG } from './constants';
 
-const MealPlanTemplatesTab = () => {
+const WeeklyPlan = () => {
   const [tabValue, setTabValue] = useState(0);
   const [filterCategory, setFilterCategory] = useState<FilterCategory>('all');
 
@@ -21,7 +20,6 @@ const MealPlanTemplatesTab = () => {
     setFilterCategory(event.target.value as FilterCategory);
   };
 
-  // Get filtered data for current tab
   const getFilteredData = () => {
     const currentData = tabValue === 0 ? myTemplatesData : readyToUseData;
     return filterTemplatesByCategory(currentData, filterCategory);
@@ -31,7 +29,6 @@ const MealPlanTemplatesTab = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      {/* Top section with Filter Category on left and Tabs on right */}
       <Box sx={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -39,7 +36,6 @@ const MealPlanTemplatesTab = () => {
         mb: 3,
         gap: 2
       }}>
-        {/* Filter Category on the left */}
         <Box sx={{ minWidth: 200 }}>
           <FormControl fullWidth size="small">
             <InputLabel id="category-filter-label">Filter Category</InputLabel>
@@ -69,7 +65,6 @@ const MealPlanTemplatesTab = () => {
           </FormControl>
         </Box>
 
-        {/* Sub-tabs on the right */}
         <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
           <Tabs 
             value={tabValue} 
@@ -102,7 +97,6 @@ const MealPlanTemplatesTab = () => {
         </Box>
       </Box>
 
-      {/* Tab Content */}
       <TabPanel value={tabValue} index={0}>
         <Box
           sx={{
@@ -188,4 +182,4 @@ const MealPlanTemplatesTab = () => {
   );
 };
 
-export default MealPlanTemplatesTab;
+export default WeeklyPlan;

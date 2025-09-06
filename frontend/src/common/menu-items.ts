@@ -48,7 +48,25 @@ const MENU_ITEMS: MenuItemTypes[] = [
     label: "Dashboard",
     isTitle: false,
     icon: LuHome,
-    url: "/ecommerce",
+    badge: {
+      variant: "bg-success rounded-full",
+      text: "3",
+    },
+    children: [
+      {
+        key: "dashboard-analytics",
+        label: "Analytics",
+        url: "/analytics",
+        parentKey: "dashboard",
+      },
+      {
+        key: "dashboard-ecommerce",
+        label: "Ecommerce",
+        url: "/ecommerce",
+        parentKey: "dashboard",
+      },
+  
+    ],
   },
   {
     key: "meal-plan",

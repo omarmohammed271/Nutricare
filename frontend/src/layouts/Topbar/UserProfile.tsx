@@ -57,6 +57,7 @@ const UserProfile = () => {
     {
       icon: LuUserCircle2,
       label: "My Account",
+      link: "/my-profile",
     },
     {
       icon: LuSettings,
