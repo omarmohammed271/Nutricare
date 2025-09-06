@@ -20,19 +20,29 @@ const FormInput = <
       defaultValue={"" as PathValue<TFieldValues, TName>}
       render={({ field, fieldState }) => (
         <Box sx={containerSx}>
-          <InputLabel htmlFor={id ?? name} style={{ fontWeight: "medium" }} error={fieldState.error != null}>
-            {label}
-          </InputLabel>
+          {label && (
+            <InputLabel
+              htmlFor={id ?? name}
+              style={{ fontWeight: "medium" }}
+              error={fieldState.error != null}
+            >
+              {label}
+            </InputLabel>
+          )}
+
           <OutlinedInput
             id={id ?? name}
-            {...other}
             {...field}
-            sx={{ width: "100%", mt: 1 }}
+            {...other}
+            sx={{ width: "100%", mt: 1, borderRadius: "0.5rem", padding: "5px" }}
             error={fieldState.error != null}
             inputProps={{ style: { padding: "10px 12px" } }}
           />
+
           {(helperText || fieldState.error?.message) && (
-            <FormHelperText error={fieldState.error != null}>{fieldState.error?.message ?? helperText}</FormHelperText>
+            <FormHelperText error={fieldState.error != null}>
+              {fieldState.error?.message ?? helperText}
+            </FormHelperText>
           )}
         </Box>
       )}
