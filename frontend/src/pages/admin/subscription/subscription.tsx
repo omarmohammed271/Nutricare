@@ -34,7 +34,7 @@ const SubscriptionPage = () => {
 
   return (
     <Box p={2}>
-      <Typography variant="h5" fontWeight="bold" mb={3}>
+      <Typography variant="h3" fontWeight="bold" mb={3}>
         Subscription & Access Control
       </Typography>
 
