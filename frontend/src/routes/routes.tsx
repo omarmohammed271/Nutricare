@@ -114,6 +114,7 @@ const adminRoutes: RoutesProps[] = [
 
   { path: "/meal-plan", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/MealPlan"))} /> },
   { path: "/clients/onboarding", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientOnboarding"))} /> },
+  { path: "/clients/file", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientFiles"))} /> },
   { path: "/test-clients", element: <div style={{ padding: '50px', fontSize: '24px', color: 'green' }}>CLIENT ONBOARDING TEST ROUTE IS WORKING!</div> },
   { path: "error-404-alt", element: <LoadComponent component={lazy(() => import("@src/pages/error/Error404Alt"))} /> },
 
@@ -151,4 +152,5 @@ export const verticalLayoutRoutes = [
   ...adminRoutes,
   ...appsRoutes,
   ...uiComponentRoutes,
+  { path: "*", element: <LoadComponent component={lazy(() => import("@src/pages/error/Error404"))} /> },
 ]
