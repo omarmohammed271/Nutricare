@@ -122,6 +122,18 @@ export default function ContentManagement() {
   const [newTemplateCalories, setNewTemplateCalories] = useState("");
   const [newTemplateCategory, setNewTemplateCategory] = useState("Meal Plan");
 
+  
+  // GET equations
+  const {
+    data: availableEquations = [], // fallback to [] if undefined
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ['equations'],
+    queryFn: getEquations,
+    select: (data) => data.available_equations, // 👈 pick only what you need
+  })
+
   const handleApproval = (id: number, val: boolean) => {
     setRecipeState((prev) => prev.map((r) => (r.id === id ? { ...r, request: val ? "Approved" : "Rejected" } : r)));
   };
@@ -148,7 +160,15 @@ export default function ContentManagement() {
     return matchesSearch && matchesCategory;
   });
 
-  const data = tab === 0 ? equations : tab === 1 ? recipeState : tab === 2 ? filteredLibrary : filteredTemplates;
+  const data =
+  tab === 0
+    ? availableEquations // array of strings
+    : tab === 1
+    ? recipeState
+    : tab === 2
+    ? filteredLibrary
+    : filteredTemplates;
+
 
   const totalPages = Math.max(1, Math.ceil(data.length / rowsPerPage));
   const startIndex = (page - 1) * rowsPerPage;
@@ -210,14 +230,6 @@ export default function ContentManagement() {
   //   setOpenTemplateDialog(false);
   //   if (tab === 3) setPage(1);
   // };
-
-  // GET equations
-  const {data: equationsData, isPending, error} = useQuery({
-    queryFn: getEquations,
-    queryKey: ['equations'],
-  })
-  console.log(equationsData)
-  console.log(error)
 
 
   // POST equations
@@ -423,22 +435,22 @@ export default function ContentManagement() {
               <TableBody>
                 {/* Equations */}
                 {tab === 0 &&
-                  (currentRows as Equation[]).map((eq) => (
-                    <TableRow key={eq.id} hover>
-                      <TableCell>{eq.name}</TableCell>
-                      <TableCell>{eq.equation}</TableCell>
-                      <TableCell>{eq.input}</TableCell>
-                      <TableCell>{eq.units}</TableCell>
-                      <TableCell>
-                        <IconButton color="success">
-                          <Edit />
-                        </IconButton>
-                        <IconButton color="error">
-                          <Delete />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                (currentRows as string[]).map((eqName, idx) => (
+                  <TableRow key={startIndex + idx} hover>
+                    <TableCell>{eqName}</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>
+                      <IconButton color="success">
+                        <Edit />
+                      </IconButton>
+                      <IconButton color="error">
+                        <Delete />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
 
                 {/* Recipes */}
                 {tab === 1 &&
