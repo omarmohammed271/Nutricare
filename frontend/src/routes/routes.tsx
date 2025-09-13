@@ -124,6 +124,8 @@ const adminRoutes: RoutesProps[] = [
   { path: "/pages/invoice", element: <LoadComponent component={lazy(() => import("@src/pages/other/Invoice"))} /> },
   { path: "/pages/faq", element: <LoadComponent component={lazy(() => import("@src/pages/other/FAQs"))} /> },
   { path: "/pages/pricing", element: <LoadComponent component={lazy(() => import("@src/pages/other/Pricing"))} /> },
+  { path: "/terms", element: <LoadComponent component={lazy(() => import("@src/pages/other/TermsAndConditions"))} /> },
+  { path: "/privacy", element: <LoadComponent component={lazy(() => import("@src/pages/other/PrivacyPolicy"))} /> },
 
   { path: "/extended-ui/swipers", element: <LoadComponent component={lazy(() => import("@src/pages/extended-ui/Swipers"))} /> },
   { path: "/extended-ui/nestable-list", element: <LoadComponent component={lazy(() => import("@src/pages/extended-ui/NestableList"))} />, },
