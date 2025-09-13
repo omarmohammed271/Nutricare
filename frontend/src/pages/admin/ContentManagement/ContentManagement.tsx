@@ -105,6 +105,12 @@ export default function ContentManagement() {
   const [libraryState, setLibraryState] = useState<LibraryFile[]>(initialLibraryFiles);
   const [templatesState, setTemplatesState] = useState<Template[]>(initialTemplates);
 
+  const [openEquationDialog, setOpenEquationDialog] = useState(false);
+  const [newEquationName, setNewEquationName] = useState("");
+  const [newEquationFormula, setNewEquationFormula] = useState("");
+  const [newEquationInput, setNewEquationInput] = useState("");
+  const [newEquationUnits, setNewEquationUnits] = useState("");
+
   // Library UI state
   const [searchLib, setSearchLib] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<"All" | string>("All");
@@ -358,7 +364,10 @@ export default function ContentManagement() {
 
           <Button
             variant="contained"
-            onClick={() => (tab === 2 ? setOpenUpload(true) : null)}
+            onClick={() => {
+              if (tab === 0) setOpenEquationDialog(true);
+              if (tab === 2) setOpenUpload(true);
+            }}
             sx={{
               bgcolor: (theme) => theme.palette.primary.main,
               "&:hover": { bgcolor: (theme) => theme.palette.secondary.main },
@@ -369,10 +378,10 @@ export default function ContentManagement() {
             {tab === 0
               ? "Create New Equation"
               : tab === 1
-                ? "Recipe Requests"
-                : tab === 2
-                  ? "Upload New File"
-                  : "Create New Templates"}
+              ? "Recipe Requests"
+              : tab === 2
+              ? "Upload New File"
+              : "Create New Templates"}
           </Button>
         </Box>
 
@@ -604,6 +613,69 @@ export default function ContentManagement() {
             </Button>
           </Box>
         </Box>
+
+        {/* New equation (Equations) */}
+        <Dialog open={openEquationDialog} onClose={() => setOpenEquationDialog(false)} maxWidth="sm" fullWidth>
+          <DialogTitle>Create New Equation</DialogTitle>
+          <DialogContent>
+            <TextField
+              fullWidth
+              label="Equation Name"
+              value={newEquationName}
+              onChange={(e) => setNewEquationName(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Equation Formula"
+              value={newEquationFormula}
+              onChange={(e) => setNewEquationFormula(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Input"
+              value={newEquationInput}
+              onChange={(e) => setNewEquationInput(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Units"
+              value={newEquationUnits}
+              onChange={(e) => setNewEquationUnits(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+
+            <Box display="flex" justifyContent="space-between" mt={2}>
+              <Button variant="outlined" onClick={() => setOpenEquationDialog(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ bgcolor: (theme) => theme.palette.primary.main }}
+                onClick={() => {
+                  // Here you can call a mutation (POST to API) instead of just console.log
+                  console.log({
+                    name: newEquationName,
+                    equation: newEquationFormula,
+                    input: newEquationInput,
+                    units: newEquationUnits,
+                  });
+
+                  // reset + close
+                  setNewEquationName("");
+                  setNewEquationFormula("");
+                  setNewEquationInput("");
+                  setNewEquationUnits("");
+                  setOpenEquationDialog(false);
+                }}>
+                Save Equation
+              </Button>
+            </Box>
+          </DialogContent>
+        </Dialog>
+
 
         {/* Upload Dialog (Library) */}
         <Dialog open={openUpload} onClose={() => setOpenUpload(false)} maxWidth="sm" fullWidth>
