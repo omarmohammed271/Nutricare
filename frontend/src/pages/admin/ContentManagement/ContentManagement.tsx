@@ -38,6 +38,8 @@ import {
   recipes,
   Template,
 } from "./index";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { getEquations } from "@src/api/admin/adminAPI";
 
 // =====================
 // BasicMenu Component
@@ -208,6 +210,25 @@ export default function ContentManagement() {
   //   setOpenTemplateDialog(false);
   //   if (tab === 3) setPage(1);
   // };
+
+  // GET equations
+  const {data: equationsData, isPending, error} = useQuery({
+    queryFn: getEquations,
+    queryKey: ['equations'],
+  })
+  console.log(equationsData)
+  console.log(error)
+
+
+  // POST equations
+  // const {
+  //   mutate,
+  //   isSuccess,
+  //   isPending,
+  //   isError
+  // } = useMutation({
+  //   mutationFn: 
+  // });
 
   return (
     <>
