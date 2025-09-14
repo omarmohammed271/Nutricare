@@ -12,7 +12,8 @@ import {
   FormControl,
   InputLabel,
   IconButton,
-  Grid
+  Grid,
+  useTheme
 } from "@mui/material";
 import { LuX, LuFileText } from "react-icons/lu";
 import { useState } from "react";
@@ -23,6 +24,7 @@ interface QuickCalculatorsPopupProps {
 }
 
 const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) => {
+  const theme = useTheme();
   const [formData, setFormData] = useState({
     calculatorType: "BMI",
     age: "",
@@ -60,7 +62,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
   };
 
   const getBmiCategory = (bmi: number | null) => {
-    if (!bmi) return { category: "Enter Data", color: "#7f8c8d" };
+    if (!bmi) return { category: "Enter Data", color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d" };
     if (bmi < 18.5) return { category: "Under", color: "#FFA726" };
     if (bmi >= 18.5 && bmi < 25) return { category: "Normal", color: "#4CAF50" };
     return { category: "Over", color: "#F44336" };
@@ -77,15 +79,17 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
       PaperProps={{
         sx: {
           borderRadius: 3,
-          backgroundColor: "#ffffff",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+          backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+          boxShadow: theme.palette.mode === 'dark' 
+            ? "0 8px 32px rgba(255,255,255,0.12)" 
+            : "0 8px 32px rgba(0,0,0,0.12)",
           minHeight: "700px"
         }
       }}
     >
       <DialogTitle sx={{ 
         pb: 2, 
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #f0f0f0",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
@@ -93,12 +97,12 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
       }}>
         <Typography variant="h5" sx={{ 
           fontWeight: 700, 
-          color: "#2c3e50",
+          color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
           fontSize: "24px"
         }}>
           Quick Calculators
         </Typography>
-        <IconButton onClick={onClose} sx={{ color: "#7f8c8d" }}>
+        <IconButton onClick={onClose} sx={{ color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d" }}>
           <LuX size={24} />
         </IconButton>
       </DialogTitle>
@@ -117,7 +121,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               gap: 3
             }}>
               <Typography variant="body1" sx={{ 
-                color: "#2c3e50",
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                 fontWeight: 500,
                 minWidth: "120px"
               }}>
@@ -130,9 +134,10 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                   displayEmpty
                   sx={{
                     borderRadius: 2,
-                    backgroundColor: "#ffffff",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#e0e0e0",
+                      borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
                       borderColor: "#02BE6A",
@@ -142,9 +147,33 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                     }
                   }}
                 >
-                  <MenuItem value="BMI">BMI</MenuItem>
-                  <MenuItem value="BMR">BMR</MenuItem>
-                  <MenuItem value="Body Fat">Body Fat</MenuItem>
+                  <MenuItem value="BMI" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                    "&:hover": {
+                      backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                    }
+                  }}>
+                    BMI
+                  </MenuItem>
+                  <MenuItem value="BMR" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                    "&:hover": {
+                      backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                    }
+                  }}>
+                    BMR
+                  </MenuItem>
+                  <MenuItem value="Body Fat" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                    "&:hover": {
+                      backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                    }
+                  }}>
+                    Body Fat
+                  </MenuItem>
                 </Select>
               </FormControl>
             </Box>
@@ -157,7 +186,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               gap: 3
             }}>
               <Typography variant="body1" sx={{ 
-                color: "#2c3e50",
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                 fontWeight: 500,
                 minWidth: "120px"
               }}>
@@ -167,13 +196,23 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                 placeholder="Write Here..."
                 value={formData.age}
                 onChange={(e) => handleInputChange("age", e.target.value)}
+                InputProps={{
+                  sx: {
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  }
+                }}
+                InputLabelProps={{
+                  sx: {
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+                  }
+                }}
                 sx={{
                   flex: 1,
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#ffffff",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
                     borderRadius: 2,
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#e0e0e0",
+                      borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
                       borderColor: "#02BE6A",
@@ -194,7 +233,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               gap: 3
             }}>
               <Typography variant="body1" sx={{ 
-                color: "#2c3e50",
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                 fontWeight: 500,
                 minWidth: "120px"
               }}>
@@ -207,9 +246,10 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                   displayEmpty
                   sx={{
                     borderRadius: 2,
-                    backgroundColor: "#ffffff",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#e0e0e0",
+                      borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
                       borderColor: "#02BE6A",
@@ -219,10 +259,39 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                     }
                   }}
                 >
-                  <MenuItem value="" disabled>Select</MenuItem>
-                  <MenuItem value="male">Male</MenuItem>
-                  <MenuItem value="female">Female</MenuItem>
-                  <MenuItem value="other">Other</MenuItem>
+                  <MenuItem value="" disabled sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  }}>
+                    Select
+                  </MenuItem>
+                  <MenuItem value="male" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                    "&:hover": {
+                      backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                    }
+                  }}>
+                    Male
+                  </MenuItem>
+                  <MenuItem value="female" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                    "&:hover": {
+                      backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                    }
+                  }}>
+                    Female
+                  </MenuItem>
+                  <MenuItem value="other" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                    "&:hover": {
+                      backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                    }
+                  }}>
+                    Other
+                  </MenuItem>
                 </Select>
               </FormControl>
             </Box>
@@ -235,7 +304,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               gap: 3
             }}>
               <Typography variant="body1" sx={{ 
-                color: "#2c3e50",
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                 fontWeight: 500,
                 minWidth: "120px"
               }}>
@@ -248,9 +317,10 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                   displayEmpty
                   sx={{
                     borderRadius: 2,
-                    backgroundColor: "#ffffff",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#e0e0e0",
+                      borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
                       borderColor: "#02BE6A",
@@ -260,10 +330,39 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                     }
                   }}
                 >
-                  <MenuItem value="" disabled>Select</MenuItem>
-                  <MenuItem value="1990">1990</MenuItem>
-                  <MenuItem value="1995">1995</MenuItem>
-                  <MenuItem value="2000">2000</MenuItem>
+                  <MenuItem value="" disabled sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  }}>
+                    Select
+                  </MenuItem>
+                  <MenuItem value="1990" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                    "&:hover": {
+                      backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                    }
+                  }}>
+                    1990
+                  </MenuItem>
+                  <MenuItem value="1995" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                    "&:hover": {
+                      backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                    }
+                  }}>
+                    1995
+                  </MenuItem>
+                  <MenuItem value="2000" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                    "&:hover": {
+                      backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                    }
+                  }}>
+                    2000
+                  </MenuItem>
                 </Select>
               </FormControl>
             </Box>
@@ -276,7 +375,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               gap: 3
             }}>
               <Typography variant="body1" sx={{ 
-                color: "#2c3e50",
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                 fontWeight: 500,
                 minWidth: "120px"
               }}>
@@ -286,13 +385,23 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                 placeholder="Write Here..."
                 value={formData.weight}
                 onChange={(e) => handleInputChange("weight", e.target.value)}
+                InputProps={{
+                  sx: {
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  }
+                }}
+                InputLabelProps={{
+                  sx: {
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+                  }
+                }}
                 sx={{
                   flex: 1,
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#ffffff",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
                     borderRadius: 2,
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#e0e0e0",
+                      borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
                       borderColor: "#02BE6A",
@@ -313,7 +422,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               gap: 3
             }}>
               <Typography variant="body1" sx={{ 
-                color: "#2c3e50",
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                 fontWeight: 500,
                 minWidth: "120px"
               }}>
@@ -323,13 +432,23 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                 placeholder="Write Here..."
                 value={formData.height}
                 onChange={(e) => handleInputChange("height", e.target.value)}
+                InputProps={{
+                  sx: {
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  }
+                }}
+                InputLabelProps={{
+                  sx: {
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+                  }
+                }}
                 sx={{
                   flex: 1,
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#ffffff",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
                     borderRadius: 2,
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#e0e0e0",
+                      borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
                       borderColor: "#02BE6A",
@@ -368,8 +487,8 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                 backgroundColor: "#029e56",
               },
               "&:disabled": {
-                backgroundColor: "#e0e0e0",
-                color: "#9e9e9e",
+                backgroundColor: theme.palette.mode === 'dark' ? "#333333" : "#e0e0e0",
+                color: theme.palette.mode === 'dark' ? "#666666" : "#9e9e9e",
               }
             }}
           >
@@ -383,13 +502,13 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
           flexDirection: "column",
           alignItems: "center",
           p: 3,
-          backgroundColor: "#f8f9fa",
+          backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
           borderRadius: 3,
-          border: "1px solid #e9ecef"
+          border: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef"
         }}>
           <Typography variant="h6" sx={{ 
             fontWeight: 600, 
-            color: "#2c3e50",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             fontSize: "18px",
             mb: 3
           }}>
@@ -423,7 +542,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                 width: "80%",
                 height: "80%",
                 borderRadius: "50%",
-                backgroundColor: "#ffffff",
+                backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
                 zIndex: 1
               }
             }}>
@@ -434,14 +553,14 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               }}>
                 <Typography variant="h4" sx={{ 
                   fontWeight: 700, 
-                  color: "#2c3e50",
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                   fontSize: "24px",
                   lineHeight: 1
                 }}>
                   {bmiResult ? bmiResult.toFixed(1) : "--"}
                 </Typography>
                 <Typography variant="body2" sx={{ 
-                  color: "#7f8c8d",
+                  color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d",
                   fontSize: "12px"
                 }}>
                   kg/m²
@@ -459,7 +578,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               height: 0,
               borderLeft: "6px solid transparent",
               borderRight: "6px solid transparent",
-              borderTop: "8px solid #2c3e50",
+              borderTop: `8px solid ${theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"}`,
               zIndex: 3
             }} />
 
@@ -489,7 +608,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               borderRadius: "50%",
               backgroundColor: "#FFA726"
             }} />
-            <Typography variant="body2" sx={{ color: "#2c3e50" }}>
+            <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50" }}>
               Under
             </Typography>
           </Box>
@@ -501,7 +620,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               borderRadius: "50%",
               backgroundColor: "#4CAF50"
             }} />
-            <Typography variant="body2" sx={{ color: "#2c3e50" }}>
+            <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50" }}>
               Normal
             </Typography>
           </Box>
@@ -513,7 +632,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               borderRadius: "50%",
               backgroundColor: "#F44336"
             }} />
-            <Typography variant="body2" sx={{ color: "#2c3e50" }}>
+            <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50" }}>
               Over
             </Typography>
           </Box>
@@ -525,8 +644,8 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
           onClick={onClose}
           variant="outlined"
           sx={{
-            borderColor: "#e0e0e0",
-            color: "#2c3e50",
+            borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             px: 4,
             py: 1.5,
             borderRadius: 2,
@@ -535,7 +654,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
             fontSize: "14px",
             "&:hover": {
               borderColor: "#02BE6A",
-              backgroundColor: "#f8f9fa",
+              backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
             }
           }}
         >

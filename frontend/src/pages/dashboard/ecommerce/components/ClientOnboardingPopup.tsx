@@ -14,7 +14,8 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  useTheme
 } from "@mui/material";
 import { LuEye, LuX, LuUserPlus } from "react-icons/lu";
 import { useState } from "react";
@@ -35,6 +36,7 @@ interface ClientOnboardingPopupProps {
 }
 
 const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) => {
+  const theme = useTheme();
   const [clients, setClients] = useState<Client[]>([
     {
       id: 1,
@@ -125,27 +127,29 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
       PaperProps={{
         sx: {
           borderRadius: 3,
-          backgroundColor: "#ffffff",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+          backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+          boxShadow: theme.palette.mode === 'dark' 
+            ? "0 8px 32px rgba(255,255,255,0.12)" 
+            : "0 8px 32px rgba(0,0,0,0.12)",
           minHeight: "600px"
         }
       }}
     >
       <DialogTitle sx={{ 
         pb: 2, 
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #f0f0f0",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center"
       }}>
         <Typography variant="h5" sx={{ 
           fontWeight: 700, 
-          color: "#2c3e50",
+          color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
           fontSize: "24px"
         }}>
           Client Onboarding
         </Typography>
-        <IconButton onClick={onClose} sx={{ color: "#7f8c8d" }}>
+        <IconButton onClick={onClose} sx={{ color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d" }}>
           <LuX size={24} />
         </IconButton>
       </DialogTitle>
@@ -161,7 +165,7 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
         }}>
           <Typography variant="h6" sx={{ 
             fontWeight: 600, 
-            color: "#2c3e50",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             fontSize: "18px"
           }}>
             Clients List
@@ -191,8 +195,8 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
             <Button
               variant="outlined"
               sx={{
-                borderColor: "#e0e0e0",
-                color: "#2c3e50",
+                borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                 px: 3,
                 py: 1,
                 borderRadius: 2,
@@ -201,7 +205,7 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
                 fontSize: "14px",
                 "&:hover": {
                   borderColor: "#02BE6A",
-                  backgroundColor: "#f8f9fa",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
                 }
               }}
             >
@@ -220,14 +224,16 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
                 height: "40.0625px",
                 borderRadius: "8.01px",
                 padding: 0,
-                backgroundColor: "background.paper",
+                backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "background.paper",
                 border: "0.8px solid",
-                borderColor: "divider",
+                borderColor: theme.palette.mode === 'dark' ? "#333333" : "divider",
                 boxShadow: "none",
                 transition: "all 0.3s ease",
                 "&:hover": {
-                  backgroundColor: "action.hover",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "action.hover",
+                  boxShadow: theme.palette.mode === 'dark' 
+                    ? "0 4px 12px rgba(255,255,255,0.08)" 
+                    : "0 4px 12px rgba(0,0,0,0.08)",
                   transform: "translateY(-2px)",
                 }
               }}
@@ -247,8 +253,10 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
                     sx={{
                       width: 32,
                       height: 32,
-                      border: "1px solid #ffffff",
-                      boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                      border: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #ffffff",
+                      boxShadow: theme.palette.mode === 'dark' 
+                        ? "0 1px 4px rgba(255,255,255,0.1)" 
+                        : "0 1px 4px rgba(0,0,0,0.1)",
                       objectFit: "contain",
                       backgroundColor: "transparent",
                       padding: 0.5,
@@ -263,14 +271,14 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
                   <Box>
                     <Typography variant="body2" sx={{ 
                       fontWeight: 600, 
-                      color: "#2c3e50",
+                      color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                       fontSize: "12px",
                       lineHeight: 1.2
                     }}>
                       {client.name}
                     </Typography>
                     <Typography variant="caption" sx={{ 
-                      color: "#7f8c8d",
+                      color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d",
                       fontSize: "10px",
                       lineHeight: 1.2
                     }}>
@@ -282,12 +290,12 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
                 <IconButton
                   onClick={() => handleViewClient(client)}
                   sx={{
-                    backgroundColor: "#f8f9fa",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                     color: "#02BE6A",
                     width: 32,
                     height: 32,
                     borderRadius: "50%",
-                    border: "0.8px solid #e9ecef",
+                    border: theme.palette.mode === 'dark' ? "0.8px solid #333333" : "0.8px solid #e9ecef",
                     "&:hover": {
                       backgroundColor: "#02BE6A",
                       color: "white",
@@ -309,8 +317,8 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
           onClick={onClose}
           variant="outlined"
           sx={{
-            borderColor: "#e0e0e0",
-            color: "#2c3e50",
+            borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             px: 4,
             py: 1.5,
             borderRadius: 2,
@@ -319,7 +327,7 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
             fontSize: "14px",
             "&:hover": {
               borderColor: "#02BE6A",
-              backgroundColor: "#f8f9fa",
+              backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
             }
           }}
         >
@@ -336,26 +344,28 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
         PaperProps={{
           sx: {
             borderRadius: 3,
-            backgroundColor: "background.paper",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.12)"
+            backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "background.paper",
+            boxShadow: theme.palette.mode === 'dark' 
+              ? "0 8px 32px rgba(255,255,255,0.12)" 
+              : "0 8px 32px rgba(0,0,0,0.12)"
           }
         }}
       >
         <DialogTitle sx={{ 
           pb: 2, 
-          borderBottom: "1px solid #f0f0f0",
+          borderBottom: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #f0f0f0",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center"
         }}>
           <Typography variant="h5" sx={{ 
             fontWeight: 700, 
-            color: "#2c3e50",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             fontSize: "24px"
           }}>
             Add New Client
           </Typography>
-          <IconButton onClick={() => setShowAddForm(false)} sx={{ color: "#7f8c8d" }}>
+          <IconButton onClick={() => setShowAddForm(false)} sx={{ color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d" }}>
             <LuX size={24} />
           </IconButton>
         </DialogTitle>
@@ -368,6 +378,29 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
               onChange={(e) => setNewClient({...newClient, name: e.target.value})}
               fullWidth
               required
+              InputProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                }
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+                }
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                },
+              }}
             />
             <TextField
               label="Profession"
@@ -375,6 +408,29 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
               onChange={(e) => setNewClient({...newClient, profession: e.target.value})}
               fullWidth
               required
+              InputProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                }
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+                }
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                },
+              }}
             />
             <TextField
               label="Email"
@@ -383,23 +439,109 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
               onChange={(e) => setNewClient({...newClient, email: e.target.value})}
               fullWidth
               required
+              InputProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                }
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+                }
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                },
+              }}
             />
             <TextField
               label="Phone Number"
               value={newClient.phone}
               onChange={(e) => setNewClient({...newClient, phone: e.target.value})}
               fullWidth
+              InputProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                }
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+                }
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                },
+              }}
             />
             <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
+              <InputLabel sx={{ 
+                color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+              }}>
+                Status
+              </InputLabel>
               <Select
                 value={newClient.status}
                 onChange={(e) => setNewClient({...newClient, status: e.target.value})}
                 label="Status"
+                sx={{
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#02BE6A",
+                  },
+                }}
               >
-                <MenuItem value="Pending">Pending</MenuItem>
-                <MenuItem value="Active">Active</MenuItem>
-                <MenuItem value="Inactive">Inactive</MenuItem>
+                <MenuItem value="Pending" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>
+                  Pending
+                </MenuItem>
+                <MenuItem value="Active" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>
+                  Active
+                </MenuItem>
+                <MenuItem value="Inactive" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>
+                  Inactive
+                </MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -410,8 +552,8 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
             onClick={() => setShowAddForm(false)}
             variant="outlined"
             sx={{
-              borderColor: "#e0e0e0",
-              color: "#2c3e50",
+              borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+              color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
               px: 4,
               py: 1.5,
               borderRadius: 2,
@@ -420,7 +562,7 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
               fontSize: "14px",
               "&:hover": {
                 borderColor: "#02BE6A",
-                backgroundColor: "#f8f9fa",
+                backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
               }
             }}
           >
@@ -457,26 +599,28 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
         PaperProps={{
           sx: {
             borderRadius: 3,
-            backgroundColor: "background.paper",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.12)"
+            backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "background.paper",
+            boxShadow: theme.palette.mode === 'dark' 
+              ? "0 8px 32px rgba(255,255,255,0.12)" 
+              : "0 8px 32px rgba(0,0,0,0.12)"
           }
         }}
       >
         <DialogTitle sx={{ 
           pb: 2, 
-          borderBottom: "1px solid #f0f0f0",
+          borderBottom: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #f0f0f0",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center"
         }}>
           <Typography variant="h5" sx={{ 
             fontWeight: 700, 
-            color: "#2c3e50",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             fontSize: "24px"
           }}>
             Client Details
           </Typography>
-          <IconButton onClick={() => setShowViewDialog(false)} sx={{ color: "#7f8c8d" }}>
+          <IconButton onClick={() => setShowViewDialog(false)} sx={{ color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d" }}>
             <LuX size={24} />
           </IconButton>
         </DialogTitle>
@@ -491,21 +635,23 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
                   sx={{
                     width: 80,
                     height: 80,
-                    border: "3px solid #ffffff",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+                    border: theme.palette.mode === 'dark' ? "3px solid #333333" : "3px solid #ffffff",
+                    boxShadow: theme.palette.mode === 'dark' 
+                      ? "0 4px 12px rgba(255,255,255,0.1)" 
+                      : "0 4px 12px rgba(0,0,0,0.1)"
                   }}
                 />
                 <Box>
                   <Typography variant="h5" sx={{ 
                     fontWeight: 700, 
-                    color: "#2c3e50",
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                     fontSize: "24px",
                     mb: 1
                   }}>
                     {selectedClient.name}
                   </Typography>
                   <Typography variant="h6" sx={{ 
-                    color: "#7f8c8d",
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d",
                     fontSize: "16px",
                     mb: 2
                   }}>
@@ -516,8 +662,12 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
                     px: 2,
                     py: 0.5,
                     borderRadius: 2,
-                    backgroundColor: selectedClient.status === "Active" ? "#d4edda" : "#fff3cd",
-                    color: selectedClient.status === "Active" ? "#155724" : "#856404",
+                    backgroundColor: selectedClient.status === "Active" 
+                      ? (theme.palette.mode === 'dark' ? "#004d1a" : "#d4edda") 
+                      : (theme.palette.mode === 'dark' ? "#4d4d00" : "#fff3cd"),
+                    color: selectedClient.status === "Active" 
+                      ? (theme.palette.mode === 'dark' ? "#66ff99" : "#155724") 
+                      : (theme.palette.mode === 'dark' ? "#ffff99" : "#856404"),
                     fontSize: "12px",
                     fontWeight: 600
                   }}>
@@ -528,26 +678,44 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
 
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <Box>
-                  <Typography variant="body2" sx={{ color: "#7f8c8d", mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
+                    mb: 0.5 
+                  }}>
                     Email
                   </Typography>
-                  <Typography variant="body1" sx={{ color: "#2c3e50", fontWeight: 500 }}>
+                  <Typography variant="body1" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50", 
+                    fontWeight: 500 
+                  }}>
                     {selectedClient.email}
                   </Typography>
                 </Box>
                 <Box>
-                  <Typography variant="body2" sx={{ color: "#7f8c8d", mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
+                    mb: 0.5 
+                  }}>
                     Phone
                   </Typography>
-                  <Typography variant="body1" sx={{ color: "#2c3e50", fontWeight: 500 }}>
+                  <Typography variant="body1" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50", 
+                    fontWeight: 500 
+                  }}>
                     {selectedClient.phone}
                   </Typography>
                 </Box>
                 <Box>
-                  <Typography variant="body2" sx={{ color: "#7f8c8d", mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
+                    mb: 0.5 
+                  }}>
                     Client ID
                   </Typography>
-                  <Typography variant="body1" sx={{ color: "#2c3e50", fontWeight: 500 }}>
+                  <Typography variant="body1" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50", 
+                    fontWeight: 500 
+                  }}>
                     #{selectedClient.id.toString().padStart(4, '0')}
                   </Typography>
                 </Box>
@@ -561,8 +729,8 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
             onClick={() => setShowViewDialog(false)}
             variant="outlined"
             sx={{
-              borderColor: "#e0e0e0",
-              color: "#2c3e50",
+              borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+              color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
               px: 4,
               py: 1.5,
               borderRadius: 2,
@@ -571,7 +739,7 @@ const ClientOnboardingPopup = ({ open, onClose }: ClientOnboardingPopupProps) =>
               fontSize: "14px",
               "&:hover": {
                 borderColor: "#02BE6A",
-                backgroundColor: "#f8f9fa",
+                backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
               }
             }}
           >

@@ -16,7 +16,8 @@ import {
   InputLabel,
   IconButton,
   Switch,
-  Grid
+  Grid,
+  useTheme
 } from "@mui/material";
 import { LuX, LuChevronDown } from "react-icons/lu";
 import { useState } from "react";
@@ -27,6 +28,7 @@ interface NutritionRiskScreeningPopupProps {
 }
 
 const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPopupProps) => {
+  const theme = useTheme();
   const [formData, setFormData] = useState({
     screeningTools: "Screening Tools",
     foodIntake: "severe",
@@ -54,8 +56,10 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
       PaperProps={{
         sx: {
           borderRadius: 3,
-          backgroundColor: "#ffffff",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+          backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+          boxShadow: theme.palette.mode === 'dark' 
+            ? "0 8px 32px rgba(255,255,255,0.12)" 
+            : "0 8px 32px rgba(0,0,0,0.12)",
           minHeight: "90vh",
           maxHeight: "90vh",
           width: "95vw",
@@ -65,7 +69,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
     >
       <DialogTitle sx={{ 
         pb: 2, 
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #f0f0f0",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
@@ -73,12 +77,12 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
       }}>
         <Typography variant="h5" sx={{ 
           fontWeight: 700, 
-          color: "#2c3e50",
+          color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
           fontSize: "24px"
         }}>
           Nutrition Risk Screening
         </Typography>
-        <IconButton onClick={onClose} sx={{ color: "#7f8c8d" }}>
+        <IconButton onClick={onClose} sx={{ color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d" }}>
           <LuX size={24} />
         </IconButton>
       </DialogTitle>
@@ -87,22 +91,68 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
         {/* Screening Tools Dropdown */}
         <Box sx={{ mb: 4 }}>
           <FormControl fullWidth>
-            <InputLabel>Screening Tools</InputLabel>
+            <InputLabel sx={{ 
+              color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+            }}>
+              Screening Tools
+            </InputLabel>
             <Select
               value={formData.screeningTools}
               onChange={(e) => handleInputChange("screeningTools", e.target.value)}
               label="Screening Tools"
               sx={{
                 borderRadius: 2,
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
                 "& .MuiOutlinedInput-root": {
-                  backgroundColor: "#ffffff",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
+                  "& fieldset": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#02BE6A",
+                  },
                 }
               }}
             >
-              <MenuItem value="Screening Tools">Screening Tools</MenuItem>
-              <MenuItem value="MNA">MNA (Mini Nutritional Assessment)</MenuItem>
-              <MenuItem value="NRS-2002">NRS-2002</MenuItem>
-              <MenuItem value="MUST">MUST (Malnutrition Universal Screening Tool)</MenuItem>
+              <MenuItem value="Screening Tools" sx={{ 
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                "&:hover": {
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                }
+              }}>
+                Screening Tools
+              </MenuItem>
+              <MenuItem value="MNA" sx={{ 
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                "&:hover": {
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                }
+              }}>
+                MNA (Mini Nutritional Assessment)
+              </MenuItem>
+              <MenuItem value="NRS-2002" sx={{ 
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                "&:hover": {
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                }
+              }}>
+                NRS-2002
+              </MenuItem>
+              <MenuItem value="MUST" sx={{ 
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                "&:hover": {
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                }
+              }}>
+                MUST (Malnutrition Universal Screening Tool)
+              </MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -112,7 +162,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
           <FormControl component="fieldset">
             <FormLabel component="legend" sx={{ 
               fontWeight: 600, 
-              color: "#2c3e50",
+              color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
               fontSize: "16px",
               mb: 2
             }}>
@@ -137,7 +187,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                 sx={{ 
                   "& .MuiFormControlLabel-label": { 
                     fontSize: "14px",
-                    color: "#2c3e50"
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                   }
                 }}
               />
@@ -155,7 +205,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                 sx={{ 
                   "& .MuiFormControlLabel-label": { 
                     fontSize: "14px",
-                    color: "#2c3e50"
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                   }
                 }}
               />
@@ -173,7 +223,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                 sx={{ 
                   "& .MuiFormControlLabel-label": { 
                     fontSize: "14px",
-                    color: "#2c3e50"
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                   }
                 }}
               />
@@ -186,7 +236,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
           <FormControl component="fieldset">
             <FormLabel component="legend" sx={{ 
               fontWeight: 600, 
-              color: "#2c3e50",
+              color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
               fontSize: "16px",
               mb: 2
             }}>
@@ -208,7 +258,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                   sx={{ 
                     "& .MuiFormControlLabel-label": { 
                       fontSize: "14px",
-                      color: "#2c3e50"
+                      color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                     }
                   }}
                 />
@@ -228,7 +278,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                   sx={{ 
                     "& .MuiFormControlLabel-label": { 
                       fontSize: "14px",
-                      color: "#2c3e50"
+                      color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                     }
                   }}
                 />
@@ -248,7 +298,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                   sx={{ 
                     "& .MuiFormControlLabel-label": { 
                       fontSize: "14px",
-                      color: "#2c3e50"
+                      color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                     }
                   }}
                 />
@@ -268,7 +318,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                   sx={{ 
                     "& .MuiFormControlLabel-label": { 
                       fontSize: "14px",
-                      color: "#2c3e50"
+                      color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                     }
                   }}
                 />
@@ -282,7 +332,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
           <FormControl component="fieldset">
             <FormLabel component="legend" sx={{ 
               fontWeight: 600, 
-              color: "#2c3e50",
+              color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
               fontSize: "16px",
               mb: 2
             }}>
@@ -307,7 +357,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                 sx={{ 
                   "& .MuiFormControlLabel-label": { 
                     fontSize: "14px",
-                    color: "#2c3e50"
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                   }
                 }}
               />
@@ -325,7 +375,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                 sx={{ 
                   "& .MuiFormControlLabel-label": { 
                     fontSize: "14px",
-                    color: "#2c3e50"
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                   }
                 }}
               />
@@ -343,7 +393,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                 sx={{ 
                   "& .MuiFormControlLabel-label": { 
                     fontSize: "14px",
-                    color: "#2c3e50"
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                   }
                 }}
               />
@@ -356,14 +406,16 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
           <FormControl component="fieldset">
             <FormLabel component="legend" sx={{ 
               fontWeight: 600, 
-              color: "#2c3e50",
+              color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
               fontSize: "16px",
               mb: 2
             }}>
               Has suffered psychological stress or acute disease in the past 3 months?
             </FormLabel>
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Typography variant="body2" sx={{ color: "#7f8c8d" }}>No</Typography>
+              <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d" }}>
+                No
+              </Typography>
               <Switch
                 checked={formData.psychologicalStress}
                 onChange={(e) => handleInputChange("psychologicalStress", e.target.checked)}
@@ -376,7 +428,9 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                   },
                 }}
               />
-              <Typography variant="body2" sx={{ color: "#7f8c8d" }}>Yes</Typography>
+              <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d" }}>
+                Yes
+              </Typography>
             </Box>
           </FormControl>
         </Box>
@@ -386,7 +440,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
           <FormControl component="fieldset">
             <FormLabel component="legend" sx={{ 
               fontWeight: 600, 
-              color: "#2c3e50",
+              color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
               fontSize: "16px",
               mb: 2
             }}>
@@ -411,7 +465,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                 sx={{ 
                   "& .MuiFormControlLabel-label": { 
                     fontSize: "14px",
-                    color: "#2c3e50"
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                   }
                 }}
               />
@@ -429,7 +483,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                 sx={{ 
                   "& .MuiFormControlLabel-label": { 
                     fontSize: "14px",
-                    color: "#2c3e50"
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                   }
                 }}
               />
@@ -447,7 +501,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                 sx={{ 
                   "& .MuiFormControlLabel-label": { 
                     fontSize: "14px",
-                    color: "#2c3e50"
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                   }
                 }}
               />
@@ -460,7 +514,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
           <FormControl component="fieldset">
             <FormLabel component="legend" sx={{ 
               fontWeight: 600, 
-              color: "#2c3e50",
+              color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
               fontSize: "16px",
               mb: 2
             }}>
@@ -482,7 +536,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                   sx={{ 
                     "& .MuiFormControlLabel-label": { 
                       fontSize: "14px",
-                      color: "#2c3e50"
+                      color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                     }
                   }}
                 />
@@ -502,7 +556,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                   sx={{ 
                     "& .MuiFormControlLabel-label": { 
                       fontSize: "14px",
-                      color: "#2c3e50"
+                      color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                     }
                   }}
                 />
@@ -522,7 +576,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                   sx={{ 
                     "& .MuiFormControlLabel-label": { 
                       fontSize: "14px",
-                      color: "#2c3e50"
+                      color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                     }
                   }}
                 />
@@ -542,7 +596,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
                   sx={{ 
                     "& .MuiFormControlLabel-label": { 
                       fontSize: "14px",
-                      color: "#2c3e50"
+                      color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50"
                     }
                   }}
                 />
@@ -567,7 +621,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
             fontSize: "14px",
             "&:hover": {
               borderColor: "#029e56",
-              backgroundColor: "#f8f9fa",
+              backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
             }
           }}
         >

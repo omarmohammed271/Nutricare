@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography , useTheme } from "@mui/material";
 import { useState } from "react";
 
 // Import SVG icons
@@ -12,8 +12,10 @@ import ClientOnboardingPopup from "./ClientOnboardingPopup";
 import QuickCalculatorsPopup from "./QuickCalculatorsPopup";
 import NutritionRiskScreeningPopup from "./NutritionRiskScreeningPopup";
 import FoodDrugInteractionPopup from "./FoodDrugInteractionPopup";
+import { Settings } from "lucide-react";
 
 const QuickActions = () => {
+  const theme = useTheme();
   const [clientOnboardingOpen, setClientOnboardingOpen] = useState(false);
   const [quickCalculatorsOpen, setQuickCalculatorsOpen] = useState(false);
   const [nutritionRiskScreeningOpen, setNutritionRiskScreeningOpen] = useState(false);
@@ -55,11 +57,13 @@ const QuickActions = () => {
       p: 2,
       backgroundColor: "background.paper",
       borderRadius: 3,
-      boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+      boxShadow: theme.palette.mode === 'dark' 
+        ? "0 4px 20px rgba(255,255,255,0.08)" 
+        : "0 4px 20px rgba(0,0,0,0.08)",
       border: "1px solid",
       borderColor: "divider"
     }}>
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "#2c3e50" }}>
+      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50" }}>
         Quick Actions
       </Typography>
       <Grid container spacing={1.25}> {/* 10px gap */}
@@ -81,12 +85,16 @@ const QuickActions = () => {
               color: "white",
               borderRadius: "18.85px",
               padding: "14.14px",
-              boxShadow: "0px 3.77px 3.77px 0px #505050",
+              boxShadow: theme.palette.mode === 'dark' 
+                ? "0px 3.77px 3.77px 0px rgba(255,255,255,0.3)" 
+                : "0px 3.77px 3.77px 0px #505050",
               justifyContent: "space-between",
               "&:hover": {
                 backgroundColor: "#229954",
                 transform: "translateY(-2px)",
-                boxShadow: "0px 5px 5px 0px #505050",
+                boxShadow: theme.palette.mode === 'dark' 
+                  ? "0px 5px 5px 0px rgba(255,255,255,0.3)" 
+                  : "0px 5px 5px 0px #505050",
               },
               transition: "all 0.3s ease",
               fontFamily: "Roboto",
@@ -121,12 +129,16 @@ const QuickActions = () => {
               color: "white",
               borderRadius: "18.85px",
               padding: "14.14px",
-              boxShadow: "0px 3.77px 3.77px 0px #505050",
+              boxShadow: theme.palette.mode === 'dark' 
+                ? "0px 3.77px 3.77px 0px rgba(255,255,255,0.3)" 
+                : "0px 3.77px 3.77px 0px #505050",
               justifyContent: "space-between",
               "&:hover": {
                 background: "linear-gradient(90deg, #00B085 0%, #00B085 100%)",
                 transform: "translateY(-2px)",
-                boxShadow: "0px 5px 5px 0px #505050",
+                boxShadow: theme.palette.mode === 'dark' 
+                  ? "0px 5px 5px 0px rgba(255,255,255,0.3)" 
+                  : "0px 5px 5px 0px #505050",
               },
               transition: "all 0.3s ease",
               fontFamily: "Roboto",
@@ -161,12 +173,16 @@ const QuickActions = () => {
               color: "white",
               borderRadius: "18.85px",
               padding: "14.14px",
-              boxShadow: "0px 3.77px 3.77px 0px #505050",
+              boxShadow: theme.palette.mode === 'dark' 
+                ? "0px 3.77px 3.77px 0px rgba(255,255,255,0.3)" 
+                : "0px 3.77px 3.77px 0px #505050",
               justifyContent: "space-between",
               "&:hover": {
                 backgroundColor: "#0F7A4D",
                 transform: "translateY(-2px)",
-                boxShadow: "0px 5px 5px 0px #505050",
+                boxShadow: theme.palette.mode === 'dark' 
+                  ? "0px 5px 5px 0px rgba(255,255,255,0.3)" 
+                  : "0px 5px 5px 0px #505050",
               },
               transition: "all 0.3s ease",
               fontFamily: "Roboto",
@@ -201,12 +217,16 @@ const QuickActions = () => {
               color: "white",
               borderRadius: "18.85px",
               padding: "14.14px",
-              boxShadow: "0px 3.77px 3.77px 0px #505050",
+              boxShadow: theme.palette.mode === 'dark' 
+                ? "0px 3.77px 3.77px 0px rgba(255,255,255,0.3)" 
+                : "0px 3.77px 3.77px 0px #505050",
               justifyContent: "space-between",
               "&:hover": {
                 background: "linear-gradient(90deg, #4A9BCF 0%, #2574A6 100%)",
                 transform: "translateY(-2px)",
-                boxShadow: "0px 5px 5px 0px #505050",
+                boxShadow: theme.palette.mode === 'dark' 
+                  ? "0px 5px 5px 0px rgba(255,255,255,0.3)" 
+                  : "0px 5px 5px 0px #505050",
               },
               transition: "all 0.3s ease",
               fontFamily: "Roboto",

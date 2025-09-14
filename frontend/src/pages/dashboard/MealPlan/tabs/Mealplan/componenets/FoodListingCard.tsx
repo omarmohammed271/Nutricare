@@ -13,8 +13,16 @@ import {
   TableHead, 
   TableRow, 
   Avatar,
-  Chip
+  Chip,
+  IconButton,
+  Tooltip
 } from '@mui/material';
+import { 
+  Add as AddIcon,
+  Delete as DeleteIcon 
+} from '@mui/icons-material';
+import { FoodItem, SelectedFood } from '../types';
+import { foodDatabase } from '../data';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -22,36 +30,10 @@ interface TabPanelProps {
   value: number;
 }
 
-interface MealNutrition {
-  calories: number;
-  carbs: number;
-  protein: number;
-  fats: number;
-}
-
-interface FoodItem {
-  id: number;
-  name: string;
-  icon: string;
-  color: string;
-  breakfast: {
-    calories: number;
-    carbs: number;
-    protein: number;
-    fat: number;
-  };
-  lunch: {
-    calories: number;
-    carbs: number;
-    protein: number;
-    fat: number;
-  };
-  dinner: {
-    calories: number;
-    carbs: number;
-    protein: number;
-    fat: number;
-  };
+interface FoodListingCardProps {
+  onFoodSelect: (food: FoodItem, mealId?: string) => void;
+  basketItems: SelectedFood[];
+  onRemoveFromBasket: (foodId: number, mealId: string) => void;
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -74,82 +56,29 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-const FoodListingCard = () => {
+const FoodListingCard: React.FC<FoodListingCardProps> = ({
+  onFoodSelect,
+  basketItems,
+  onRemoveFromBasket
+}) => {
   const [tabValue, setTabValue] = useState(0);
-  const [selectedMeal, setSelectedMeal] = useState<'breakfast' | 'lunch' | 'dinner'>('breakfast');
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
-  const handleMealChange = (meal: 'breakfast' | 'lunch' | 'dinner') => {
-    setSelectedMeal(meal);
-  };
+  const filteredFoods = foodDatabase;
 
-  // Food items data with different values for each meal
-  const foodItems: FoodItem[] = [
-    {
-      id: 1,
-      name: 'Red Meat',
-      icon: '🥩',
-      color: '#FF6B6B',
-      breakfast: { calories: 350, carbs: 5, protein: 45, fat: 18 },
-      lunch: { calories: 450, carbs: 8, protein: 52, fat: 22 },
-      dinner: { calories: 380, carbs: 6, protein: 48, fat: 20 }
-    },
-    {
-      id: 2,
-      name: 'Eggs',
-      icon: '🥚',
-      color: '#FFD93D',
-      breakfast: { calories: 280, carbs: 2, protein: 25, fat: 18 },
-      lunch: { calories: 320, carbs: 3, protein: 28, fat: 20 },
-      dinner: { calories: 300, carbs: 2, protein: 26, fat: 19 }
-    },
-    {
-      id: 3,
-      name: 'Fruits',
-      icon: '🍎',
-      color: '#FF8C42',
-      breakfast: { calories: 180, carbs: 45, protein: 2, fat: 1 },
-      lunch: { calories: 150, carbs: 38, protein: 1, fat: 0 },
-      dinner: { calories: 120, carbs: 30, protein: 1, fat: 0 }
-    },
-    {
-      id: 4,
-      name: 'Bread',
-      icon: '🍞',
-      color: '#D2691E',
-      breakfast: { calories: 320, carbs: 65, protein: 12, fat: 4 },
-      lunch: { calories: 280, carbs: 55, protein: 10, fat: 3 },
-      dinner: { calories: 200, carbs: 40, protein: 8, fat: 2 }
-    },
-    {
-      id: 5,
-      name: 'Vegetables',
-      icon: '🥬',
-      color: '#4ECDC4',
-      breakfast: { calories: 80, carbs: 18, protein: 4, fat: 1 },
-      lunch: { calories: 120, carbs: 25, protein: 6, fat: 2 },
-      dinner: { calories: 150, carbs: 30, protein: 8, fat: 3 }
-    },
-    {
-      id: 6,
-      name: 'White Meat',
-      icon: '🍗',
-      color: '#F8E71C',
-      breakfast: { calories: 250, carbs: 0, protein: 35, fat: 12 },
-      lunch: { calories: 380, carbs: 2, protein: 48, fat: 18 },
-      dinner: { calories: 420, carbs: 3, protein: 52, fat: 20 }
-    }
+  const foodCategories = [
+    { name: 'All Foods', foods: filteredFoods },
+    { name: 'Proteins', foods: filteredFoods.filter(f => f.proteinPer100g > 15) },
+    { name: 'Carbs', foods: filteredFoods.filter(f => f.carbsPer100g > 15) },
+    { name: 'Healthy Fats', foods: filteredFoods.filter(f => f.fatPer100g > 10) },
+    { name: 'Vegetables', foods: filteredFoods.filter(f => f.caloriesPer100g < 50 && f.fiberPer100g > 1) },
+    { name: 'Fruits', foods: filteredFoods.filter(f => [15, 16, 17, 18].includes(f.id)) }
   ];
 
-  const macroColumns = [
-    {key : 'calories' , label: 'calories' ,unit :'kcal'},
-    { key: 'carbs', label: 'Carbs', unit: 'gm' },
-    { key: 'protein', label: 'Protein', unit: 'gm' },
-    { key: 'fat', label: 'Fat', unit: 'gm' }
-  ];
+  const [selectedCategory, setSelectedCategory] = useState(0);
 
   return (
     <Card
@@ -195,53 +124,26 @@ const FoodListingCard = () => {
         {/* Tab Panels */}
         <TabPanel value={tabValue} index={0}>
           <Box sx={{ px: 3, pb: 3 }}>
-            {/* Meal Type Chips */}
-            <Box sx={{ mb: 3, display: 'flex', gap: 1 }}>
-              <Chip 
-                label="Breakfast" 
-                onClick={() => handleMealChange('breakfast')}
-                sx={{ 
-                  backgroundColor: selectedMeal === 'breakfast' ? '#81C784' : 'transparent', 
-                  color: selectedMeal === 'breakfast' ? 'white' : '#666',
-                  fontWeight: 600,
-                  px: 2,
-                  border: selectedMeal === 'breakfast' ? 'none' : '1px solid #E0E0E0',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: selectedMeal === 'breakfast' ? '#66BB6A' : '#F5F5F5'
-                  }
-                }} 
-              />
-              <Chip 
-                label="Lunch" 
-                onClick={() => handleMealChange('lunch')}
-                sx={{ 
-                  backgroundColor: selectedMeal === 'lunch' ? '#81C784' : 'transparent', 
-                  color: selectedMeal === 'lunch' ? 'white' : '#666',
-                  fontWeight: 600,
-                  px: 2,
-                  border: selectedMeal === 'lunch' ? 'none' : '1px solid #E0E0E0',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: selectedMeal === 'lunch' ? '#66BB6A' : '#F5F5F5'
-                  }
-                }} 
-              />
-              <Chip 
-                label="Dinner" 
-                onClick={() => handleMealChange('dinner')}
-                sx={{ 
-                  backgroundColor: selectedMeal === 'dinner' ? '#81C784' : 'transparent', 
-                  color: selectedMeal === 'dinner' ? 'white' : '#666',
-                  fontWeight: 600,
-                  px: 2,
-                  border: selectedMeal === 'dinner' ? 'none' : '1px solid #E0E0E0',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: selectedMeal === 'dinner' ? '#66BB6A' : '#F5F5F5'
-                  }
-                }} 
-              />
+            {/* Food Category Chips */}
+            <Box sx={{ mb: 3, display: 'flex', gap: 1, flexWrap: 'wrap' }}>              
+              {foodCategories.map((category, index) => (
+                <Chip 
+                  key={category.name}
+                  label={`${category.name} (${category.foods.length})`}
+                  onClick={() => setSelectedCategory(index)}
+                  sx={{ 
+                    backgroundColor: selectedCategory === index ? '#81C784' : 'transparent', 
+                    color: selectedCategory === index ? 'white' : '#666',
+                    fontWeight: 600,
+                    px: 2,
+                    border: selectedCategory === index ? 'none' : '1px solid #E0E0E0',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor: selectedCategory === index ? '#66BB6A' : '#F5F5F5'
+                    }
+                  }} 
+                />
+              ))}
             </Box>
 
             {/* Food Items Table */}
@@ -249,110 +151,228 @@ const FoodListingCard = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 600, border: 'none', pb: 1, width: '40%' }}>
-                      {/* Empty header for food items */}
+                    <TableCell sx={{ fontWeight: 600, border: 'none', pb: 1, width: '35%' }}>
+                      Food Item
                     </TableCell>
-                    {macroColumns.map((macro) => (
-                      <TableCell 
-                        key={macro.key} 
-                        align="center" 
-                        sx={{ fontWeight: 600, border: 'none', pb: 1, color: '#666', width: '20%' }}
-                      >
-                        {macro.label}
-                      </TableCell>
-                    ))}
+                    <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1, width: '15%' }}>
+                      Calories
+                    </TableCell>
+                    <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1, width: '15%' }}>
+                      Protein
+                    </TableCell>
+                    <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1, width: '15%' }}>
+                      Carbs
+                    </TableCell>
+                    <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1, width: '15%' }}>
+                      Fat
+                    </TableCell>
+                    <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1, width: '5%' }}>
+                      Action
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {foodItems.map((food) => (
-                    <TableRow key={food.id} sx={{ '&:last-child td': { border: 0 } }}>
-                      {/* Food Item Name with Calories */}
+                  {foodCategories[selectedCategory].foods.map((food) => (
+                    <TableRow 
+                      key={food.id} 
+                      sx={{ 
+                        '&:last-child td': { border: 0 },
+                        '&:hover': { backgroundColor: '#f8f9fa' },
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => onFoodSelect(food)}
+                    >
+                      {/* Food Item Name */}
                       <TableCell sx={{ border: 'none', py: 1.5, verticalAlign: 'middle' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                            <Avatar 
-                              sx={{ 
-                                width: 32, 
-                                height: 32,
-                                backgroundColor: food.color + '20',
-                                fontSize: '1rem'
-                              }}
-                            >
-                              {food.icon}
-                            </Avatar>
-                            <Typography variant="body2" sx={{ fontWeight: 500, color: '#333' }}>
-                              {food.name}
-                            </Typography>
-                          </Box>
-                          <Box sx={{ textAlign: 'right' }}>
-                            <Typography 
-                              variant="h6" 
-                              sx={{ 
-                                fontWeight: 700, 
-                                color: '#333',
-                                fontSize: '1rem',
-                                lineHeight: 1
-                              }}
-                            >
-                              {food[selectedMeal].calories}
-                            </Typography>
-                            <Typography 
-                              variant="caption" 
-                              sx={{ 
-                                color: '#999', 
-                                fontSize: '0.7rem',
-                                fontWeight: 500
-                              }}
-                            >
-                              kcal
-                            </Typography>
-                          </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                          <Avatar 
+                            sx={{ 
+                              width: 32, 
+                              height: 32,
+                              backgroundColor: food.color + '20',
+                              fontSize: '1rem'
+                            }}
+                          >
+                            {food.icon}
+                          </Avatar>
+                          <Typography variant="body2" sx={{ fontWeight: 500, color: '#333' }}>
+                            {food.name}
+                          </Typography>
                         </Box>
                       </TableCell>
                       
-                      {/* Macro Columns */}
-                      {macroColumns.map((macro) => (
-                        <TableCell key={macro.key} align="center" sx={{ border: 'none', py: 1.5, verticalAlign: 'middle' }}>
-                          <Box sx={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            {/* Main Value */}
-                            <Typography 
-                              variant="h6" 
-                              sx={{ 
-                                fontWeight: 700, 
-                                color: '#333',
-                                fontSize: '1.1rem',
-                                lineHeight: 1,
-                                mb: 0.5
-                              }}
-                            >
-                              {food[selectedMeal][macro.key as keyof typeof food[typeof selectedMeal]]}
-                            </Typography>
-                            <Typography 
-                              variant="caption" 
-                              sx={{ 
-                                color: '#999', 
-                                fontSize: '0.75rem',
-                                fontWeight: 500
-                              }}
-                            >
-                              {macro.unit}
-                            </Typography>
-                          </Box>
-                        </TableCell>
-                      ))}
+                      {/* Nutritional Values per 100g */}
+                      <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {food.caloriesPer100g}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          kcal/100g
+                        </Typography>
+                      </TableCell>
+                      
+                      <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {food.proteinPer100g}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          g/100g
+                        </Typography>
+                      </TableCell>
+                      
+                      <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {food.carbsPer100g}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          g/100g
+                        </Typography>
+                      </TableCell>
+                      
+                      <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {food.fatPer100g}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          g/100g
+                        </Typography>
+                      </TableCell>
+                      
+                      <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
+                        <Tooltip title="Add to meal">
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onFoodSelect(food);
+                            }}
+                            sx={{ 
+                              bgcolor: '#4CAF50', 
+                              color: 'white',
+                              '&:hover': { bgcolor: '#45a049' }
+                            }}
+                          >
+                            <AddIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </TableContainer>
+            
+            {foodCategories[selectedCategory].foods.length === 0 && (
+              <Box sx={{ textAlign: 'center', py: 4 }}>
+                <Typography variant="body1" color="text.secondary">
+                  No foods found in this category.
+                </Typography>
+              </Box>
+            )}
           </Box>
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
-          <Box sx={{ px: 3, pb: 3, textAlign: 'center', py: 6 }}>
-            <Typography variant="h6" color="text.secondary">
-              Food Basket content will be displayed here
+          <Box sx={{ px: 3, pb: 3 }}>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+              Food Basket ({basketItems.length} items)
             </Typography>
+            
+            {basketItems.length > 0 ? (
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 600, border: 'none', pb: 1 }}>
+                        Food Item
+                      </TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1 }}>
+                        Amount
+                      </TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1 }}>
+                        Calories
+                      </TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1 }}>
+                        Meal
+                      </TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1 }}>
+                        Action
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {basketItems.map((item, index) => {
+                      const food = foodDatabase.find(f => f.id === item.foodId);
+                      return (
+                        <TableRow key={`${item.foodId}-${item.mealId}-${index}`}>
+                          <TableCell sx={{ border: 'none', py: 1.5 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                              <Avatar 
+                                sx={{ 
+                                  width: 32, 
+                                  height: 32,
+                                  backgroundColor: food?.color + '20' || '#e0e0e0',
+                                  fontSize: '1rem'
+                                }}
+                              >
+                                {food?.icon || '🍽️'}
+                              </Avatar>
+                              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                {item.name}
+                              </Typography>
+                            </Box>
+                          </TableCell>
+                          <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {item.grams}g
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 600, color: '#4CAF50' }}>
+                              {item.calories} kcal
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
+                            <Chip 
+                              label={item.mealId.replace(/-.+/, '').replace(/([A-Z])/g, ' $1').toLowerCase().replace(/^\w/, c => c.toUpperCase())}
+                              size="small"
+                              sx={{ 
+                                bgcolor: '#e8f5e8',
+                                color: '#2e7d32',
+                                fontWeight: 500
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
+                            <Tooltip title="Remove from basket">
+                              <IconButton
+                                size="small"
+                                onClick={() => onRemoveFromBasket(item.foodId, item.mealId)}
+                                sx={{ 
+                                  color: '#f44336',
+                                  '&:hover': { bgcolor: '#ffebee' }
+                                }}
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <Box sx={{ textAlign: 'center', py: 6 }}>
+                <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                  Your basket is empty
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Add foods from the Food Listing tab to see them here
+                </Typography>
+              </Box>
+            )}
           </Box>
         </TabPanel>
       </CardContent>
