@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Equation, Calculation,Drug, DrugCategory
+from .models import *
 
 
 class EquationSerializer(serializers.ModelSerializer):
@@ -36,3 +36,5 @@ class DrugSerializer(serializers.ModelSerializer):
     class Meta:
         model = Drug
         fields = ['id', 'name', 'drug_effect', 'nutritional_implications', 'category', 'category_id']
+
+

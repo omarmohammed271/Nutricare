@@ -48,4 +48,5 @@ class DrugDetailAPIView(generics.RetrieveAPIView):
     serializer_class = DrugSerializer
     lookup_field = 'id'
       
-    
+
+

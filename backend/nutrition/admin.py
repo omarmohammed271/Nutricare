@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Equation, Calculation, Drug, DrugCategory
+from .models import *
 
 @admin.register(Equation)
 class EquationAdmin(admin.ModelAdmin):
@@ -21,3 +21,6 @@ class DrugCategoryAdmin(admin.ModelAdmin):
 class DrugAdmin(admin.ModelAdmin):
     list_display = ("id","name", "category")
     search_fields = ("name", "category__name")
+
+
+
