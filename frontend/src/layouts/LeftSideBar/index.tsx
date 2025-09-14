@@ -56,8 +56,8 @@ const LeftSideBarMenu = () => {
         {/* Footer Section */}
         <Box sx={{ 
           p: 2, 
-          borderTop: "1px solid #E5E5E5",
-          backgroundColor: "#F9F4F2"
+          borderTop: settings.theme == "light" ? "1px solid #E5E5E5" :"1px solid #2d3142" ,
+         backgroundColor: settings.theme == "light" ? "#F9F4F2" : "#1a1a1a;",
         }}>
           {/* Logout Button */}
           <Button
