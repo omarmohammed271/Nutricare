@@ -35,13 +35,18 @@ export default function useLogin() {
   type LoginFormFields = yup.InferType<typeof loginFormSchema>;
 
   const redirectUrl = useMemo(() => {
-    // If there's a specific redirect path from location state, use it
-    if (location.state?.from?.pathname) {
-      return location.state.from.pathname;
-    }
-    // Otherwise redirect to the dashboard
-    return "/ecommerce";
-  }, [location.state]);
+  const fromPath = location.state?.from?.pathname;
+
+  if (fromPath) {
+    return fromPath.startsWith("/admin") ? "/admin/user" : fromPath;
+  }
+
+  if (location.pathname.startsWith("/admin")) {
+    return "/admin/user";
+  }
+
+  return "/ecommerce";
+}, [location.state, location.pathname]);
 
   const login = handleSubmit(async (values: LoginFormFields) => {
     setLoading(true);

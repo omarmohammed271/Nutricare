@@ -126,6 +126,7 @@ const adminRoutes: RoutesProps[] = [
   { path: "/client-file/medication", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientFile"))} /> },
   { path: "/client-file/meal-plans", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientFile"))} /> },
   { path: "/clients/onboarding", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientOnboarding"))} /> },
+  { path: "/clients/file", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientFiles"))} /> },
   { path: "/test-clients", element: <div style={{ padding: '50px', fontSize: '24px', color: 'green' }}>CLIENT ONBOARDING TEST ROUTE IS WORKING!</div> },
   { path: "/library", element: <LoadComponent component={lazy(() => import("@src/pages/Library"))} /> },
   { path: "error-404-alt", element: <LoadComponent component={lazy(() => import("@src/pages/error/Error404Alt"))} /> },
@@ -136,6 +137,8 @@ const adminRoutes: RoutesProps[] = [
   { path: "/pages/invoice", element: <LoadComponent component={lazy(() => import("@src/pages/other/Invoice"))} /> },
   { path: "/pages/faq", element: <LoadComponent component={lazy(() => import("@src/pages/other/FAQs"))} /> },
   { path: "/pages/pricing", element: <LoadComponent component={lazy(() => import("@src/pages/other/Pricing"))} /> },
+  { path: "/terms", element: <LoadComponent component={lazy(() => import("@src/pages/other/TermsAndConditions"))} /> },
+  { path: "/privacy", element: <LoadComponent component={lazy(() => import("@src/pages/other/PrivacyPolicy"))} /> },
 
   { path: "/extended-ui/swipers", element: <LoadComponent component={lazy(() => import("@src/pages/extended-ui/Swipers"))} /> },
   { path: "/extended-ui/nestable-list", element: <LoadComponent component={lazy(() => import("@src/pages/extended-ui/NestableList"))} />, },
@@ -155,6 +158,9 @@ const adminRoutes: RoutesProps[] = [
 
 const adminDashboardRoutes: RoutesProps[] = [
   { path: "/admin/user", element: <LoadComponent component={lazy(() => import("@src/pages/admin/dashboard/UserManagement"))} /> },
+  { path: "/admin/content-management", element: <LoadComponent component={lazy(() => import("@src/pages/admin/ContentManagement/ContentManagement"))} /> },
+  { path: "/admin/subscription", element: <LoadComponent component={lazy(() => import("@src/pages/admin/subscription/subscription"))} /> },
+  { path: "/admin/reporting", element: <LoadComponent component={lazy(() => import("@src/pages/admin/Reporting/Reporting"))} /> },
 ]
 
 export const defaultLayoutRoutes = [
@@ -169,5 +175,6 @@ export const verticalLayoutRoutes = [
   ...adminDashboardRoutes,
   ...appsRoutes,
   ...uiComponentRoutes,
+  { path: "*", element: <LoadComponent component={lazy(() => import("@src/pages/error/Error404"))} /> },
 ]
 
