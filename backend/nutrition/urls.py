@@ -12,9 +12,7 @@ urlpatterns = [
     path("drugs/<int:category_id>", views.DrugListAPIView.as_view(), name="DrugListAPIView"),
     path("drug-details/<int:id>", views.DrugDetailAPIView.as_view(), name="DrugDetailAPIView"),
  
-    path('equations-risk/', views.EquationListCreateView.as_view(), name='equation-list-create'),
-    path('equations-risk/<int:pk>/', views.EquationRetrieveUpdateDestroyView.as_view(), name='equation-detail'),
-    path('equations-risk/<int:pk>/calculate/', views.EquationCalculateView.as_view(), name='equation-calculate'),
+  
 
 ]
 
