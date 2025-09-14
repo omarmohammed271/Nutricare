@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { Box, Typography } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { PageMetaData } from "@src/components";
-import { useAuthContext } from "@src/states";
 import { LogoutIcon } from "../Logout";
 import AuthLayout2 from "../AuthLayout2";
+import useLogout from "../Logout/useLogout";
 
 const BottomLink = () => (
   <Typography variant="body2" color={"text.secondary"} sx={{ display: "flex", flexWrap: "nowrap", gap: 0.5 }}>
@@ -18,17 +18,12 @@ const BottomLink = () => (
 );
 
 const Logout2 = () => {
-  const { removeSession } = useAuthContext();
-  const navigate = useNavigate();
+  const { logout } = useLogout();
 
   useEffect(() => {
-    removeSession();
-    // Redirect to login2 after logout
-    const timer = setTimeout(() => {
-      navigate("/auth/login2", { replace: true });
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [removeSession, navigate]);
+    // Automatically logout when component mounts
+    logout();
+  }, []);
 
   return (
     <>

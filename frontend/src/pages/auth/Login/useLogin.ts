@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AxiosResponse } from "axios";
 import { useForm } from "react-hook-form";
-import { HttpClient } from "@src/helpers";
 import { useAuthContext } from "@src/states";
 import { yupResolver } from "@hookform/resolvers/yup";
-import type { User } from "@src/types";
+import { AuthService } from "@src/services";
+import { ErrorHandler } from "@src/utils/errorHandler";
+import type { LoginRequest } from "@src/types";
 import * as yup from "yup";
 import { useSnackbar } from "notistack";
 
@@ -26,8 +26,9 @@ export default function useLogin() {
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(loginFormSchema),
     defaultValues: {
-      email: "demo@demo.com",
-      password: "password",
+      email: "",
+      password: "",
+      rememberMe: false,
     },
   });
 
@@ -49,18 +50,42 @@ export default function useLogin() {
 
   const login = handleSubmit(async (values: LoginFormFields) => {
     setLoading(true);
+    
     try {
-      const res: AxiosResponse<User> = await HttpClient.post("/login", values);
-      if (res.data.token) {
-        saveSession({
-          ...(res.data ?? {}),
-          token: res.data.token,
-        });
-        navigate(redirectUrl);
+      const loginData: LoginRequest = {
+        email: values.email,
+        password: values.password,
+        rememberMe: values.rememberMe,
+      };
+
+      // Authenticate with backend
+      const response = await AuthService.login(loginData);
+      
+      // Extract token and create user object
+      const token = AuthService.extractToken(response);
+      
+      if (!token) {
+        throw new Error("No authentication token received from server");
       }
+
+      const userData = AuthService.createUserFromResponse(response, values.email);
+      
+      // Save session with rememberMe preference
+      saveSession(userData, values.rememberMe);
+      
+      // Show success message
+      enqueueSnackbar("Login successful!", { variant: "success" });
+      
+      // Navigate to dashboard
+      navigate(redirectUrl, { replace: true });
+      
     } catch (error: any) {
-      if (error.response?.data?.error) {
-        enqueueSnackbar(error.response?.data?.error, { variant: "error" });
+      const errorInfo = ErrorHandler.processLoginError(error);
+      enqueueSnackbar(errorInfo.message, { variant: "error" });
+      
+      // Log error for debugging (could be conditional based on environment)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Login error:', error);
       }
     } finally {
       setLoading(false);

@@ -1,8 +1,9 @@
-import { Box, Card, Typography } from "@mui/material";
+import { Box, Card, Typography, useTheme } from "@mui/material";
 import { ApexOptions } from "apexcharts";
 import ReactApexCharts from "react-apexcharts";
 
 const CaseOverview = () => {
+  const theme = useTheme();
   const apexOpts: ApexOptions = {
     chart: {
       type: "pie",
@@ -22,7 +23,7 @@ const CaseOverview = () => {
       style: {
         fontSize: "16px",
         fontWeight: 600,
-        colors: ["#ffffff"]
+        colors: theme.palette.mode === 'dark' ? ["#000000"] : ["#ffffff"]
       },
     },
     legend: {
@@ -32,7 +33,7 @@ const CaseOverview = () => {
       fontSize: "14px",
       fontFamily: "inherit",
       labels: {
-        colors: "#2c3e50",
+        colors: theme.palette.mode === 'dark' ? '#ffffff' : "#2c3e50",
       },
       markers: {
         size: 12,
@@ -72,11 +73,13 @@ const CaseOverview = () => {
       height: "100%",
       backgroundColor: "background.paper",
       borderRadius: 3,
-      boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+      boxShadow: theme.palette.mode === 'dark' 
+        ? "0 4px 20px rgba(255,255,255,0.08)" 
+        : "0 4px 20px rgba(0,0,0,0.08)",
       border: "1px solid",
       borderColor: "divider"
     }}>
-      <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: "#2c3e50" }}>
+      <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: theme.palette.mode === 'dark' ? '#ffffff' : "#2c3e50" }}>
         Case Overview
       </Typography>
       
