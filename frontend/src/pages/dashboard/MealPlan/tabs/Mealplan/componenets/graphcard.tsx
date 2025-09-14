@@ -1,14 +1,30 @@
 import React from 'react';
-import { Box, Card, CardContent, Typography, Grid, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Box, Card, CardContent, Typography, Grid, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, useTheme } from '@mui/material';
 import ReactApexChart from 'react-apexcharts';
-import { donutOptions  ,  macronutrientsTable ,micronutrients ,mealData ,macroData} from '../constants/const';
+import { donutOptions, micronutrients } from '../constants/const';
+import { NutritionSummary, MealData } from '../types';
+import { calculateMacroPercentages, generateMacronutrientsTableData } from '../utils/nutritionCalculator';
+
+interface GraphCardProps {
+  nutritionSummary: NutritionSummary;
+  targetCalories: number;
+}
 
 
-const GraphCard = () => {
+const GraphCard: React.FC<GraphCardProps> = ({ nutritionSummary, targetCalories = 2200 }) => {
+  const theme = useTheme();
+  const macroPercentages = calculateMacroPercentages(nutritionSummary);
+  const macronutrientsTable = generateMacronutrientsTableData(nutritionSummary);
+  
   // Nutrition data for donut chart
-  const nutritionData = [35, 25, 30, 10]; // Carbs, Protein, Fat, Fiber percentages
+  const nutritionData = [
+    macroPercentages.carbsPercent,
+    macroPercentages.proteinPercent,
+    macroPercentages.fatPercent,
+    macroPercentages.fiberPercent
+  ];
   const nutritionLabels = ['Carbs', 'Protein', 'Fat', 'Fiber'];
-  const nutritionColors = ['#FFAA7B', '#1BB394', '#3B82F6', '#6A7C92'];
+  const nutritionColors = [theme.palette.info.main, theme.palette.warning.main, theme.palette.success.main, theme.palette.secondary.main];
   
   const chartOptions = {
     ...donutOptions,
@@ -32,7 +48,62 @@ const GraphCard = () => {
     }
   };
 
-  // Macro data with calories
+  // Macro data with actual values - using theme colors
+  const macroData = [
+    { 
+      name: 'Carbs', 
+      value: macroPercentages.carbsPercent, 
+      calories: `${Math.round(nutritionSummary.totalCarbs * 4)} kcal`, 
+      color: theme.palette.info.main 
+    },
+    { 
+      name: 'Protein', 
+      value: macroPercentages.proteinPercent, 
+      calories: `${Math.round(nutritionSummary.totalProtein * 4)} kcal`, 
+      color: theme.palette.warning.main 
+    },
+    { 
+      name: 'Fat', 
+      value: macroPercentages.fatPercent, 
+      calories: `${Math.round(nutritionSummary.totalFat * 9)} kcal`, 
+      color: theme.palette.success.main 
+    },
+    { 
+      name: 'Fiber', 
+      value: macroPercentages.fiberPercent, 
+      calories: `${Math.round(nutritionSummary.totalFiber)} g`, 
+      color: theme.palette.secondary.main 
+    }
+  ];
+
+  // Calculate meal data for smaller charts
+  const mealData = Object.entries(nutritionSummary.mealBreakdown).map(([mealType, nutrition]) => {
+    const mealTotal = nutrition.calories;
+    if (mealTotal === 0) {
+      return { name: mealType.charAt(0).toUpperCase() + mealType.slice(1), data: [0, 0, 0, 0] };
+    }
+    
+    const carbsCalories = nutrition.carbs * 4;
+    const proteinCalories = nutrition.protein * 4;
+    const fatCalories = nutrition.fat * 9;
+    const totalMacroCalories = carbsCalories + proteinCalories + fatCalories;
+    
+    if (totalMacroCalories === 0) {
+      return { name: mealType.charAt(0).toUpperCase() + mealType.slice(1), data: [0, 0, 0, 0] };
+    }
+    
+    return {
+      name: mealType.charAt(0).toUpperCase() + mealType.slice(1),
+      data: [
+        Math.round((carbsCalories / totalMacroCalories) * 100),
+        Math.round((proteinCalories / totalMacroCalories) * 100),
+        Math.round((fatCalories / totalMacroCalories) * 100),
+        Math.round((nutrition.fiber / (nutrition.carbs + nutrition.protein + nutrition.fat)) * 100) || 0
+      ]
+    };
+  });
+
+  const calorieProgress = Math.min((nutritionSummary.totalCalories / targetCalories) * 100, 100);
  
 
   return (
@@ -41,7 +112,7 @@ const GraphCard = () => {
         borderRadius: 3,
         boxShadow: 2,
         height: 'fit-content',
-        backgroundColor: '#F9F4F2'
+        backgroundColor: theme.palette.background.paper
       }}
     >
       <CardContent sx={{ p: 3 }}>
@@ -51,7 +122,7 @@ const GraphCard = () => {
           sx={{
             mb: 3,
             fontWeight: 600,
-            color: '#333',
+            color: theme.palette.text.primary,
           }}
         >
           Caloric & Macro Summary
@@ -63,17 +134,17 @@ const GraphCard = () => {
             Energy
           </Typography>
           <Typography variant="h6" sx={{ mb: 2, textAlign: 'right', fontWeight: 600 }}>
-            1991/2228 kcal
+            {Math.round(nutritionSummary.totalCalories)}/{targetCalories} kcal
           </Typography>
           <LinearProgress 
             variant="determinate" 
-            value={89} 
+            value={calorieProgress} 
             sx={{ 
               height: 12, 
               borderRadius: 6,
-              backgroundColor: '#E0E0E0',
+              backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#E0E0E0',
               '& .MuiLinearProgress-bar': {
-                backgroundColor: '#4CAF50'
+                backgroundColor: calorieProgress > 100 ? theme.palette.error.main : theme.palette.success.main
               }
             }} 
           />
@@ -119,11 +190,11 @@ const GraphCard = () => {
                   </Box>
                   <LinearProgress 
                     variant="determinate" 
-                    value={macro.value * 2.5} 
+                    value={Math.min(macro.value * 2.5, 100)} 
                     sx={{ 
                       height: 6, 
                       borderRadius: 3,
-                      backgroundColor: '#E0E0E0',
+                      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#E0E0E0',
                       '& .MuiLinearProgress-bar': {
                         backgroundColor: macro.color
                       }
@@ -184,9 +255,9 @@ const GraphCard = () => {
                 sx={{ 
                   height: 8, 
                   borderRadius: 4,
-                  backgroundColor: '#E0E0E0',
+                  backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#E0E0E0',
                   '& .MuiLinearProgress-bar': {
-                    backgroundColor: '#4CAF50'
+                    backgroundColor: theme.palette.success.main
                   }
                 }} 
               />
@@ -202,13 +273,13 @@ const GraphCard = () => {
           <TableContainer component={Paper} sx={{ boxShadow: 1, borderRadius: 2 }}>
             <Table>
               <TableHead>
-                <TableRow sx={{ backgroundColor: '#4CAF50' }}>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Meal</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Calories</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Protein</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Carbs</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Fats</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Supplements</TableCell>
+                <TableRow sx={{ backgroundColor: theme.palette.success.main }}>
+                  <TableCell sx={{ color: theme.palette.success.contrastText, fontWeight: 600 }}>Meal</TableCell>
+                  <TableCell sx={{ color: theme.palette.success.contrastText, fontWeight: 600 }}>Calories</TableCell>
+                  <TableCell sx={{ color: theme.palette.success.contrastText, fontWeight: 600 }}>Protein</TableCell>
+                  <TableCell sx={{ color: theme.palette.success.contrastText, fontWeight: 600 }}>Carbs</TableCell>
+                  <TableCell sx={{ color: theme.palette.success.contrastText, fontWeight: 600 }}>Fats</TableCell>
+                  <TableCell sx={{ color: theme.palette.success.contrastText, fontWeight: 600 }}>Supplements</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -216,9 +287,13 @@ const GraphCard = () => {
                   <TableRow 
                     key={row.meal} 
                     sx={{ 
-                      backgroundColor: index === macronutrientsTable.length - 1 ? '#E8F5E8' : 'white',
+                      backgroundColor: index === macronutrientsTable.length - 1 
+                        ? (theme.palette.mode === 'dark' ? theme.palette.success.dark + '30' : theme.palette.success.light + '40') 
+                        : theme.palette.background.paper,
                       '&:nth-of-type(even)': {
-                        backgroundColor: index === macronutrientsTable.length - 1 ? '#E8F5E8' : '#F5F5F5'
+                        backgroundColor: index === macronutrientsTable.length - 1 
+                          ? (theme.palette.mode === 'dark' ? theme.palette.success.dark + '30' : theme.palette.success.light + '40') 
+                          : (theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[50])
                       }
                     }}
                   >

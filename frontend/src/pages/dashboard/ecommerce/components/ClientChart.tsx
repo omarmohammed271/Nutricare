@@ -1,10 +1,11 @@
-import { Box, Card, Typography, Select, MenuItem, FormControl } from "@mui/material";
+import { Box, Card, Typography, Select, MenuItem, FormControl, useTheme } from "@mui/material";
 import { ApexOptions } from "apexcharts";
 import ReactApexCharts from "react-apexcharts";
 import { useState } from "react";
 import { LuTrendingUp } from "react-icons/lu";
 
 const ClientChart = () => {
+  const theme = useTheme();
   const [timeRange, setTimeRange] = useState("weekly");
 
   const apexOpts: ApexOptions = {
@@ -44,7 +45,7 @@ const ClientChart = () => {
       categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       labels: {
         style: {
-          colors: "#7f8c8d",
+          colors: theme.palette.mode === 'dark' ? '#ffffff' : '#7f8c8d',
         },
       },
     },
@@ -52,12 +53,12 @@ const ClientChart = () => {
       title: {
         text: "Number of Clients",
         style: {
-          color: "#7f8c8d",
+          color: theme.palette.mode === 'dark' ? '#ffffff' : '#7f8c8d',
         },
       },
       labels: {
         style: {
-          colors: "#7f8c8d",
+          colors: theme.palette.mode === 'dark' ? '#ffffff' : '#7f8c8d',
         },
       },
       max: 20,
@@ -74,7 +75,7 @@ const ClientChart = () => {
       enabled: false,
     },
     grid: {
-      borderColor: "#f1f1f1",
+      borderColor: theme.palette.mode === 'dark' ? '#333333' : '#f1f1f1',
       strokeDashArray: 5,
     },
     legend: {
@@ -95,23 +96,61 @@ const ClientChart = () => {
       height: "100%",
       backgroundColor: "background.paper",
       borderRadius: 3,
-      boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+      boxShadow: theme.palette.mode === 'dark' 
+        ? "0 4px 20px rgba(255,255,255,0.08)" 
+        : "0 4px 20px rgba(0,0,0,0.08)",
       border: "1px solid",
       borderColor: "divider"
     }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, color: "#2c3e50" }}>
+        <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.mode === 'dark' ? '#ffffff' : "#2c3e50" }}>
           Total Number of Clients
         </Typography>
         <FormControl size="small" sx={{ minWidth: 120 }}>
           <Select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            sx={{ fontSize: "14px" }}
+            sx={{ 
+              fontSize: "14px",
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: theme.palette.mode === 'dark' ? '#444444' : '#e0e0e0',
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#02BE6A",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#02BE6A",
+              }
+            }}
           >
-            <MenuItem value="weekly">Weekly</MenuItem>
-            <MenuItem value="monthly">Monthly</MenuItem>
-            <MenuItem value="yearly">Yearly</MenuItem>
+            <MenuItem value="weekly" sx={{ 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+              backgroundColor: theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
+              "&:hover": {
+                backgroundColor: theme.palette.mode === 'dark' ? '#111111' : '#f5f5f5',
+              }
+            }}>
+              Weekly
+            </MenuItem>
+            <MenuItem value="monthly" sx={{ 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+              backgroundColor: theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
+              "&:hover": {
+                backgroundColor: theme.palette.mode === 'dark' ? '#111111' : '#f5f5f5',
+              }
+            }}>
+              Monthly
+            </MenuItem>
+            <MenuItem value="yearly" sx={{ 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+              backgroundColor: theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
+              "&:hover": {
+                backgroundColor: theme.palette.mode === 'dark' ? '#111111' : '#f5f5f5',
+              }
+            }}>
+              Yearly
+            </MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -130,12 +169,12 @@ const ClientChart = () => {
         gap: 1,
         mt: 3,
         p: 2,
-        backgroundColor: "#fff8e1",
+        backgroundColor: theme.palette.mode === 'dark' ? '#333333' : "#fff8e1",
         borderRadius: 2,
-        border: "1px solid #fdb90620"
+        border: theme.palette.mode === 'dark' ? "1px solid #fdb90640" : "1px solid #fdb90620"
       }}>
         <LuTrendingUp size={16} color="#fdb906" />
-        <Typography variant="body2" color="#2c3e50">
+        <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? '#ffffff' : "#2c3e50" }}>
           30% Your performance is 30% better compared to last month's performance
         </Typography>
       </Box>

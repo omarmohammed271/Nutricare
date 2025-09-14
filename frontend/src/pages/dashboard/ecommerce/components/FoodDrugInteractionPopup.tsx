@@ -8,7 +8,8 @@ import {
   Box, 
   TextField,
   IconButton,
-  Autocomplete
+  Autocomplete,
+  useTheme
 } from "@mui/material";
 import { LuX, LuChevronDown } from "react-icons/lu";
 import { useState } from "react";
@@ -19,6 +20,7 @@ interface FoodDrugInteractionPopupProps {
 }
 
 const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupProps) => {
+  const theme = useTheme();
   const [selectedDrug, setSelectedDrug] = useState("");
   const [drugEffect, setDrugEffect] = useState("Spinach, Kale (high Vitamin K)");
   const [nutritionalImplication, setNutritionalImplication] = useState("Limit intake to < 1 serving/day");
@@ -68,15 +70,17 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
       PaperProps={{
         sx: {
           borderRadius: 3,
-          backgroundColor: "#ffffff",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+          backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+          boxShadow: theme.palette.mode === 'dark' 
+            ? "0 8px 32px rgba(255,255,255,0.12)" 
+            : "0 8px 32px rgba(0,0,0,0.12)",
           minHeight: "500px"
         }
       }}
     >
       <DialogTitle sx={{ 
         pb: 2, 
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #f0f0f0",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
@@ -84,12 +88,12 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
       }}>
         <Typography variant="h5" sx={{ 
           fontWeight: 700, 
-          color: "#2c3e50",
+          color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
           fontSize: "24px"
         }}>
           Food-Drug Interaction Checker
         </Typography>
-        <IconButton onClick={onClose} sx={{ color: "#7f8c8d" }}>
+        <IconButton onClick={onClose} sx={{ color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d" }}>
           <LuX size={24} />
         </IconButton>
       </DialogTitle>
@@ -99,7 +103,7 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
         <Box sx={{ mb: 4 }}>
           <Typography variant="body1" sx={{ 
             fontWeight: 600, 
-            color: "#2c3e50",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             fontSize: "16px",
             mb: 2
           }}>
@@ -119,12 +123,18 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
                 {...params}
                 placeholder="Search for a drug..."
                 variant="outlined"
+                InputProps={{
+                  ...params.InputProps,
+                  sx: {
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  }
+                }}
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#ffffff",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
                     borderRadius: 2,
                     "& fieldset": {
-                      borderColor: "#e0e0e0",
+                      borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
                     },
                     "&:hover fieldset": {
                       borderColor: "#02BE6A",
@@ -139,7 +149,7 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
             popupIcon={<LuChevronDown size={20} />}
             sx={{
               "& .MuiAutocomplete-popupIndicator": {
-                color: "#7f8c8d"
+                color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d"
               }
             }}
           />
@@ -161,7 +171,7 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
               fontSize: "14px",
               "&:hover": {
                 borderColor: "#029e56",
-                backgroundColor: "#f8f9fa",
+                backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
               }
             }}
           >
@@ -173,7 +183,7 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
         <Box sx={{ mb: 4 }}>
           <Typography variant="body1" sx={{ 
             fontWeight: 600, 
-            color: "#2c3e50",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             fontSize: "16px",
             mb: 2
           }}>
@@ -182,15 +192,15 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
           
           <Box sx={{
             p: 3,
-            backgroundColor: "#f8f9fa",
+            backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
             borderRadius: 2,
-            border: "1px solid #e9ecef",
+            border: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef",
             minHeight: "60px",
             display: "flex",
             alignItems: "center"
           }}>
             <Typography variant="body1" sx={{ 
-              color: "#2c3e50",
+              color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
               fontSize: "14px",
               lineHeight: 1.5
             }}>
@@ -203,7 +213,7 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
         <Box sx={{ mb: 4 }}>
           <Typography variant="body1" sx={{ 
             fontWeight: 600, 
-            color: "#2c3e50",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             fontSize: "16px",
             mb: 2
           }}>
@@ -212,15 +222,15 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
           
           <Box sx={{
             p: 3,
-            backgroundColor: "#f8f9fa",
+            backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
             borderRadius: 2,
-            border: "1px solid #e9ecef",
+            border: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef",
             minHeight: "60px",
             display: "flex",
             alignItems: "center"
           }}>
             <Typography variant="body1" sx={{ 
-              color: "#2c3e50",
+              color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
               fontSize: "14px",
               lineHeight: 1.5
             }}>
@@ -235,8 +245,8 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
           onClick={onClose}
           variant="outlined"
           sx={{
-            borderColor: "#e0e0e0",
-            color: "#2c3e50",
+            borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             px: 4,
             py: 1.5,
             borderRadius: 2,
@@ -245,7 +255,7 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
             fontSize: "14px",
             "&:hover": {
               borderColor: "#02BE6A",
-              backgroundColor: "#f8f9fa",
+              backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
             }
           }}
         >

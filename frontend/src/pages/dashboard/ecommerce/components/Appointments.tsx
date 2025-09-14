@@ -1,4 +1,4 @@
-
+import { useTheme } from "@mui/material/styles";
 
 import {
   Box,
@@ -20,7 +20,8 @@ import {
   DialogActions,
   TextField,
   Snackbar,
-  Alert
+  Alert,
+  useTheme as muiUseTheme
 } from "@mui/material";
 import {
   LuPlus,
@@ -57,6 +58,7 @@ interface Appointment {
 }
 
 const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
+  const theme = muiUseTheme();
   const [month, setMonth] = useState("November");
   const [year, setYear] = useState("2024");
   const [selectedDate, setSelectedDate] = useState(10);
@@ -346,13 +348,15 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
         height: "100%",
         backgroundColor: "background.paper",
         borderRadius: 3,
-        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+        boxShadow: theme.palette.mode === 'dark' 
+          ? "0 4px 20px rgba(255,255,255,0.08)" 
+          : "0 4px 20px rgba(0,0,0,0.08)",
         border: "1px solid",
         borderColor: "divider"
       }}>
         {/* Header */}
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: "#2c3e50" }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.mode === 'dark' ? '#ffffff' : "#2c3e50" }}>
             Appointments for {month} {selectedDate}, {year}
           </Typography>
           <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
@@ -363,13 +367,47 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                 onChange={(e) => setMonth(e.target.value)}
                 sx={{
                   fontSize: "14px",
-                  "& .MuiSelect-icon": { color: "#666" }
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                  "& .MuiSelect-icon": { color: theme.palette.mode === 'dark' ? '#cccccc' : "#666" },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: theme.palette.mode === 'dark' ? '#444444' : '#e0e0e0',
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#02BE6A",
+                  }
                 }}
                 IconComponent={LuChevronDown}
               >
-                <MenuItem value="November">November</MenuItem>
-                <MenuItem value="December">December</MenuItem>
-                <MenuItem value="January">January</MenuItem>
+                <MenuItem value="November" sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                  backgroundColor: theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? '#111111' : '#f5f5f5',
+                  }
+                }}>
+                  November
+                </MenuItem>
+                <MenuItem value="December" sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                  backgroundColor: theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? '#111111' : '#f5f5f5',
+                  }
+                }}>
+                  December
+                </MenuItem>
+                <MenuItem value="January" sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                  backgroundColor: theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? '#111111' : '#f5f5f5',
+                  }
+                }}>
+                  January
+                </MenuItem>
               </Select>
             </FormControl>
             <FormControl size="small" sx={{ minWidth: 80 }}>
@@ -378,12 +416,38 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                 onChange={(e) => setYear(e.target.value)}
                 sx={{
                   fontSize: "14px",
-                  "& .MuiSelect-icon": { color: "#666" }
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                  "& .MuiSelect-icon": { color: theme.palette.mode === 'dark' ? '#cccccc' : "#666" },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: theme.palette.mode === 'dark' ? '#444444' : '#e0e0e0',
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#02BE6A",
+                  }
                 }}
                 IconComponent={LuChevronDown}
               >
-                <MenuItem value="2024">2024</MenuItem>
-                <MenuItem value="2025">2025</MenuItem>
+                <MenuItem value="2024" sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                  backgroundColor: theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? '#111111' : '#f5f5f5',
+                  }
+                }}>
+                  2024
+                </MenuItem>
+                <MenuItem value="2025" sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                  backgroundColor: theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? '#111111' : '#f5f5f5',
+                  }
+                }}>
+                  2025
+                </MenuItem>
               </Select>
             </FormControl>
 
@@ -414,14 +478,14 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
           {/* Calendar Section */}
           <Grid item xs={12} md={4}>
             <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: "#34495e" }}>
+              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: theme.palette.mode === 'dark' ? '#ffffff' : "#34495e" }}>
                 Calendar
               </Typography>
               <Box sx={{
                 display: "grid",
                 gridTemplateColumns: "repeat(7, 1fr)",
                 gap: 0.5,
-                backgroundColor: "background.default",
+                backgroundColor: theme.palette.mode === 'dark' ? '#111111' : "background.default",
                 p: 1,
                 borderRadius: 2
               }}>
@@ -433,7 +497,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                       textAlign: "center",
                       fontSize: "11px",
                       fontWeight: 600,
-                      color: "#7f8c8d",
+                      color: theme.palette.mode === 'dark' ? '#cccccc' : "#7f8c8d",
                       py: 1,
                       px: 0.5,
                     }}
@@ -457,7 +521,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                       backgroundColor: day === selectedDate ? "#02BE6A" : "transparent",
                       color: day === selectedDate ? "white" :
                              day && appointmentDates.includes(day) ? "#02BE6A" :
-                             day ? "#2c3e50" : "transparent",
+                             day ? theme.palette.mode === 'dark' ? '#ffffff' : "#2c3e50" : "transparent",
                       fontWeight: day === selectedDate ? 600 :
                                  day && appointmentDates.includes(day) ? 500 : 400,
                       border: day && appointmentDates.includes(day) && day !== selectedDate ?
@@ -490,13 +554,16 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
           {/* Appointments List Section */}
           <Grid item xs={12} md={8}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-              <Typography variant="subtitle2" sx={{ fontWeight: 600, color: "#34495e" }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.mode === 'dark' ? '#ffffff' : "#34495e" }}>
                 Appointments ({appointments.length})
               </Typography>
               <Chip
                 label={`${appointments.length} appointments`}
                 size="small"
-                sx={{ backgroundColor: "success.light", color: "primary.main" }}
+                sx={{ 
+                  backgroundColor: "success.light", 
+                  color: "#000000"  // Changed to black text as requested
+                }}
               />
             </Box>
 
@@ -504,8 +571,8 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
               <Box sx={{ 
                 textAlign: "center", 
                 py: 4, 
-                color: "#7f8c8d",
-                backgroundColor: "background.default",
+                color: theme.palette.mode === 'dark' ? '#cccccc' : "#7f8c8d",
+                backgroundColor: theme.palette.mode === 'dark' ? '#111111' : "background.default",
                 borderRadius: 2
               }}>
                 <LuCalendar size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
@@ -532,7 +599,9 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                       transition: "all 0.2s ease",
                       "&:hover": {
                         transform: "translateY(-1px)",
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        boxShadow: theme.palette.mode === 'dark' 
+                          ? "0 2px 8px rgba(255,255,255,0.1)" 
+                          : "0 2px 8px rgba(0,0,0,0.1)",
                       }
                     }}
                   >
@@ -547,7 +616,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                             height: 12,
                             borderRadius: "50%",
                             backgroundColor: getStatusTextColor(appointment.status),
-                            border: "2px solid white"
+                            border: theme.palette.mode === 'dark' ? "2px solid #000000" : "2px solid white"
                           }}
                         />
                       }
@@ -571,15 +640,15 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
 
                     {/* Client Info */}
                     <Box sx={{ flexGrow: 1 }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5, color: "#2c3e50" }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5, color: theme.palette.mode === 'dark' ? '#ffffff' : "#2c3e50" }}>
                         {appointment.name}
                       </Typography>
                       <Chip
                         label={appointment.type}
                         size="small"
                         sx={{
-                          backgroundColor: "white",
-                          color: "#7f8c8d",
+                          backgroundColor: theme.palette.mode === 'dark' ? '#333333' : "white",
+                          color: theme.palette.mode === 'dark' ? '#ffffff' : "#7f8c8d",
                           fontSize: "11px",
                           height: "20px"
                         }}
@@ -588,7 +657,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
 
                     {/* Time and Status */}
                     <Box sx={{ textAlign: "right", mr: 1 }}>
-                      <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5, color: "#2c3e50" }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5, color: theme.palette.mode === 'dark' ? '#ffffff' : "#2c3e50" }}>
                         {appointment.time}
                       </Typography>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
@@ -612,7 +681,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                         <IconButton
                           size="small"
                           onClick={() => handleViewAppointment(appointment.id)}
-                          sx={{ color: "#666", "&:hover": { color: "#02BE6A" } }}
+                          sx={{ color: theme.palette.mode === 'dark' ? '#cccccc' : "#666", "&:hover": { color: "#02BE6A" } }}
                         >
                           <LuEye size={14} />
                         </IconButton>
@@ -621,7 +690,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                         <IconButton
                           size="small"
                           onClick={() => handleEditAppointment(appointment.id)}
-                          sx={{ color: "#666", "&:hover": { color: "#3FC6FC" } }}
+                          sx={{ color: theme.palette.mode === 'dark' ? '#cccccc' : "#666", "&:hover": { color: "#3FC6FC" } }}
                         >
                           <LuPencil size={14} />
                         </IconButton>
@@ -630,7 +699,7 @@ const Appointments = ({ chatOpen = false, onChatClose }: AppointmentsProps) => {
                         <IconButton
                           size="small"
                           onClick={() => handleDeleteAppointment(appointment.id)}
-                          sx={{ color: "#666", "&:hover": { color: "#ff4444" } }}
+                          sx={{ color: theme.palette.mode === 'dark' ? '#cccccc' : "#666", "&:hover": { color: "#ff4444" } }}
                         >
                           <LuTrash2 size={14} />
                         </IconButton>

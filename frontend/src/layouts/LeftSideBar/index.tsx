@@ -21,7 +21,10 @@ const SideBarContent = () => <AppMenu menuItems={getMenuItems()} />;
 
 const LeftSideBarWrapper = styled("div")<WithSetting>(({ settings }) => {
   return {
-    backgroundColor: "#F9F4F2",
+
+    backgroundColor: settings.theme == "light" ? "#F9F4F2" : "#1a1a1a;",
+  
+
     width: 240,
     minWidth: 240,
     height: "100vh",
@@ -30,6 +33,7 @@ const LeftSideBarWrapper = styled("div")<WithSetting>(({ settings }) => {
     // transform: "translateX(-100%)"
     marginInlineStart: !settings.sidenav.showMobileMenu ? -240 : 0,
     transition: "0.3s margin",
+    borderRight: settings.theme == "light" ? "1px solid #e9ecef" : "1px solid #2d3142",
   };
 });
 
