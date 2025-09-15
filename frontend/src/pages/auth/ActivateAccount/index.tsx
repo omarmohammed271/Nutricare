@@ -8,6 +8,8 @@ import AuthLayout2 from "../AuthLayout2";
 import { AuthService } from "@src/services";
 import { useAuthContext } from "@src/states";
 import { useState, useEffect } from "react";
+import { useSnackbar } from "notistack";
+import { ErrorHandler } from "@src/utils/errorHandler";
 
 const BottomLink = () => {
   return (
@@ -28,6 +30,7 @@ const ActivateAccount = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { saveSession } = useAuthContext();
+  const { enqueueSnackbar } = useSnackbar();
   const [email, setEmail] = useState("");
   
   // Get email from navigation state
@@ -61,7 +64,7 @@ const ActivateAccount = () => {
 
   const onSubmit = async (data: any) => {
     try {
-      console.log("Activation data:", { email, code: data.code });
+      console.log("Activation data:", { email, activation_code: data.activation_code });
       
       // Call the activation API with email from state and code from form
       const response = await AuthService.activateCode({
@@ -73,42 +76,64 @@ const ActivateAccount = () => {
       if (response.user && response.token) {
         const userWithToken = AuthService.createUserFromResponse(response as any, email);
         saveSession(userWithToken, false); // false = don't remember me by default
+        enqueueSnackbar("Account activated successfully!", { variant: "success" });
         navigate("/ecommerce"); // Redirect to dashboard
       } else {
         // Handle case where activation succeeded but no token was returned
         console.error("Activation succeeded but no authentication token received");
-        navigate("/auth/login2");
+        enqueueSnackbar("Account activated! Please login to continue.", { variant: "success" });
+        navigate("/auth/login2", { state: { email: email } });
       }
     } catch (error: any) {
       console.error("Activation failed:", error);
-      // Handle activation errors
-      setError("activation_code", {
-        type: "manual",
-        message: "Invalid activation code. Please try again."
-      });
+      
+      // Process server error and display appropriate message
+      const errorInfo = ErrorHandler.processLoginError(error);
+      enqueueSnackbar(errorInfo.message, { variant: "error" });
+      
+      // Handle specific field errors
+      if (error?.response?.data) {
+        const errorData = error.response.data;
+        if (errorData.activation_code) {
+          const message = Array.isArray(errorData.activation_code) ? errorData.activation_code[0] : errorData.activation_code;
+          setError("activation_code", { type: "server", message });
+        } else if (errorData.detail) {
+          setError("activation_code", { type: "server", message: errorData.detail });
+        }
+      } else {
+        setError("activation_code", {
+          type: "manual",
+          message: "Invalid activation code. Please try again."
+        });
+      }
     }
   };
 
   // Function to request a new activation code
-const requestNewCode = async () => {
-  try {
-    const response = await AuthService.resendActivation({ email });
-    
-    if (response.status === "success") {
-      console.log("Activation code sent successfully. Please check your email.");
-    } else {
+  const requestNewCode = async () => {
+    try {
+      const response = await AuthService.resendActivation({ email });
+      
+      if (response.status === "success") {
+        console.log("Activation code sent successfully. Please check your email.");
+        enqueueSnackbar("Activation code sent successfully. Please check your email.", { variant: "success" });
+      } else {
+        setError("activation_code", {
+          type: "manual",
+          message: response.message || "Failed to send activation code. Please try again."
+        });
+      }
+    } catch (error: any) {
+      // Process server error and display appropriate message
+      const errorInfo = ErrorHandler.processLoginError(error);
+      enqueueSnackbar(errorInfo.message, { variant: "error" });
+      
       setError("activation_code", {
         type: "manual",
-        message: response.message || "Failed to send activation code. Please try again."
+        message: error?.response?.data?.message || "An unexpected error occurred."
       });
     }
-  } catch (error: any) {
-    setError("activation_code", {
-      type: "manual",
-      message: error?.response?.data?.message || "An unexpected error occurred."
-    });
-  }
-};
+  };
 
 
   return (

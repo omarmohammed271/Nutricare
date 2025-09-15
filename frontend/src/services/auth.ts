@@ -3,7 +3,7 @@
  * Handles authentication-related API calls and business logic
  */
 import { HttpClient } from "@src/helpers";
-import { ResendActivation , LoginRequest, LoginResponse, ResetPassword, resetpasswordCode, SignupRequest, SignupResponse, ActivationRequest, ActivationResponse, User } from "@src/types";
+import { ResendActivation , LoginRequest, LoginResponse, ResetPasswordDone, ResetPassword, resetpasswordCode, SignupRequest, SignupResponse, ActivationRequest, ActivationResponse, User } from "@src/types";
 import { AxiosResponse } from "axios";
 import { StorageService } from "./storage";
 
@@ -88,10 +88,24 @@ export class AuthService {
 
 
 
-  static async resetPasswordCode(data: resetpasswordCode): Promise<resetpasswordCode> {
+  static async resetPasswordCode(data: resetpasswordCode): Promise<any> {
     try {
       const response: AxiosResponse<resetpasswordCode> = await HttpClient.post(
         "/users/resetpassword-verify/",
+        data
+      );
+      return response;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+   static async ResetPasswordDone(data: ResetPasswordDone): Promise<any> {
+    try {
+      const response: AxiosResponse<ResetPasswordDone> = await HttpClient.post(
+        "/users/password-reset-done/",
         data
       );
       return response.data;
