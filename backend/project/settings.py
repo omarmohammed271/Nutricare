@@ -59,12 +59,21 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework.authentication.TokenAuthentication',
+#         # 'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+#         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ),
+# }
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-        # 'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  
+    ],
 }
 ROOT_URLCONF = 'project.urls'
 
@@ -170,16 +179,16 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # CSRF Settings
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "http://87.237.225.191:3000",
-]
+# CSRF_TRUSTED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://localhost:5173",
+#     "http://87.237.225.191:3000",
+# ]
 
-# Cookie settings
-CSRF_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_HTTPONLY = False
-SESSION_COOKIE_SAMESITE = 'Lax'
+# # Cookie settings
+# CSRF_COOKIE_SAMESITE = 'Lax'
+# CSRF_COOKIE_HTTPONLY = False
+# SESSION_COOKIE_SAMESITE = 'Lax'
 
 
 CORS_ALLOW_ALL_ORIGINS = True
