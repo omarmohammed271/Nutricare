@@ -28,7 +28,7 @@ const ResetPassword2 = () => {
     email: yup.string().email("Please enter valid email").required("Please enter email"),
   });
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit ,setError } = useForm({
     resolver: yupResolver(resetPasswordFormSchema),
     defaultValues: {
       email: "",
@@ -52,23 +52,22 @@ const ResetPassword2 = () => {
     console.log("console ",response)
 
     if (response.status  == 200) {
-      // ✅ العملية نجحت
+
       console.log("Password reset email sent successfully!");
       navigate("/auth/recover-password-code",{ state: { email: data.email } } ); 
     } else {
-      // 🚨 حالة unexpected response
       console.log("Unexpected response:", response);
     }
   } catch (error: any) {
-    // Axios error
     if (error.response) {
-      // السيرفر رد بحاجة زي 400 أو 500
-      console.log("Server error:", error.response.data);
+      if (error.response?.status === 400) {
+      const message = error.response.data?.message || "Email not found";
+        setError("email", { type: "server", message });
+      }
     } else if (error.request) {
-      // السيرفر مردش
       console.log("No response from server:", error.request);
     } else {
-      // مشكلة في الكود
+     
       console.log("Error:", error.message);
     }
   }
@@ -89,7 +88,10 @@ const ResetPassword2 = () => {
             label="Email Address"
             containerSx={{ mt: 2, textAlign: "left" }}
             control={control}
+           
           />
+
+
 
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
             <Button variant="contained" color="primary" type="submit" size={"large"} fullWidth>

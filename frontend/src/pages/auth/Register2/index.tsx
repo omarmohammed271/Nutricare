@@ -7,6 +7,8 @@ import { PageMetaData } from "@src/components";
 import AuthLayout2 from "../AuthLayout2";
 import { AuthService } from "@src/services";
 import { useAuthContext } from "@src/states";
+import { useSnackbar } from "notistack";
+import { ErrorHandler } from "@src/utils/errorHandler";
 
 const BottomLink = () => {
   return (
@@ -26,7 +28,8 @@ const BottomLink = () => {
 const Register2 = () => {
   const navigate = useNavigate();
   const { saveSession } = useAuthContext();
-  
+  const { enqueueSnackbar } = useSnackbar();
+
   const registerFormSchema = yup.object({
     fullName: yup.string().required("Full name is required"),
     email: yup
@@ -73,15 +76,17 @@ const Register2 = () => {
       
       // After successful signup, redirect to activation page
       // Pass the email to the activation page
+      enqueueSnackbar("Registration successful! Please check your email for activation instructions.", { variant: "success" });
       navigate("/auth/activate-account", { state: { email: data.email } });
     } catch (error: any) {
       console.error("Registration failed:", error);
-      // Handle registration errors
-      // You could set error state here to display to the user
+      
+      // Process server error and display appropriate message
+      const errorInfo = ErrorHandler.processLoginError(error);
+      enqueueSnackbar(errorInfo.message, { variant: "error" });
     }
 
     sessionStorage.setItem("signupEmail", data.email);
-
   };
 
   return (
