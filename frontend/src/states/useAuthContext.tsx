@@ -21,6 +21,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const initializeAuth = async () => {
       try {
         const savedUser = StorageService.loadSession();
+        console.log('Initializing auth with saved user:', savedUser);
+        
         if (savedUser) {
           // If user has no token but has user data, try to refresh
           if (!savedUser.token && StorageService.hasUserData()) {
@@ -39,10 +41,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               console.error('Token refresh failed:', error);
               StorageService.clearSession();
             }
-          } else {
-            // User has valid token
+          } else if (savedUser.token) {
+            // User has token, set them as authenticated
+            console.log('User has valid token, setting as authenticated');
             setUser(savedUser);
+          } else {
+            // User data exists but no token, clear session
+            console.log('User data exists but no token, clearing session');
+            StorageService.clearSession();
           }
+        } else {
+          console.log('No saved user found');
         }
       } catch (error) {
         console.error("Authentication initialization failed:", error);

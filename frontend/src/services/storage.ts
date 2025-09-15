@@ -18,15 +18,14 @@ export class StorageService {
    */
   static saveSession(user: User, rememberMe: boolean = false): void {
     try {
-      // Store access token in memory only (never persisted)
+      // Store access token in memory
       if (user.token) {
-        
         this.accessToken = user.token;
         // Set token expiry (default 1 hour)
         this.tokenExpiry = Date.now() + (60 * 60 * 1000);
       }
 
-      // Save non-sensitive user data to cookie
+      // Save user data including token to cookie for persistence
       const userDataForCookie = {
         id: user.id,
         email: user.email,
@@ -35,6 +34,8 @@ export class StorageService {
         lastName: user.lastName,
         role: user.role,
         lastLoginTime: Date.now(),
+        token: user.token, // Include token for persistence
+        tokenExpiry: this.tokenExpiry, // Include token expiry
       };
       
       setCookie(this.AUTH_SESSION_KEY, JSON.stringify(userDataForCookie), {
@@ -67,17 +68,26 @@ export class StorageService {
     try {
       const savedUser = getCookie(this.AUTH_SESSION_KEY);
       
-      // If we have user data but no valid token, we'll try to refresh
       if (savedUser) {
         const parsedUser = JSON.parse(savedUser as string);
         
-        // If token is still valid, return user with token
-        if (this.isTokenValid()) {
-          return { ...parsedUser, token: this.accessToken };
+        // Restore token from cookie if it exists and is not expired
+        if (parsedUser.token && parsedUser.tokenExpiry) {
+          const now = Date.now();
+          if (now < parsedUser.tokenExpiry) {
+            // Token is still valid, restore it to memory
+            this.accessToken = parsedUser.token;
+            this.tokenExpiry = parsedUser.tokenExpiry;
+            return { ...parsedUser, token: parsedUser.token };
+          } else {
+            // Token expired, clear it
+            console.log('Stored token has expired');
+            this.clearSession();
+            return null;
+          }
         }
         
-        // Token is invalid/expired, but user data exists
-        // Return user without token - auth context will handle refresh
+        // No token or expired token
         return { ...parsedUser, token: undefined };
       }
       
@@ -103,11 +113,20 @@ export class StorageService {
    * Check if token is valid and not expired
    */
   static isTokenValid(): boolean {
-    return !!(
-      this.accessToken && 
-      this.tokenExpiry && 
-      Date.now() < this.tokenExpiry
-    );
+    if (!this.accessToken || !this.tokenExpiry) {
+      return false;
+    }
+    
+    const now = Date.now();
+    const isValid = now < this.tokenExpiry;
+    
+    if (!isValid) {
+      // Token expired, clear it
+      this.accessToken = null;
+      this.tokenExpiry = null;
+    }
+    
+    return isValid;
   }
 
   /**
