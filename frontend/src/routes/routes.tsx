@@ -116,6 +116,7 @@ const authRoutes: RoutesProps[] = [
 const adminRoutes: RoutesProps[] = [
   { path: "/ecommerce", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ecommerce/"))} /> },
   { path: "/my-profile", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/Profile/" ))} /> },
+  { path: "/auth-test", element: <LoadComponent component={lazy(() => import("@src/components/AuthTest"))} /> },
   { path: "/meal-plan", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/MealPlan"))} /> },
   { path: "/meal-plan/templates", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/MealPlan"))} /> },
   { path: "/meal-plan/recipes", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/MealPlan"))} /> },
