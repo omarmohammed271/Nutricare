@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -11,11 +11,13 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import AuthLayout2 from "../AuthLayout2";
-import useLogin from "../Login/useLogin";
 import { PageMetaData } from "@src/components";
-import { Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { handleLogin } from "@src/api/admin/adminAPI";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const BottomLink = () => {
   const { t } = useTranslation("auth");
@@ -29,7 +31,8 @@ const BottomLink = () => {
         flexWrap: "nowrap",
         gap: 0.5,
         justifyContent: "center",
-      }}>
+      }}
+    >
       {t("login.noAccount")}&nbsp;
       <Link to="/auth/register2">
         <Typography variant="subtitle2" component="span">
@@ -41,11 +44,23 @@ const BottomLink = () => {
 };
 
 const Login2 = () => {
-  const { loading, login, control } = useLogin();
   const { t } = useTranslation("auth");
-
-  // state to toggle password visibility
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const { control, handleSubmit } = useForm();
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationFn: handleLogin,
+    mutationKey: ["login"],
+    onSuccess: () => {
+      navigate("/admin/user");
+    },
+    onError: (err:any) => {
+      toast.error(err?.response?.data?.error)
+    },
+  });
+  const onSubmit = (data:any) => {
+    mutate(data);
+  };
 
   const handleClickShowPassword = () => setShowPassword((prev) => !prev);
 
@@ -57,9 +72,10 @@ const Login2 = () => {
         authTitle={t("login.title")}
         helpText={t("login.subtitle")}
         hasThirdPartyLogin
-        bottomLinks={<BottomLink />}>
-        <form onSubmit={login} style={{ textAlign: "left" }}>
-          {/* Email field with green styling */}
+        bottomLinks={<BottomLink />}
+      >
+        <form onSubmit={handleSubmit(onSubmit)} style={{ textAlign: "left" }}>
+          {/* Email field */}
           <Controller
             name="email"
             control={control}
@@ -103,7 +119,7 @@ const Login2 = () => {
             )}
           />
 
-          {/* Password field with show/hide icon */}
+          {/* Password field */}
           <Controller
             name="password"
             control={control}
@@ -117,11 +133,6 @@ const Login2 = () => {
             }}
             render={({ field, fieldState: { error } }) => (
               <TextField
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: "10px",
-                  },
-                }}
                 {...field}
                 label={t("login.password")}
                 type={showPassword ? "text" : "password"}
@@ -130,6 +141,11 @@ const Login2 = () => {
                 fullWidth
                 margin="normal"
                 autoComplete="current-password"
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "10px",
+                  },
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -143,14 +159,15 @@ const Login2 = () => {
             )}
           />
 
-          {/* Remember Me Switch */}
+          {/* Remember Me */}
           <Box
             sx={{
               mt: 1,
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-            }}>
+            }}
+          >
             <Controller
               name="rememberMe"
               control={control}
@@ -158,7 +175,11 @@ const Login2 = () => {
               render={({ field }) => (
                 <FormControlLabel
                   control={
-                    <Switch checked={field.value} onChange={(e) => field.onChange(e.target.checked)} color="success" />
+                    <Switch
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      color="success"
+                    />
                   }
                   label={t("login.rememberMe")}
                 />
@@ -166,23 +187,33 @@ const Login2 = () => {
             />
 
             <Typography>
-              <Link to="/admin/auth/recover-password">{t("login.forgotPassword")}</Link>
+              <Link to="/admin/auth/recover-password">
+                {t("login.forgotPassword")}
+              </Link>
             </Typography>
           </Box>
 
-          {/* Submit Button */}
+          {/* Submit button */}
           <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
             <Button
               variant="contained"
               color="primary"
               type="submit"
-              disabled={loading}
+              disabled={isPending}
               size="large"
               fullWidth
-              sx={{ borderRadius: "0.5rem", padding: "12px" }}>
-              {t("login.loginButton")}
+              sx={{ borderRadius: "0.5rem", padding: "12px" }}
+            >
+              {isPending ? "Loading..." : t("login.loginButton")}
             </Button>
           </Box>
+
+          {/* Show error message */}
+          {isError && (
+            <Typography color="error" sx={{ mt: 2 }}>
+              {error?.response?.data?.error || "Something went wrong!"}
+            </Typography>
+          )}
         </form>
       </AuthLayout2>
     </>

@@ -10,6 +10,7 @@ import Router from "@src/routes/Router";
 import { createTheme } from "@src/theme";
 import { useLanguage } from "@src/hooks";
 import { useLayoutContext } from "@src/states";
+import { Toaster } from "react-hot-toast";
 
 const AppContent = () => {
   const { i18n } = useLanguage();
@@ -19,9 +20,12 @@ const AppContent = () => {
   const theme = createTheme(themeMode, i18n.language);
 
   return (
+    <>
+    <Toaster position="top-right"/>
     <ThemeProvider theme={theme}>
       <Router />
     </ThemeProvider>
+    </>
   );
 };
 
