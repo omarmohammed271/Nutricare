@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { LuX, LuChevronDown } from "react-icons/lu";
 import { useState, useMemo, useEffect } from "react";
-import { useDrugCategories, useDrugsByCategory, useDrugDetails } from "@src/hooks/useNutritionApi";
+import { useDrugCategories, useDrugsByCategory, useDrugDetails, useSearchDrugs } from "@src/hooks/useNutritionApi";
 import { Drug, DrugCategory, DrugDetail } from "@src/services/nutritionApi";
 
 interface FoodDrugInteractionPopupProps {
@@ -39,15 +39,18 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
   // Ensure drugCategories is always an array
   const drugCategories = Array.isArray(drugCategoriesData) ? drugCategoriesData : [];
 
-  // Fetch drugs by selected category - only when category is selected and valid
-  const { 
-    data: drugsByCategoryData, 
-    isLoading: drugsLoading, 
-    error: drugsError 
-  } = useDrugsByCategory(selectedCategory?.id || 0);
+  // Get drugs from selected category directly (no separate API call needed)
+  const drugsByCategory = selectedCategory?.drugs || [];
 
-  // Ensure drugsByCategory is always an array
-  const drugsByCategory = Array.isArray(drugsByCategoryData) ? drugsByCategoryData : [];
+  // Search drugs across all categories when search query is provided
+  const { 
+    data: searchResults, 
+    isLoading: searchLoading, 
+    error: searchError 
+  } = useSearchDrugs(searchQuery);
+
+  // Use search results if searching, otherwise use category drugs
+  const availableDrugs = searchQuery && searchQuery.length > 2 ? (searchResults || []) : drugsByCategory;
 
   // Fetch drug details when a drug is selected - only when drug is selected and valid
   const { 
@@ -56,22 +59,14 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
     error: detailsError 
   } = useDrugDetails(selectedDrug?.id || 0);
 
-  // Combine all drugs for autocomplete options
+  // Prepare drugs for autocomplete options
   const allDrugs = useMemo(() => {
-    return drugsByCategory.map(drug => ({
+    return availableDrugs.map(drug => ({
       ...drug,
       label: drug.name,
       value: drug.id
     }));
-  }, [drugsByCategory]);
-
-  // Filter drugs based on search query
-  const filteredDrugs = useMemo(() => {
-    if (!searchQuery) return allDrugs;
-    return allDrugs.filter(drug => 
-      drug.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [allDrugs, searchQuery]);
+  }, [availableDrugs]);
 
   const handleDrugSelect = (drug: Drug | null) => {
     console.log('🔍 Drug selected:', drug);
@@ -83,6 +78,14 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
     setSelectedCategory(category);
     setSelectedDrug(null); // Reset selected drug when category changes
     setSearchQuery(""); // Reset search query when category changes
+  };
+
+  const handleSearchChange = (event: any, newInputValue: string) => {
+    setSearchQuery(newInputValue);
+    // If searching, clear category selection to show all drugs
+    if (newInputValue && newInputValue.length > 2) {
+      setSelectedCategory(null);
+    }
   };
 
   const handleClear = () => {
@@ -228,7 +231,7 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
             mb: 2
           }}>
             Drug Search
-            {selectedCategory && (
+            {selectedCategory && !searchQuery && (
               <Typography component="span" sx={{ 
                 fontSize: "12px", 
                 color: theme.palette.mode === 'dark' ? "#888888" : "#666666",
@@ -238,15 +241,25 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
                 ({drugsByCategory.length} drugs available)
               </Typography>
             )}
+            {searchQuery && searchQuery.length > 2 && (
+              <Typography component="span" sx={{ 
+                fontSize: "12px", 
+                color: theme.palette.mode === 'dark' ? "#888888" : "#666666",
+                ml: 1,
+                fontWeight: 400
+              }}>
+                (Searching all categories...)
+              </Typography>
+            )}
           </Typography>
           
-          {drugsError && (
+          {searchError && (
             <Alert severity="error" sx={{ mb: 2 }}>
-              Failed to load drugs: {drugsError.message}
+              Failed to search drugs: {searchError.message}
             </Alert>
           )}
           
-          {selectedCategory && drugsLoading && (
+          {searchQuery && searchQuery.length > 2 && searchLoading && (
             <Box sx={{ 
               display: "flex", 
               alignItems: "center", 
@@ -262,36 +275,38 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
                 color: theme.palette.mode === 'dark' ? "#cccccc" : "#666666",
                 fontSize: "12px"
               }}>
-                Loading drugs for {selectedCategory.name}...
+                Searching drugs...
               </Typography>
             </Box>
           )}
           
           <Autocomplete
-            options={filteredDrugs}
+            options={allDrugs}
             value={selectedDrug}
             onChange={(event, newValue) => handleDrugSelect(newValue)}
             getOptionLabel={(option) => option.name}
-            loading={drugsLoading}
-            disabled={!selectedCategory || drugsLoading}
+            loading={searchLoading}
+            disabled={searchLoading}
             inputValue={searchQuery}
-            onInputChange={(event, newInputValue) => setSearchQuery(newInputValue)}
+            onInputChange={handleSearchChange}
             renderInput={(params) => (
               <TextField
                 {...params}
                 placeholder={
-                  !selectedCategory 
-                    ? "Please select a category first" 
-                    : drugsLoading 
-                      ? "Loading drugs..." 
-                      : "Search for a drug..."
+                  searchLoading 
+                    ? "Searching drugs..." 
+                    : searchQuery && searchQuery.length > 2
+                      ? "Searching all categories..."
+                      : selectedCategory
+                        ? "Search for a drug in this category..."
+                        : "Search for a drug across all categories..."
                 }
                 variant="outlined"
                 InputProps={{
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {drugsLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                      {searchLoading ? <CircularProgress color="inherit" size={20} /> : null}
                       {params.InputProps.endAdornment}
                     </>
                   ),
@@ -307,10 +322,10 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
                       borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
                     },
                     "&:hover fieldset": {
-                      borderColor: selectedCategory ? "#02BE6A" : theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                      borderColor: "#02BE6A",
                     },
                     "&.Mui-focused fieldset": {
-                      borderColor: selectedCategory ? "#02BE6A" : theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                      borderColor: "#02BE6A",
                     },
                   }
                 }}
