@@ -37,7 +37,7 @@ const ResetPassword2 = () => {
       navigate('/admin/auth/login')
     },
     onError(err:any){
-            toast.error(err?.response?.data?.error)
+      toast.error(err?.response?.data?.error)
     }
   })
 
