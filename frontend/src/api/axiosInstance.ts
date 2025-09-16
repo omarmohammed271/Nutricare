@@ -16,4 +16,3 @@ export const axiosMutateInstance = axios.create({
     'Content-Type': 'multipart/form-data',
   },
 });
-
