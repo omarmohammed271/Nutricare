@@ -4,7 +4,7 @@
  * Author: Coderthemes
  */
 
-import { Drawer, styled } from "@mui/material";
+import { Drawer, styled, Box, Button, Typography, Link as MuiLink } from "@mui/material";
 import LogoBox from "./LogoBox";
 import SimpleBar from "simplebar-react";
 import AppMenu from "./AppMenu";
@@ -13,13 +13,18 @@ import { WithSetting } from "@src/types";
 import { useLayoutContext } from "@src/states";
 import { useViewPort } from "@src/hooks";
 import { useEffect } from "react";
+import { LuLogOut } from "react-icons/lu";
+import { Link } from "react-router-dom";
 
 /* Sidemenu content */
 const SideBarContent = () => <AppMenu menuItems={getMenuItems()} />;
 
 const LeftSideBarWrapper = styled("div")<WithSetting>(({ settings }) => {
   return {
-    backgroundColor: settings.sidenav.theme == "light" ? "#fff " : "#F9F4F2",
+
+    backgroundColor: settings.theme == "light" ? "#F9F4F2" : "#1a1a1a;",
+  
+
     width: 240,
     minWidth: 240,
     height: "100vh",
@@ -28,6 +33,7 @@ const LeftSideBarWrapper = styled("div")<WithSetting>(({ settings }) => {
     // transform: "translateX(-100%)"
     marginInlineStart: !settings.sidenav.showMobileMenu ? -240 : 0,
     transition: "0.3s margin",
+    borderRight: settings.theme == "light" ? "1px solid #e9ecef" : "1px solid #2d3142",
   };
 });
 
@@ -37,9 +43,99 @@ const LeftSideBarMenu = () => {
   return (
     <LeftSideBarWrapper settings={settings} className="app-menu-do-not-remove">
       <LogoBox backgroundColor />
-      <SimpleBar style={{ height: "calc(100% - 70px)" }}>
-        <SideBarContent />
-      </SimpleBar>
+      <Box sx={{ 
+        display: "flex", 
+        flexDirection: "column", 
+        height: "100%",
+        justifyContent: "space-between"
+      }}>
+        <SimpleBar style={{ height: "calc(100% - 200px)", flex: 1 }}>
+          <SideBarContent />
+        </SimpleBar>
+        
+        {/* Footer Section */}
+        <Box sx={{ 
+          p: 2, 
+          borderTop: settings.theme == "light" ? "1px solid #E5E5E5" :"1px solid #2d3142" ,
+         backgroundColor: settings.theme == "light" ? "#F9F4F2" : "#1a1a1a;",
+        }}>
+          {/* Logout Button */}
+          <Button
+            component={Link}
+            to="/auth/logout"
+            fullWidth
+            sx={{
+              mb: 2,
+              py: 1.5,
+              px: 2,
+              backgroundColor: "#E5E5E5",
+              color: "#666666",
+              borderRadius: 2,
+              textTransform: "none",
+              fontSize: "14px",
+              fontWeight: 500,
+              "&:hover": {
+                backgroundColor: "#D5D5D5",
+              },
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              justifyContent: "flex-start"
+            }}
+            startIcon={<LuLogOut size={16} />}
+          >
+            Logout
+          </Button>
+          
+          {/* Terms and Privacy Links */}
+          <Box sx={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            gap: 0.5,
+            mb: 1
+          }}>
+            <MuiLink
+              component={Link}
+              to="/terms"
+              sx={{
+                color: "#02BE6A",
+                fontSize: "12px",
+                textDecoration: "none",
+                "&:hover": {
+                  textDecoration: "underline"
+                }
+              }}
+            >
+              Terms and conditions
+            </MuiLink>
+            <MuiLink
+              component={Link}
+              to="/privacy"
+              sx={{
+                color: "#02BE6A",
+                fontSize: "12px",
+                textDecoration: "none",
+                "&:hover": {
+                  textDecoration: "underline"
+                }
+              }}
+            >
+              Privacy Policy
+            </MuiLink>
+          </Box>
+          
+          {/* Copyright */}
+          <Typography
+            sx={{
+              color: "#999999",
+              fontSize: "10px",
+              textAlign: "center"
+            }}
+          >
+            © 2025 Nutricare. All Rights Reserved.
+          </Typography>
+        </Box>
+      </Box>
     </LeftSideBarWrapper>
   );
 };

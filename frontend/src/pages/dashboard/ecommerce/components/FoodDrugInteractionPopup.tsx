@@ -8,10 +8,15 @@ import {
   Box, 
   TextField,
   IconButton,
-  Autocomplete
+  Autocomplete,
+  useTheme,
+  CircularProgress,
+  Alert
 } from "@mui/material";
 import { LuX, LuChevronDown } from "react-icons/lu";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useDrugCategories, useDrugsByCategory, useDrugDetails } from "@src/hooks/useNutritionApi";
+import { Drug, DrugCategory, DrugDetail } from "@src/services/nutritionApi";
 
 interface FoodDrugInteractionPopupProps {
   open: boolean;
@@ -19,45 +24,96 @@ interface FoodDrugInteractionPopupProps {
 }
 
 const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupProps) => {
-  const [selectedDrug, setSelectedDrug] = useState("");
-  const [drugEffect, setDrugEffect] = useState("Spinach, Kale (high Vitamin K)");
-  const [nutritionalImplication, setNutritionalImplication] = useState("Limit intake to < 1 serving/day");
+  const theme = useTheme();
+  const [selectedDrug, setSelectedDrug] = useState<Drug | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<DrugCategory | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const drugOptions = [
-    "Warfarin",
-    "Aspirin",
-    "Metformin",
-    "Digoxin",
-    "Lithium",
-    "Phenytoin",
-    "Theophylline",
-    "Ciprofloxacin"
-  ];
+  // Fetch drug categories - only when dialog is open
+  const { 
+    data: drugCategoriesData, 
+    isLoading: categoriesLoading, 
+    error: categoriesError 
+  } = useDrugCategories();
 
-  const handleDrugSelect = (drug: string) => {
+  // Ensure drugCategories is always an array
+  const drugCategories = Array.isArray(drugCategoriesData) ? drugCategoriesData : [];
+
+  // Fetch drugs by selected category - only when category is selected and valid
+  const { 
+    data: drugsByCategoryData, 
+    isLoading: drugsLoading, 
+    error: drugsError 
+  } = useDrugsByCategory(selectedCategory?.id || 0);
+
+  // Ensure drugsByCategory is always an array
+  const drugsByCategory = Array.isArray(drugsByCategoryData) ? drugsByCategoryData : [];
+
+  // Fetch drug details when a drug is selected - only when drug is selected and valid
+  const { 
+    data: drugDetails, 
+    isLoading: detailsLoading, 
+    error: detailsError 
+  } = useDrugDetails(selectedDrug?.id || 0);
+
+  // Combine all drugs for autocomplete options
+  const allDrugs = useMemo(() => {
+    return drugsByCategory.map(drug => ({
+      ...drug,
+      label: drug.name,
+      value: drug.id
+    }));
+  }, [drugsByCategory]);
+
+  // Filter drugs based on search query
+  const filteredDrugs = useMemo(() => {
+    if (!searchQuery) return allDrugs;
+    return allDrugs.filter(drug => 
+      drug.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [allDrugs, searchQuery]);
+
+  const handleDrugSelect = (drug: Drug | null) => {
+    console.log('🔍 Drug selected:', drug);
     setSelectedDrug(drug);
-    
-    // Simulate drug interaction lookup
-    if (drug === "Warfarin") {
-      setDrugEffect("Spinach, Kale (high Vitamin K)");
-      setNutritionalImplication("Limit intake to < 1 serving/day");
-    } else if (drug === "Aspirin") {
-      setDrugEffect("Garlic, Ginger (blood thinning effects)");
-      setNutritionalImplication("Monitor bleeding risk, avoid excessive intake");
-    } else if (drug === "Metformin") {
-      setDrugEffect("Alcohol (increased risk of lactic acidosis)");
-      setNutritionalImplication("Avoid alcohol consumption while taking medication");
-    } else {
-      setDrugEffect("No significant food interactions found");
-      setNutritionalImplication("Continue normal dietary habits");
-    }
+  };
+
+  const handleCategorySelect = (category: DrugCategory | null) => {
+    console.log('📂 Category selected:', category);
+    setSelectedCategory(category);
+    setSelectedDrug(null); // Reset selected drug when category changes
+    setSearchQuery(""); // Reset search query when category changes
   };
 
   const handleClear = () => {
-    setSelectedDrug("");
-    setDrugEffect("");
-    setNutritionalImplication("");
+    console.log('🧹 Clearing all selections');
+    setSelectedDrug(null);
+    setSelectedCategory(null);
+    setSearchQuery("");
   };
+
+  // Debug logging for API calls
+  useEffect(() => {
+    if (open) {
+      console.log('🔍 FoodDrugInteractionPopup opened - fetching categories');
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (selectedCategory) {
+      console.log('📂 Category selected, fetching drugs for category:', selectedCategory.id);
+    }
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    if (selectedDrug) {
+      console.log('💊 Drug selected, fetching details for drug:', selectedDrug.id);
+    }
+  }, [selectedDrug]);
+
+  // Get drug effect and nutritional implication from API data
+  const drugEffect = drugDetails?.drug_effect || "Select a drug to view interactions";
+  const nutritionalImplication = drugDetails?.nutritional_implications || "Select a drug to view nutritional implications";
 
   return (
     <Dialog
@@ -68,63 +124,81 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
       PaperProps={{
         sx: {
           borderRadius: 3,
-          backgroundColor: "#ffffff",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+          backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+          boxShadow: theme.palette.mode === 'dark' 
+            ? "0 8px 32px rgba(255,255,255,0.12)" 
+            : "0 8px 32px rgba(0,0,0,0.12)",
           minHeight: "500px"
         }
       }}
     >
       <DialogTitle sx={{ 
         pb: 2, 
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #f0f0f0",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         mb:5
       }}>
-        <Typography variant="h5" sx={{ 
+        <Typography variant="h5" component="div" sx={{ 
           fontWeight: 700, 
-          color: "#2c3e50",
+          color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
           fontSize: "24px"
         }}>
           Food-Drug Interaction Checker
         </Typography>
-        <IconButton onClick={onClose} sx={{ color: "#7f8c8d" }}>
+        <IconButton onClick={onClose} sx={{ color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d" }}>
           <LuX size={24} />
         </IconButton>
       </DialogTitle>
 
       <DialogContent sx={{ p: 3 }}>
-        {/* Drug Search Section */}
+        {/* Category Selection Section */}
         <Box sx={{ mb: 4 }}>
           <Typography variant="body1" sx={{ 
             fontWeight: 600, 
-            color: "#2c3e50",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             fontSize: "16px",
             mb: 2
           }}>
-            Drug Search
+            Drug Category
           </Typography>
           
+          {categoriesError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              Failed to load drug categories: {categoriesError.message}
+            </Alert>
+          )}
+          
           <Autocomplete
-            options={drugOptions}
-            value={selectedDrug}
-            onChange={(event, newValue) => {
-              if (newValue) {
-                handleDrugSelect(newValue);
-              }
-            }}
+            options={drugCategories}
+            value={selectedCategory}
+            onChange={(event, newValue) => handleCategorySelect(newValue)}
+            getOptionLabel={(option) => option.name}
+            loading={categoriesLoading}
             renderInput={(params) => (
               <TextField
                 {...params}
-                placeholder="Search for a drug..."
+                placeholder="Select a drug category..."
                 variant="outlined"
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {categoriesLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
+                  sx: {
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  }
+                }}
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#ffffff",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
                     borderRadius: 2,
                     "& fieldset": {
-                      borderColor: "#e0e0e0",
+                      borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
                     },
                     "&:hover fieldset": {
                       borderColor: "#02BE6A",
@@ -139,7 +213,113 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
             popupIcon={<LuChevronDown size={20} />}
             sx={{
               "& .MuiAutocomplete-popupIndicator": {
-                color: "#7f8c8d"
+                color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d"
+              }
+            }}
+          />
+        </Box>
+
+        {/* Drug Search Section */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="body1" sx={{ 
+            fontWeight: 600, 
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
+            fontSize: "16px",
+            mb: 2
+          }}>
+            Drug Search
+            {selectedCategory && (
+              <Typography component="span" sx={{ 
+                fontSize: "12px", 
+                color: theme.palette.mode === 'dark' ? "#888888" : "#666666",
+                ml: 1,
+                fontWeight: 400
+              }}>
+                ({drugsByCategory.length} drugs available)
+              </Typography>
+            )}
+          </Typography>
+          
+          {drugsError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              Failed to load drugs: {drugsError.message}
+            </Alert>
+          )}
+          
+          {selectedCategory && drugsLoading && (
+            <Box sx={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: 1, 
+              mb: 2,
+              p: 2,
+              backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
+              borderRadius: 2,
+              border: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef"
+            }}>
+              <CircularProgress size={16} />
+              <Typography variant="body2" sx={{ 
+                color: theme.palette.mode === 'dark' ? "#cccccc" : "#666666",
+                fontSize: "12px"
+              }}>
+                Loading drugs for {selectedCategory.name}...
+              </Typography>
+            </Box>
+          )}
+          
+          <Autocomplete
+            options={filteredDrugs}
+            value={selectedDrug}
+            onChange={(event, newValue) => handleDrugSelect(newValue)}
+            getOptionLabel={(option) => option.name}
+            loading={drugsLoading}
+            disabled={!selectedCategory || drugsLoading}
+            inputValue={searchQuery}
+            onInputChange={(event, newInputValue) => setSearchQuery(newInputValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder={
+                  !selectedCategory 
+                    ? "Please select a category first" 
+                    : drugsLoading 
+                      ? "Loading drugs..." 
+                      : "Search for a drug..."
+                }
+                variant="outlined"
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {drugsLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
+                  sx: {
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  }
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
+                    borderRadius: 2,
+                    "& fieldset": {
+                      borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: selectedCategory ? "#02BE6A" : theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: selectedCategory ? "#02BE6A" : theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                    },
+                  }
+                }}
+              />
+            )}
+            popupIcon={<LuChevronDown size={20} />}
+            sx={{
+              "& .MuiAutocomplete-popupIndicator": {
+                color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d"
               }
             }}
           />
@@ -161,7 +341,7 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
               fontSize: "14px",
               "&:hover": {
                 borderColor: "#029e56",
-                backgroundColor: "#f8f9fa",
+                backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
               }
             }}
           >
@@ -173,29 +353,71 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
         <Box sx={{ mb: 4 }}>
           <Typography variant="body1" sx={{ 
             fontWeight: 600, 
-            color: "#2c3e50",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             fontSize: "16px",
             mb: 2
           }}>
             Drug Effect
+            {selectedDrug && (
+              <Typography component="span" sx={{ 
+                fontSize: "12px", 
+                color: theme.palette.mode === 'dark' ? "#888888" : "#666666",
+                ml: 1,
+                fontWeight: 400
+              }}>
+                ({selectedDrug.name})
+              </Typography>
+            )}
           </Typography>
+          
+          {detailsError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              Failed to load drug details: {detailsError.message}
+            </Alert>
+          )}
+          
+          {selectedDrug && detailsLoading && (
+            <Box sx={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: 1, 
+              mb: 2,
+              p: 2,
+              backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
+              borderRadius: 2,
+              border: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef"
+            }}>
+              <CircularProgress size={16} />
+              <Typography variant="body2" sx={{ 
+                color: theme.palette.mode === 'dark' ? "#cccccc" : "#666666",
+                fontSize: "12px"
+              }}>
+                Loading details for {selectedDrug.name}...
+              </Typography>
+            </Box>
+          )}
           
           <Box sx={{
             p: 3,
-            backgroundColor: "#f8f9fa",
+            backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
             borderRadius: 2,
-            border: "1px solid #e9ecef",
+            border: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef",
             minHeight: "60px",
             display: "flex",
-            alignItems: "center"
+            alignItems: "center",
+            justifyContent: detailsLoading ? "center" : "flex-start"
           }}>
-            <Typography variant="body1" sx={{ 
-              color: "#2c3e50",
-              fontSize: "14px",
-              lineHeight: 1.5
-            }}>
-              {drugEffect || "Select a drug to view interactions"}
-            </Typography>
+            {detailsLoading ? (
+              <CircularProgress size={24} />
+            ) : (
+              <Typography variant="body1" sx={{ 
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
+                fontSize: "14px",
+                lineHeight: 1.5
+              }}>
+                {drugEffect}
+              </Typography>
+            )}
           </Box>
         </Box>
 
@@ -203,29 +425,44 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
         <Box sx={{ mb: 4 }}>
           <Typography variant="body1" sx={{ 
             fontWeight: 600, 
-            color: "#2c3e50",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             fontSize: "16px",
             mb: 2
           }}>
             Nutritional Implication And Caution
+            {selectedDrug && (
+              <Typography component="span" sx={{ 
+                fontSize: "12px", 
+                color: theme.palette.mode === 'dark' ? "#888888" : "#666666",
+                ml: 1,
+                fontWeight: 400
+              }}>
+                ({selectedDrug.name})
+              </Typography>
+            )}
           </Typography>
           
           <Box sx={{
             p: 3,
-            backgroundColor: "#f8f9fa",
+            backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
             borderRadius: 2,
-            border: "1px solid #e9ecef",
+            border: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef",
             minHeight: "60px",
             display: "flex",
-            alignItems: "center"
+            alignItems: "center",
+            justifyContent: detailsLoading ? "center" : "flex-start"
           }}>
-            <Typography variant="body1" sx={{ 
-              color: "#2c3e50",
-              fontSize: "14px",
-              lineHeight: 1.5
-            }}>
-              {nutritionalImplication || "Select a drug to view nutritional implications"}
-            </Typography>
+            {detailsLoading ? (
+              <CircularProgress size={24} />
+            ) : (
+              <Typography variant="body1" sx={{ 
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
+                fontSize: "14px",
+                lineHeight: 1.5
+              }}>
+                {nutritionalImplication}
+              </Typography>
+            )}
           </Box>
         </Box>
       </DialogContent>
@@ -235,8 +472,8 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
           onClick={onClose}
           variant="outlined"
           sx={{
-            borderColor: "#e0e0e0",
-            color: "#2c3e50",
+            borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             px: 4,
             py: 1.5,
             borderRadius: 2,
@@ -245,7 +482,7 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
             fontSize: "14px",
             "&:hover": {
               borderColor: "#02BE6A",
-              backgroundColor: "#f8f9fa",
+              backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
             }
           }}
         >

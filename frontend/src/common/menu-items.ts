@@ -86,10 +86,10 @@ const MENU_ITEMS: MenuItemTypes[] = [
   },
   {
     key: "clients-file",
-    label: "Clients File",
+    label: "Client File",
     isTitle: false,
     icon: LuUsers,
-    url: "/clients/file",
+    url: "/client-file",
   },
   {
     key: "calendar",

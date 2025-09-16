@@ -29,10 +29,10 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
     mutationFn: addCaclulations,
     mutationKey: ["new_calculation"],
     onSuccess(data) {
-      setToast({ open: true, message: "✅ Calculation added successfully!", severity: "success" });
+      setToast({ open: true, message: "Calculation added successfully!", severity: "success" });
     },
     onError(err: any) {
-      setToast({ open: true, message: "❌ Failed to add calculation.", severity: "error" });
+      setToast({ open: true, message: "Failed to add calculation.", severity: "error" });
     }
   });
 

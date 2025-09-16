@@ -98,11 +98,13 @@ const authRoutes: RoutesProps[] = [
   { path: "/admin/auth/recover-password", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Admin/resetPassAdmin"))} /> },
   { path: "/auth/register", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Register"))} /> },
   { path: "/auth/logout", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Logout"))} /> },
-  { path: "/auth/recover-password", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ResetPassword"))} />, },
   { path: "/auth/lock-screen", element: <LoadComponent component={lazy(() => import("@src/pages/auth/LockScreen"))} /> },
   { path: "/auth/confirm-mail", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ConfirmMail"))} />, },
   { path: "/auth/login2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Login2"))} /> },
   { path: "/auth/register2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Register2"))} /> },
+  { path: "/auth/activate-account", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ActivateAccount"))} /> },
+  { path: "/auth/recover-password-code", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ResetPasswordCode"))} />, },
+  { path: "/auth/recover-password", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ResetPasswordDone"))} />, },
   { path: "/auth/logout2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Logout2"))} /> },
   { path: "/auth/recover-password2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ResetPassword2"))} />, },
   { path: "/auth/lock-screen2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/LockScreen"))} />, },
@@ -114,12 +116,18 @@ const authRoutes: RoutesProps[] = [
 const adminRoutes: RoutesProps[] = [
   { path: "/ecommerce", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ecommerce/"))} /> },
   { path: "/my-profile", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/Profile/" ))} /> },
+  { path: "/auth-test", element: <LoadComponent component={lazy(() => import("@src/components/AuthTest"))} /> },
   { path: "/meal-plan", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/MealPlan"))} /> },
   { path: "/meal-plan/templates", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/MealPlan"))} /> },
   { path: "/meal-plan/recipes", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/MealPlan"))} /> },
   { path: "/meal-plan/client-plans", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/MealPlan"))} /> },
+  { path: "/client-file", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientFile"))} /> },
+  { path: "/client-file/biochemical-data", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientFile"))} /> },
+  { path: "/client-file/medication", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientFile"))} /> },
+  { path: "/client-file/meal-plans", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientFile"))} /> },
   { path: "/clients/onboarding", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientOnboarding"))} /> },
   { path: "/test-clients", element: <div style={{ padding: '50px', fontSize: '24px', color: 'green' }}>CLIENT ONBOARDING TEST ROUTE IS WORKING!</div> },
+  { path: "/library", element: <LoadComponent component={lazy(() => import("@src/pages/Library"))} /> },
   { path: "error-404-alt", element: <LoadComponent component={lazy(() => import("@src/pages/error/Error404Alt"))} /> },
   
   { path: "/pages/starter", element: <LoadComponent component={lazy(() => import("@src/pages/other/Starter"))} /> },
@@ -128,6 +136,8 @@ const adminRoutes: RoutesProps[] = [
   { path: "/pages/invoice", element: <LoadComponent component={lazy(() => import("@src/pages/other/Invoice"))} /> },
   { path: "/pages/faq", element: <LoadComponent component={lazy(() => import("@src/pages/other/FAQs"))} /> },
   { path: "/pages/pricing", element: <LoadComponent component={lazy(() => import("@src/pages/other/Pricing"))} /> },
+  { path: "/terms", element: <LoadComponent component={lazy(() => import("@src/pages/other/TermsAndConditions"))} /> },
+  { path: "/privacy", element: <LoadComponent component={lazy(() => import("@src/pages/other/PrivacyPolicy"))} /> },
 
   { path: "/extended-ui/swipers", element: <LoadComponent component={lazy(() => import("@src/pages/extended-ui/Swipers"))} /> },
   { path: "/extended-ui/nestable-list", element: <LoadComponent component={lazy(() => import("@src/pages/extended-ui/NestableList"))} />, },
@@ -148,19 +158,22 @@ const adminRoutes: RoutesProps[] = [
 const adminDashboardRoutes: RoutesProps[] = [
   { path: "/admin/user", element: <LoadComponent component={lazy(() => import("@src/pages/admin/dashboard/UserManagement"))} /> },
   { path: "/admin/content-management", element: <LoadComponent component={lazy(() => import("@src/pages/admin/ContentManagement/ContentManagement"))} /> },
+  { path: "/admin/subscription", element: <LoadComponent component={lazy(() => import("@src/pages/admin/subscription/subscription"))} /> },
+  { path: "/admin/reporting", element: <LoadComponent component={lazy(() => import("@src/pages/admin/Reporting/Reporting"))} /> },
 ]
 
 export const defaultLayoutRoutes = [
   ...otherRotes,
   ...authRoutes,
-  { path: "*", element: <Navigate to="/auth/login2" /> },
+  { path: "*", element: <Navigate to="/error-404" /> },
 ]
 
 export const verticalLayoutRoutes = [
-  { path: "/", element: <Navigate to="/auth/login2" /> },
+  { path: "/", element: <Navigate to="/ecommerce" replace /> },
   ...adminRoutes,
   ...adminDashboardRoutes,
   ...appsRoutes,
   ...uiComponentRoutes,
+  { path: "*", element: <LoadComponent component={lazy(() => import("@src/pages/error/Error404"))} /> },
 ]
 

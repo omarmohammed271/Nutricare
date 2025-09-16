@@ -1,3 +1,18 @@
+export interface MacroNutrient {
+  name: string;
+  amount: number;
+  unit: string;
+  dailyValue?: number;
+}
+
+export interface MicroNutrient {
+  name: string;
+  amount: number;
+  unit: string;
+  dailyValue?: number;
+  category?: 'vitamin' | 'mineral' | 'other';
+}
+
 export interface Recipe {
   id: string;
   recipeName: string;
@@ -21,8 +36,8 @@ export interface Recipe {
     carbohydrates: number;
     protein: number;
     fiber: number;
-    macronutrients?: any[];
-    micronutrients?: any[];
+    macronutrients?: MacroNutrient[];
+    micronutrients?: MicroNutrient[];
   };
   isPublic: boolean;
   createdAt: Date;

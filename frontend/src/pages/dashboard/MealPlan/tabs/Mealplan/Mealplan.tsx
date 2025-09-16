@@ -22,6 +22,7 @@ import {
   DialogActions,
   Divider,
   Tab,
+  useTheme,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -34,7 +35,11 @@ import {
   MealCounter, 
   MealData, 
   FormData, 
-  NoteDialogState 
+  NoteDialogState,
+  FoodSelectionDialogState,
+  FoodItem,
+  SelectedFood,
+  NutritionSummary
 } from './types';
 import { 
   clientOptions,
@@ -42,13 +47,18 @@ import {
   foodExcludedOptions,
   mealTypes,
   defaultFormData,
-  defaultMealCounters
+  defaultMealCounters,
+  foodDatabase
 } from './data';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import GraphCard from './componenets/graphcard';
 import FoodListingCard from './componenets/FoodListingCard';
+import FoodSelectionDialog from './componenets/FoodSelectionDialog';
+import FoodDropdownDialog from './componenets/FoodDropdownDialog';
+import { calculateNutritionSummary } from './utils/nutritionCalculator';
 
 const Mealplan = () => {
+  const theme = useTheme();
   const [formData, setFormData] = useState<FormData>(defaultFormData);
   const [mealCounters, setMealCounters] = useState<MealCounter>(defaultMealCounters);
   const [generatedMeals, setGeneratedMeals] = useState<MealData[]>([]);
@@ -58,6 +68,31 @@ const Mealplan = () => {
     mealId: '', 
     currentNote: '' 
   });
+  const [foodDialog, setFoodDialog] = useState<FoodSelectionDialogState>({
+    open: false,
+    mealId: '',
+    selectedFood: null,
+    grams: 100
+  });
+  const [foodDropdownDialog, setFoodDropdownDialog] = useState({
+    open: false,
+    mealId: ''
+  });
+  const [basketItems, setBasketItems] = useState<SelectedFood[]>([]);
+  const [nutritionSummary, setNutritionSummary] = useState<NutritionSummary>({
+    totalCalories: 0,
+    totalCarbs: 0,
+    totalProtein: 0,
+    totalFat: 0,
+    totalFiber: 0,
+    mealBreakdown: {}
+  });
+
+  // Calculate nutrition summary when meals change
+  React.useEffect(() => {
+    const summary = calculateNutritionSummary(generatedMeals);
+    setNutritionSummary(summary);
+  }, [generatedMeals]);
 
   const handleSliderChange = (macroType: 'carbs' | 'protein' | 'fat') => (event: Event, newValue: number | number[]) => {
     const value = newValue as number;
@@ -96,6 +131,86 @@ const Mealplan = () => {
     
     setGeneratedMeals(meals);
     setPlanGenerated(true);
+  };
+
+  const handleFoodSelect = (food: FoodItem, mealId?: string) => {
+    if (generatedMeals.length === 0) {
+      alert('Please generate a meal plan first!');
+      return;
+    }
+    
+    // If mealId is provided, use it; otherwise use the first meal
+    const targetMealId = mealId || generatedMeals[0]?.id;
+    
+    setFoodDialog({
+      open: true,
+      mealId: targetMealId,
+      selectedFood: food,
+      grams: 100
+    });
+  };
+
+  const handleAddFood = (selectedFood: SelectedFood) => {
+    // Add to the specific meal
+    setGeneratedMeals(prev => prev.map(meal => 
+      meal.id === selectedFood.mealId 
+        ? { ...meal, foods: [...meal.foods, selectedFood] }
+        : meal
+    ));
+    
+    // Add to basket
+    setBasketItems(prev => [...prev, selectedFood]);
+  };
+
+  const handleRemoveFromBasket = (foodId: number, mealId: string) => {
+    // Remove from basket
+    setBasketItems(prev => {
+      const index = prev.findIndex(item => item.foodId === foodId && item.mealId === mealId);
+      if (index > -1) {
+        const newBasket = [...prev];
+        newBasket.splice(index, 1);
+        return newBasket;
+      }
+      return prev;
+    });
+    
+    // Remove from meal
+    setGeneratedMeals(prev => prev.map(meal => 
+      meal.id === mealId 
+        ? { ...meal, foods: meal.foods.filter((food, index) => {
+            const isMatch = food.foodId === foodId;
+            if (isMatch) {
+              // Remove only the first occurrence
+              const updatedFoods = [...meal.foods];
+              updatedFoods.splice(index, 1);
+              return false;
+            }
+            return true;
+          })}
+        : meal
+    ));
+  };
+
+  const handleAddFoodToMeal = (mealId: string) => {
+    setFoodDropdownDialog({
+      open: true,
+      mealId: mealId // Specific meal selected
+    });
+  };
+
+  const handleAddFoodFromDropdown = (selectedFood: SelectedFood) => {
+    // Add to the specific meal
+    setGeneratedMeals(prev => prev.map(meal => 
+      meal.id === selectedFood.mealId 
+        ? { ...meal, foods: [...meal.foods, selectedFood] }
+        : meal
+    ));
+    
+    // Add to basket
+    setBasketItems(prev => [...prev, selectedFood]);
+    
+    // Close the dropdown dialog
+    setFoodDropdownDialog({ open: false, mealId: '' });
   };
 
   const handleAddNote = (mealId: string) => {
@@ -140,14 +255,14 @@ const Mealplan = () => {
           <TabList onChange={handleChange} aria-label="meal plan tabs" 
             sx={{
               '& .MuiTabs-indicator': {
-                backgroundColor: '#02BE6A',
+                backgroundColor: theme.palette.primary.main,
               },
               '& .MuiTab-root': {
                 textTransform: 'none',
                 fontWeight: 600,
-                color: '#666',
+                color: theme.palette.text.secondary,
                 '&.Mui-selected': {
-                  color: '#02BE6A',
+                  color: theme.palette.primary.main,
                   fontWeight: 700,
                 },
               },
@@ -335,9 +450,9 @@ const Mealplan = () => {
                     alignItems: 'center', 
                     justifyContent: 'space-between',
                     p: 2,
-                    border: '1px solid #e0e0e0',
+                    border: `1px solid ${theme.palette.divider}`,
                     borderRadius: 2,
-                    bgcolor: '#f8f9fa'
+                    bgcolor: theme.palette.background.paper
                   }}>
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
                       {meal.label}
@@ -346,7 +461,7 @@ const Mealplan = () => {
                       <IconButton 
                         size="small" 
                         onClick={() => handleCounterChange(meal.key as keyof MealCounter, false)}
-                        sx={{ bgcolor: '#4CAF50', color: 'white', width: 24, height: 24 }}
+                        sx={{ bgcolor: theme.palette.success.main, color: theme.palette.success.contrastText, width: 24, height: 24 }}
                       >
                         <RemoveIcon fontSize="small" />
                       </IconButton>
@@ -356,7 +471,7 @@ const Mealplan = () => {
                       <IconButton 
                         size="small" 
                         onClick={() => handleCounterChange(meal.key as keyof MealCounter, true)}
-                        sx={{ bgcolor: '#4CAF50', color: 'white', width: 24, height: 24 }}
+                        sx={{ bgcolor: theme.palette.success.main, color: theme.palette.success.contrastText, width: 24, height: 24 }}
                       >
                         <AddIcon fontSize="small" />
                       </IconButton>
@@ -376,8 +491,8 @@ const Mealplan = () => {
             sx={{
               mt: 4,
               py: 2,
-              bgcolor: '#4CAF50',
-              '&:hover': { bgcolor: '#45a049' },
+              bgcolor: theme.palette.success.main,
+              '&:hover': { bgcolor: theme.palette.success.dark },
               borderRadius: 2,
               fontWeight: 600,
               fontSize: '1.1rem'
@@ -404,8 +519,15 @@ const Mealplan = () => {
 
         {/* Chart Section - Right Side */}
         <Grid item xs={12} md={5}>
-          <FoodListingCard />
-          <GraphCard />
+          <FoodListingCard 
+            onFoodSelect={handleFoodSelect}
+            basketItems={basketItems}
+            onRemoveFromBasket={handleRemoveFromBasket}
+          />
+          <GraphCard 
+            nutritionSummary={nutritionSummary}
+            targetCalories={parseInt(formData.calorieNeed) || 2200}
+          />
         </Grid>
       </Grid>
 
@@ -414,7 +536,7 @@ const Mealplan = () => {
         <Grid container spacing={2} sx={{ mt: 2 }}>
           {generatedMeals.map((meal) => (
             <Grid item xs={12} md={12} key={meal.id}>
-              <Card sx={{ borderRadius: 2, boxShadow: 2, p: 1, bgcolor: '#F9F4F2' }}>
+              <Card sx={{ borderRadius: 2, boxShadow: 2, p: 1, bgcolor: theme.palette.background.paper }}>
                 <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <Typography variant="h6" sx={{ fontWeight: 600, flexGrow: 1 }}>
@@ -423,7 +545,7 @@ const Mealplan = () => {
                       <Chip 
                         label={meal.id.split('-')[1] ? `#${parseInt(meal.id.split('-')[1]) + 1}` : '#1'}
                         size="small"
-                        sx={{ bgcolor: '#4CAF50', color: 'white' }}
+                        sx={{ bgcolor: theme.palette.success.main, color: theme.palette.success.contrastText }}
                       />
                     </Box>
                     
@@ -433,10 +555,11 @@ const Mealplan = () => {
                         startIcon={<RestaurantIcon />}
                         sx={{ 
                           flexGrow: 1,
-                          color: '#4CAF50',
-                          borderColor: '#4CAF50',
-                          '&:hover': { bgcolor: '#f1f8e9' }
+                          color: theme.palette.success.main,
+                          borderColor: theme.palette.success.main,
+                          '&:hover': { bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark + '20' : theme.palette.success.light + '20' }
                         }}
+                        onClick={() => handleAddFoodToMeal(meal.id)}
                       >
                         Add New Food
                       </Button>
@@ -444,14 +567,59 @@ const Mealplan = () => {
                       <IconButton
                         onClick={() => handleAddNote(meal.id)}
                         sx={{ 
-                          bgcolor: '#4CAF50',
-                          color: 'white',
-                          '&:hover': { bgcolor: '#45a049' }
+                          bgcolor: theme.palette.success.main,
+                          color: theme.palette.success.contrastText,
+                          '&:hover': { bgcolor: theme.palette.success.dark }
                         }}
                       >
                         <AddIcon />
                       </IconButton>
                     </Box>
+                    
+                    {/* Display foods in this meal */}
+                    {meal.foods.length > 0 && (
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                          Foods ({meal.foods.length}):
+                        </Typography>
+                        {meal.foods.map((food, index) => {
+                          const foodItem = foodDatabase.find(f => f.id === food.foodId);
+                          return (
+                            <Box key={`${food.foodId}-${index}`} sx={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'space-between',
+                              p: 1, 
+                              bgcolor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[100], 
+                              borderRadius: 1, 
+                              mb: 1 
+                            }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Typography variant="body2">
+                                  {foodItem?.icon || '🍽️'}
+                                </Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                  {food.name}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  ({food.grams}g)
+                                </Typography>
+                              </Box>
+                              <Typography variant="caption" sx={{ fontWeight: 600, color: theme.palette.success.main }}>
+                                {food.calories} kcal
+                              </Typography>
+                            </Box>
+                          );
+                        })}
+                        
+                        {/* Meal nutrition summary */}
+                        <Box sx={{ mt: 1, p: 1, bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark + '20' : theme.palette.success.light + '20', borderRadius: 1 }}>
+                          <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                            Meal Total: {Math.round(meal.foods.reduce((sum, food) => sum + food.calories, 0))} kcal
+                          </Typography>
+                        </Box>
+                      </Box>
+                    )}
                     
                     <Button
                       variant="outlined"
@@ -460,16 +628,16 @@ const Mealplan = () => {
                       onClick={() => handleAddNote(meal.id)}
                       sx={{ 
                         mt: 1,
-                        color: '#4CAF50',
-                        borderColor: '#4CAF50',
-                        '&:hover': { bgcolor: '#f1f8e9' }
+                        color: theme.palette.success.main,
+                        borderColor: theme.palette.success.main,
+                        '&:hover': { bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark + '20' : theme.palette.success.light + '20' }
                       }}
                     >
                       Add Note
                     </Button>
                     
                     {meal.notes && (
-                      <Box sx={{ mt: 2, p: 2, bgcolor: '#f8f9fa', borderRadius: 1 }}>
+                      <Box sx={{ mt: 2, p: 2, bgcolor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[100], borderRadius: 1 }}>
                         <Typography variant="body2" color="text.secondary">
                           <strong>Note:</strong> {meal.notes}
                         </Typography>
@@ -481,6 +649,24 @@ const Mealplan = () => {
             ))}
           </Grid>
         )}
+
+      {/* Food Dropdown Dialog */}
+      <FoodDropdownDialog
+        open={foodDropdownDialog.open}
+        mealId={foodDropdownDialog.mealId || undefined}
+        availableMeals={generatedMeals.map(meal => ({ id: meal.id, type: meal.type }))}
+        onClose={() => setFoodDropdownDialog({ open: false, mealId: '' })}
+        onAddFood={handleAddFoodFromDropdown}
+      />
+
+      {/* Food Selection Dialog */}
+      <FoodSelectionDialog
+        open={foodDialog.open}
+        mealId={foodDialog.mealId}
+        selectedFood={foodDialog.selectedFood}
+        onClose={() => setFoodDialog({ open: false, mealId: '', selectedFood: null, grams: 100 })}
+        onAddFood={handleAddFood}
+      />
 
       {/* Note Dialog */}
       <Dialog open={noteDialog.open} onClose={() => setNoteDialog({ open: false, mealId: '', currentNote: '' })} maxWidth="sm" fullWidth>
@@ -498,7 +684,7 @@ const Mealplan = () => {
             onChange={(e) => setNoteDialog(prev => ({ ...prev, currentNote: e.target.value }))}
             sx={{
               '& .MuiOutlinedInput-root': {
-                backgroundColor: '#FFFFFF'
+                backgroundColor: theme.palette.background.paper
               }
             }}
           />
@@ -507,7 +693,7 @@ const Mealplan = () => {
           <Button onClick={() => setNoteDialog({ open: false, mealId: '', currentNote: '' })}>
             Cancel
           </Button>
-          <Button onClick={saveNote} variant="contained" sx={{ bgcolor: '#4CAF50' }}>
+          <Button onClick={saveNote} variant="contained" sx={{ bgcolor: theme.palette.success.main }}>
             Save
           </Button>
         </DialogActions>

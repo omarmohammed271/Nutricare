@@ -1,10 +1,14 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Box, Button, Typography, TextField, Checkbox, FormControlLabel } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { PageMetaData } from "@src/components";
 import AuthLayout2 from "../AuthLayout2";
+import { AuthService } from "@src/services";
+import { useAuthContext } from "@src/states";
+import { useSnackbar } from "notistack";
+import { ErrorHandler } from "@src/utils/errorHandler";
 
 const BottomLink = () => {
   return (
@@ -22,6 +26,10 @@ const BottomLink = () => {
 };
 
 const Register2 = () => {
+  const navigate = useNavigate();
+  const { saveSession } = useAuthContext();
+  const { enqueueSnackbar } = useSnackbar();
+
   const registerFormSchema = yup.object({
     fullName: yup.string().required("Full name is required"),
     email: yup
@@ -45,17 +53,40 @@ const Register2 = () => {
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: yupResolver(registerFormSchema),
     defaultValues: {
-      fullName: "Nutricare Demo",
-      email: "demo@demo.com",
-      password: "password",
-      confirmPassword: "password",
-      agreeToTerms: false,
+      fullName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      agreeToTerms: true,
     },
   });
 
-  const onSubmit = (data:any) => {
-    console.log("Registration data:", data);
-    // هنا تضيف الـ registration logic
+  const onSubmit = async (data: any) => {
+    try {
+      console.log("Registration data:", data);
+      
+      // Call the signup API
+      const response = await AuthService.signup({
+        fullName: data.fullName,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+        agreeToTerms: data.agreeToTerms
+      });
+      
+      // After successful signup, redirect to activation page
+      // Pass the email to the activation page
+      enqueueSnackbar("Registration successful! Please check your email for activation instructions.", { variant: "success" });
+      navigate("/auth/activate-account", { state: { email: data.email } });
+    } catch (error: any) {
+      console.error("Registration failed:", error);
+      
+      // Process server error and display appropriate message
+      const errorInfo = ErrorHandler.processLoginError(error);
+      enqueueSnackbar(errorInfo.message, { variant: "error" });
+    }
+
+    sessionStorage.setItem("signupEmail", data.email);
   };
 
   return (
@@ -143,7 +174,23 @@ const Register2 = () => {
             )}
           />
 
-
+          {/* Confirm Password Field */}
+          <Controller
+            name="confirmPassword"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <TextField
+                {...field}
+                label="Confirm Password"
+                type="password"
+                error={!!error}
+                helperText={error?.message}
+                fullWidth
+                margin="normal"
+                autoComplete="new-password"
+              />
+            )}
+          />
 
           {/* Terms and Conditions Checkbox */}
           <Box sx={{ mt: 2 }}>

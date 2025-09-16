@@ -283,3 +283,64 @@ def total_lymphocyte_count(percent_lymphocytes:float, wbc_10e3:float) -> Dict:
     else:
         interp = "Severe depletion"
     return {"value": int(val), "unit":"cells/uL", "interpretation": interp}
+
+
+## Nutrition Risk in Critically Ill (NUTRIC) Score
+def calculate_nutric_score(age, apache_ii, sofa, comorbidities, days_hospitalized, il_6=None):
+    """Calculate NUTRIC score with or without IL-6"""
+    score = 0
+    
+    # Age scoring
+    if age < 50:
+        score += 0
+    elif age < 75:
+        score += 1
+    else:
+        score += 2
+    
+    # Apache II scoring
+    if apache_ii < 15:
+        score += 0
+    elif apache_ii < 20:
+        score += 1
+    elif apache_ii < 28:
+        score += 2
+    else:
+        score += 3
+    
+    # SOFA scoring
+    if sofa < 6:
+        score += 0
+    else:
+        score += 1
+    
+    # Comorbidities scoring
+    score += comorbidities
+    
+    # Days hospitalized scoring
+    if days_hospitalized < 1:
+        score += 0
+    else:
+        score += 1
+    
+    # IL-6 scoring if available
+    if il_6 is not None:
+        if il_6 < 400:
+            score += 0
+        else:
+            score += 1
+    
+    return score
+
+def interpret_nutric_score(score, has_il_6=False):
+    """Interpret NUTRIC score based on whether IL-6 was available"""
+    if has_il_6:
+        if score <= 5:
+            return "Low risk"
+        else:
+            return "High risk - benefit from aggressive nutrition therapy"
+    else:
+        if score <= 4:
+            return "Low risk"
+        else:
+            return "High risk - benefit from aggressive nutrition therapy"
