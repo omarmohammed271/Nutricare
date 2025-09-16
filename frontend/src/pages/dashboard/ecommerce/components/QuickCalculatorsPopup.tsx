@@ -16,6 +16,8 @@ import {
 } from "@mui/material";
 import { LuX, LuFileText } from "react-icons/lu";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getEquations } from "@src/api/admin/adminAPI";
 
 interface QuickCalculatorsPopupProps {
   open: boolean;
@@ -33,6 +35,14 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
   });
 
   const [bmiResult, setBmiResult] = useState<number | null>(null);
+
+  // GET Equations
+  const { data: equations, isPending, isError } = useQuery({
+    queryFn: getEquations,
+    queryKey: ['equations']
+  })
+  console.log(equations);
+  
 
   const calculateBMI = (weight: number, height: number) => {
     if (weight && height && height > 0) {
@@ -125,7 +135,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               </Typography>
               <FormControl sx={{ flex: 1 }}>
                 <Select
-                  value={formData.calculatorType}
+                  value={equations?.[0].code}
                   onChange={(e) => handleInputChange("calculatorType", e.target.value)}
                   displayEmpty
                   sx={{
@@ -142,9 +152,11 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                     }
                   }}
                 >
-                  <MenuItem value="BMI">BMI</MenuItem>
-                  <MenuItem value="BMR">BMR</MenuItem>
-                  <MenuItem value="Body Fat">Body Fat</MenuItem>
+                  {
+                    equations?.map((eq) => (
+                      <MenuItem value={eq.code}>{eq.name}</MenuItem>
+                    ))
+                  }
                 </Select>
               </FormControl>
             </Box>

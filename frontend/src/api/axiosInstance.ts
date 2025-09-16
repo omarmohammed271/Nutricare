@@ -8,6 +8,7 @@ export const axiosInstance = axios.create({
   baseURL: baseURL,
   headers: {
     'Content-Type': 'application/json',
+    'Authorization': `Token ${'444c718a1c1cb89bb0115b5389cb780877403272'}`
   },
 });
 
