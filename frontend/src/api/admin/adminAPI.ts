@@ -1,17 +1,15 @@
 import { axiosInstance } from "../axiosInstance";
-
-type EquationsData = {
-    id: number;
-    name: string;
-    code: string;
-    function_path: string;
-    description: string;
+interface ILogin{
+    email : string ,
+    password : string
 }
-
-export const getEquations = async () => {
-    return axiosInstance.get<EquationsData[]>("api/nutritions/equations/").then(res => res.data);
+interface IResetPassword{
+    email : string,
+    new_password : string
 }
-
-export const addEquations = async (data: any) => {
-    return axiosInstance.post("api/nutritions/equations/", data);
+export const handleLogin = async (data:ILogin) => {
+    return axiosInstance.post('/api/users/login/', data)
+}
+export const handleResetPassword = async (data : IResetPassword) =>{
+    return axiosInstance.post('/api/users/password-reset-done/',data)
 }
