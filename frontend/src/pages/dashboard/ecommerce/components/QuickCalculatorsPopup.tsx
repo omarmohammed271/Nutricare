@@ -310,11 +310,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                 width: 120,
                 height: 120,
                 borderRadius: "50%",
-                background: `conic-gradient(
-                  #FFA726 0deg 60deg,
-                  #F44336 60deg 120deg,
-                  #4CAF50 120deg 360deg
-                )`,
+                background: (theme) => theme.palette.primary.main,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -391,7 +387,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
         </Box>
 
         {/* Legend */}
-        <Box
+        {/* <Box
           sx={{
             display: "flex",
             justifyContent: "center",
@@ -453,7 +449,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               Over
             </Typography>
           </Box>
-        </Box>
+        </Box> */}
       </DialogContent>
 
       <DialogActions sx={{ p: 3, pt: 0, gap: 2 }}>
