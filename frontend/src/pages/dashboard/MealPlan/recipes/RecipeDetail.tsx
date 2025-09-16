@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, IconButton, Chip, Grid, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Box, Typography, IconButton, Chip, Grid, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, useTheme } from '@mui/material';
 import { LuArrowLeft, LuHeart, LuClock, LuUsers, LuZap } from 'react-icons/lu';
 
 interface RecipeDetailProps {
@@ -31,6 +31,7 @@ interface RecipeDetailProps {
 }
 
 const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
+  const theme = useTheme();
   const nutritionData = [
     { label: 'Energy', per100g: recipe.nutritionData.energy, perPortion: Math.round(recipe.nutritionData.energy * parseFloat(recipe.finalWeight) / 100 / parseFloat(recipe.numberOfPortions)) },
     { label: 'Fat', per100g: recipe.nutritionData.fat, perPortion: Math.round(recipe.nutritionData.fat * parseFloat(recipe.finalWeight) / 100 / parseFloat(recipe.numberOfPortions)) },
@@ -43,7 +44,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
   ];
 
   return (
-    <Box sx={{ backgroundColor: 'white', minHeight: '100vh' }}>
+    <Box sx={{ backgroundColor: theme.palette.background.paper, minHeight: '100vh' }}>
       {/* Header */}
       <Box sx={{ 
         position: 'relative',
@@ -140,7 +141,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
           <Grid item xs={12} md={8}>
             {/* Creator Info */}
             <Box sx={{ mb: 4 }}>
-              <Typography sx={{ fontSize: '16px', color: '#6B7280', fontStyle: 'italic' }}>
+              <Typography sx={{ fontSize: '16px', color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#6B7280', fontStyle: 'italic' }}>
                 Creator Name: {recipe.creatorName}
               </Typography>
             </Box>
@@ -163,7 +164,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
             </Box>
 
             {/* Ingredients */}
-            <Card sx={{ mb: 4, borderLeft: '4px solid #02BE6A' }}>
+            <Card sx={{ mb: 4, borderLeft: '4px solid #02BE6A', backgroundColor: theme.palette.background.paper }}>
               <CardContent>
                 <Typography variant="h6" sx={{ 
                   color: '#02BE6A', 
@@ -185,7 +186,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
                           backgroundColor: '#02BE6A',
                           mr: 2,
                         }} />
-                        <Typography sx={{ fontSize: '14px' }}>
+                        <Typography sx={{ fontSize: '14px', color: theme.palette.text.primary }}>
                           {ingredient.quantity} {ingredient.unit} {ingredient.name}
                         </Typography>
                       </Box>
@@ -196,7 +197,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
             </Card>
 
             {/* Cooking Method */}
-            <Card sx={{ borderLeft: '4px solid #02BE6A' }}>
+            <Card sx={{ borderLeft: '4px solid #02BE6A', backgroundColor: theme.palette.background.paper }}>
               <CardContent>
                 <Typography variant="h6" sx={{ 
                   color: '#02BE6A', 
@@ -210,7 +211,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
                 <Typography sx={{ 
                   fontSize: '14px', 
                   lineHeight: 1.8,
-                  color: '#374151'
+                  color: theme.palette.text.primary
                 }}>
                   {recipe.cookingMethod}
                 </Typography>
@@ -220,7 +221,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
 
           {/* Right Column - Nutrition Information */}
           <Grid item xs={12} md={4}>
-            <Card>
+            <Card sx={{ backgroundColor: theme.palette.background.paper }}>
               <CardContent>
                 <Typography variant="h6" sx={{ 
                   color: '#02BE6A', 
@@ -236,13 +237,13 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell sx={{ fontWeight: 600, borderBottom: '2px solid #E5E7EB' }}>
+                        <TableCell sx={{ fontWeight: 600, borderBottom: `2px solid ${theme.palette.divider}`, color: theme.palette.text.primary }}>
                           
                         </TableCell>
-                        <TableCell sx={{ fontWeight: 600, borderBottom: '2px solid #E5E7EB' }}>
+                        <TableCell sx={{ fontWeight: 600, borderBottom: `2px solid ${theme.palette.divider}`, color: theme.palette.text.primary }}>
                           Per 100 g
                         </TableCell>
-                        <TableCell sx={{ fontWeight: 600, borderBottom: '2px solid #E5E7EB' }}>
+                        <TableCell sx={{ fontWeight: 600, borderBottom: `2px solid ${theme.palette.divider}`, color: theme.palette.text.primary }}>
                           Per portion
                         </TableCell>
                       </TableRow>
@@ -252,20 +253,20 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
                         <TableRow key={index}>
                           <TableCell sx={{ 
                             fontWeight: 500,
-                            color: '#374151',
-                            borderBottom: '1px solid #F3F4F6'
+                            color: theme.palette.text.primary,
+                            borderBottom: `1px solid ${theme.palette.divider}`
                           }}>
                             {row.label}
                           </TableCell>
                           <TableCell sx={{ 
-                            color: '#6B7280',
-                            borderBottom: '1px solid #F3F4F6'
+                            color: theme.palette.text.secondary,
+                            borderBottom: `1px solid ${theme.palette.divider}`
                           }}>
                             {row.per100g}
                           </TableCell>
                           <TableCell sx={{ 
-                            color: '#6B7280',
-                            borderBottom: '1px solid #F3F4F6'
+                            color: theme.palette.text.secondary,
+                            borderBottom: `1px solid ${theme.palette.divider}`
                           }}>
                             {row.perPortion}
                           </TableCell>

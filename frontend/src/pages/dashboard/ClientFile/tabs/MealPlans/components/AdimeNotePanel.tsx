@@ -3,11 +3,15 @@ import {
   Card,
   CardContent,
   Typography,
-  Box
+  Box,
+  useTheme
 } from '@mui/material';
-import { themeColors } from '../constants';
+import { getThemeColors } from '../constants';
 
 const AdimeNotePanel: React.FC = () => {
+  const theme = useTheme();
+  const themeColors = getThemeColors(theme);
+  
   return (
     <Card 
       sx={{ 
@@ -17,7 +21,8 @@ const AdimeNotePanel: React.FC = () => {
         height: 'fit-content',
         position: 'sticky',
         top: 20,
-        mt: 3
+        mt: 3,
+        bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
       }}
     >
       <CardContent sx={{ p: 3 }}>

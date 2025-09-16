@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Checkbox, FormControlLabel, Button } from '@mui/material';
+import { Box, Typography, Checkbox, FormControlLabel, Button, useTheme } from '@mui/material';
 import { FORM_STYLES } from '../constants/recipeConstants';
 
 interface PublishRecipeSectionProps {
@@ -13,6 +13,8 @@ const PublishRecipeSection: React.FC<PublishRecipeSectionProps> = ({
   onPublicChange,
   onPublish,
 }) => {
+  const theme = useTheme();
+  
   return (
     <Box
       sx={{
@@ -22,7 +24,10 @@ const PublishRecipeSection: React.FC<PublishRecipeSectionProps> = ({
       }}
     >
       <Box sx={{ flex: 1 }}>
-        <Typography sx={FORM_STYLES.sectionTitle}>
+        <Typography sx={{ 
+          ...FORM_STYLES.sectionTitle,
+          color: theme.palette.mode === 'dark' ? '#ffffff' : '#1F2937'
+        }}>
           Publish Recipe
         </Typography>
         <FormControlLabel
@@ -39,7 +44,10 @@ const PublishRecipeSection: React.FC<PublishRecipeSectionProps> = ({
             />
           }
           label={
-            <Typography sx={{ fontSize: '14px', color: '#6B7280' }}>
+            <Typography sx={{ 
+              fontSize: '14px', 
+              color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#6B7280' 
+            }}>
               Share your recipe on your website or with the NutriCare community to inspire others and expand your reach.
             </Typography>
           }

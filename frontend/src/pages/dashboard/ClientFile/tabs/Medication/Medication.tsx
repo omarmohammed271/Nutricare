@@ -17,7 +17,8 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  useTheme
 } from '@mui/material';
 import { 
   Add as AddIcon,
@@ -35,6 +36,7 @@ import {
 } from './components';
 
 const Medication = () => {
+  const theme = useTheme();
   const [medications, setMedications] = useState<MedicationInterface[]>(sampleMedications);
   const [searchByMedication, setSearchByMedication] = useState('');
   const [searchByCategory, setSearchByCategory] = useState('');
@@ -115,12 +117,17 @@ const Medication = () => {
   };
 
   return (
-    <Box sx={{ width: '100%', p: 1 , }}>
+    <Box sx={{ width: '100%', p: 1 }}>
       <Grid container spacing={3}>
         {/* Left Column - Main Content */}
-        <Grid item sx={{bgcolor: '#F9F4F2',height:'100%' , p:2 ,borderRadius:'20px' }} xs={12} lg={8}>
+        <Grid item sx={{ 
+          bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2',
+          height:'100%', 
+          p:2,
+          borderRadius:'20px' 
+        }} xs={12} lg={8}>
           {/* Search Filters */}
-          <Box sx={{ mb: 3    }}>
+          <Box sx={{ mb: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
                 <FormControl fullWidth>
@@ -131,7 +138,8 @@ const Medication = () => {
                     onChange={(e) => setSearchByMedication(e.target.value)}
                     sx={{
                       '& .MuiOutlinedInput-root': {
-                        borderRadius: 2
+                        borderRadius: 2,
+                        backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF'
                       }
                     }}
                   >
@@ -149,10 +157,10 @@ const Medication = () => {
                     value={searchByCategory}
                     label="Search by Category"
                     onChange={(e) => setSearchByCategory(e.target.value)}
-                
                     sx={{
                       '& .MuiOutlinedInput-root': {
-                        borderRadius: 2
+                        borderRadius: 2,
+                        backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF'
                       }
                     }}
                   >
@@ -167,15 +175,39 @@ const Medication = () => {
           </Box>
 
           {/* Medication Table */}
-          <Card sx={{ borderRadius: 0 ,boxShadow:'none' , bgcolor: '#F9F4F2' }}>
+          <Card sx={{ 
+            borderRadius: 0,
+            boxShadow:'none',
+            bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2' 
+          }}>
             <CardContent sx={{ p: 0 }}>
               <TableContainer>
                 <Table>
                   <TableHead>
-                    <TableRow sx={{ bgcolor: '#F9F4F2'  }}>
-                      <TableCell sx={{ fontWeight: 700,  py: 2 }}>Drug Name</TableCell>
-                      <TableCell sx={{ fontWeight: 700,  py: 2 }}>Drug Effect</TableCell>
-                      <TableCell sx={{ fontWeight: 700,  py: 2 }}>Nutritional Implications And Cautions</TableCell>
+                    <TableRow sx={{ 
+                      bgcolor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#F9F4F2'  
+                    }}>
+                      <TableCell sx={{ 
+                        fontWeight: 700,  
+                        py: 2,
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                      }}>
+                        Drug Name
+                      </TableCell>
+                      <TableCell sx={{ 
+                        fontWeight: 700,  
+                        py: 2,
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                      }}>
+                        Drug Effect
+                      </TableCell>
+                      <TableCell sx={{ 
+                        fontWeight: 700,  
+                        py: 2,
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                      }}>
+                        Nutritional Implications And Cautions
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -183,31 +215,52 @@ const Medication = () => {
                       <TableRow 
                         key={index}
                         sx={{ 
-                          
-                     
-                          '&:hover': { bgcolor: '#f8fff8' },
-                          '&:nth-of-type(even)': { bgcolor: '#fafafa' }
+                          '&:hover': { 
+                            bgcolor: theme.palette.mode === 'dark' ? '#3d3d3d' : '#f8fff8' 
+                          },
+                          '&:nth-of-type(even)': { 
+                            bgcolor: theme.palette.mode === 'dark' ? '#2a2a2a' : '#fafafa' 
+                          }
                         }}
                       >
-                        <TableCell sx={{  verticalAlign: 'top' ,bgcolor: 'white' , borderRadius:4 ,p:4, height:'fit-content' }}>
+                        <TableCell sx={{  
+                          verticalAlign: 'top',
+                          bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : 'white',
+                          borderRadius: theme.palette.mode === 'dark' ?  0  : 4,
+                          p:4, 
+                          height:'fit-content',
+                          color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                        }}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
                             {medication.drugName}
                           </Typography>
                         </TableCell>
-                        <TableCell sx={{ verticalAlign: 'top' ,bgcolor: 'white' , borderRadius:4 ,p:4 }}>
+                        <TableCell sx={{ 
+                          verticalAlign: 'top',
+                          bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : 'white',
+                        borderRadius: theme.palette.mode === 'dark' ?  0  : 4,
+                          p:4,
+                          color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
+                        }}>
                           <Typography variant="body2" sx={{ 
                             fontWeight: 600,
-                            color: '#666',
+                            color: theme.palette.mode === 'dark' ? '#cccccc' : '#666',
                             lineHeight: 1.5,
                             whiteSpace: 'pre-line'
                           }}>
                             {medication.drugEffect}
                           </Typography>
                         </TableCell>
-                        <TableCell sx={{ verticalAlign: 'top' ,bgcolor: 'white' , borderRadius:4 ,p:4}}>
+                        <TableCell sx={{ 
+                          verticalAlign: 'top',
+                          bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : 'white',
+                          borderRadius: theme.palette.mode === 'dark' ?  0  : 4,
+                          p:4,
+                          color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
+                        }}>
                           <Typography variant="body2" sx={{ 
                             fontWeight: 600,
-                            color: '#666',
+                            color: theme.palette.mode === 'dark' ? '#cccccc' : '#666',
                             lineHeight: 1.5,
                             whiteSpace: 'pre-line'
                           }}>
@@ -231,28 +284,52 @@ const Medication = () => {
               boxShadow: 2, 
               height: 'fit-content',
               position: 'sticky',
-              top: 20
+              top: 20,
+              bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
             }}
           >
-            <CardContent sx={{ p: 3 , bgcolor: '#F9F4F2' }}>
-              <Typography variant="h6" sx={{ fontWeight: 700, mb: 3, color: '#02BE6A' }}>
+            <CardContent sx={{ 
+              p: 3, 
+              bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2' 
+            }}>
+              <Typography variant="h6" sx={{ 
+                fontWeight: 700, 
+                mb: 3, 
+                color: '#02BE6A' 
+              }}>
                 Adime Note
               </Typography>
               
               <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2, color: '#333' }}>
+                <Typography variant="subtitle2" sx={{ 
+                  fontWeight: 600, 
+                  mb: 2, 
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#333' 
+                }}>
                   Assessment
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#666', mb: 2, lineHeight: 1.6 }}>
+                <Typography variant="body2" sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666', 
+                  mb: 2, 
+                  lineHeight: 1.6 
+                }}>
                   The Client Presents With A History Of Type 2 Diabetes And Hypertension, Currently Managed With Medication. Recent Labs Indicate Elevated Fasting Glucose (130 Mg/ DL) And Borderline Cholesterol Levels, Requiring Ongoing Dietary Monitoring.
                 </Typography>
               </Box>
 
               <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2, color: '#333' }}>
+                <Typography variant="subtitle2" sx={{ 
+                  fontWeight: 600, 
+                  mb: 2, 
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#333' 
+                }}>
                   Clint History:
                 </Typography>
-                <Box sx={{ color: '#666', fontSize: '0.875rem', lineHeight: 1.6 }}>
+                <Box sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666', 
+                  fontSize: '0.875rem', 
+                  lineHeight: 1.6 
+                }}>
                   <Typography variant="body2" sx={{ mb: 1 }}>
                     <strong>Client Name:</strong> Ayesha Malik
                   </Typography>

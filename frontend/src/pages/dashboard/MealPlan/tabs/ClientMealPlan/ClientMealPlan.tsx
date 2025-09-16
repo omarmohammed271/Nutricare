@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, useTheme } from '@mui/material';
 import {
   DataGrid,
   GridRowsProp,
@@ -18,6 +18,7 @@ import { createColumns } from './utils';
 import { MealPlanTemplateRow } from './types';
 
 const ClientMealPlan = () => {
+  const theme = useTheme();
   const [rows, setRows] = useState<MealPlanTemplateRow[]>(initialRows);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
@@ -123,10 +124,17 @@ const ClientMealPlan = () => {
             border: '2px solid #22c55e',
             borderRadius: '12px',
             '& .MuiDataGrid-cell': {
-              borderBottom: '1px solid #e5e7eb',
+              borderBottom: theme.palette.mode === 'dark' ? '1px solid #404040' : '1px solid #e5e7eb',
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+              backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
             },
             '& .MuiDataGrid-columnHeaders': {
               borderBottom: 'none',
+              backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+            },
+            '& .MuiDataGrid-footerContainer': {
+              backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#f8fafc',
+              borderTop: theme.palette.mode === 'dark' ? '1px solid #404040' : '1px solid #e5e7eb',
             },
           },
         }}
@@ -147,8 +155,8 @@ const ClientMealPlan = () => {
           pageSizeOptions={[7]}
           sx={{
             '& .MuiDataGrid-footerContainer': {
-              backgroundColor: '#f8fafc',
-              borderTop: '1px solid #e5e7eb',
+              backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#f8fafc',
+              borderTop: theme.palette.mode === 'dark' ? '1px solid #404040' : '1px solid #e5e7eb',
             },
           }}
         />

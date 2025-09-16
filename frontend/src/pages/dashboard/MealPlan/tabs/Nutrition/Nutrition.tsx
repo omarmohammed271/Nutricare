@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
+import { Box, Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select, useTheme } from '@mui/material';
 import FloatingLeaf from './components/FloatingLeaf';
 import RecipeOvenCard from './components/RecipeOvenCard';
 import CreateRecipePage from '../../recipes/CreateRecipe';
@@ -11,6 +11,7 @@ import { Recipe } from '../../types/recipeStore';
 import { addSampleRecipes } from '../../utils/sampleData';
 
 const Nutrition = () => {
+  const theme = useTheme();
   const [personName, setPersonName] = useState([]);
   const [showCreateRecipePage, setShowCreateRecipePage] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
@@ -62,7 +63,7 @@ const Nutrition = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative', backgroundColor: theme.palette.background.paper }}>
       {/* Floating autumn leaves */}
       <FloatingLeaf top="10%" left="15%" delay="0s" size={15} />
       <FloatingLeaf top="25%" left="75%" delay="1s" size={18} />
@@ -74,23 +75,75 @@ const Nutrition = () => {
       <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', position: 'relative', zIndex: 3 }}>
         <Box sx={{ display: 'flex', width: '70%' }}>
           <FormControl sx={{ width: '80%' }}>
-            <InputLabel id="demo-multiple-name-label">Community Recipes</InputLabel>
+            <InputLabel 
+              id="demo-multiple-name-label"
+              sx={{
+                color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
+                '&.Mui-focused': {
+                  color: '#02BE6A',
+                },
+              }}
+            >
+              Community Recipes
+            </InputLabel>
             <Select
               labelId="demo-multiple-name-label"
               id="demo-multiple-name"
               placeholder="Community Recipes"
               value={personName}
               onChange={handleChange}
-              input={<OutlinedInput label="Community Recipes" />}
+              input={
+                <OutlinedInput 
+                  label="Community Recipes" 
+                  sx={{
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: theme.palette.mode === 'dark' ? '#404040' : 'rgba(0, 0, 0, 0.23)',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: theme.palette.mode === 'dark' ? '#737373' : '#02BE6A',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#02BE6A',
+                      borderWidth: '2px',
+                    },
+                  }}
+                />
+              }
               MenuProps={MENU_PROPS}
               sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.palette.mode === 'dark' ? '#404040' : 'rgba(0, 0, 0, 0.23)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.palette.mode === 'dark' ? '#737373' : '#02BE6A',
+                },
                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                   borderColor: '#02BE6A',
                 },
+                '& .MuiSvgIcon-root': {
+                  color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
+                },
+                backgroundColor: theme.palette.background.paper,
               }}
             >
               {DEMO_NAMES.map((name) => (
-                <MenuItem key={name} value={name}>
+                <MenuItem 
+                  key={name} 
+                  value={name}
+                  sx={{
+                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                    backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                    '&:hover': {
+                      backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                    },
+                    '&.Mui-selected': {
+                      backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                    },
+                    '&.Mui-selected:hover': {
+                      backgroundColor: theme.palette.mode === 'dark' ? '#404040' : '#e0e0e0',
+                    },
+                  }}
+                >
                   {name}
                 </MenuItem>
               ))}
@@ -113,7 +166,7 @@ const Nutrition = () => {
               color: '#02BE6A',
               fontWeight: 600,
               '&:hover': {
-                bgcolor: '#E8F5E8',
+                bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#E8F5E8',
                 borderColor: '#02BE6A',
                 transform: 'translateY(-2px)',
               },

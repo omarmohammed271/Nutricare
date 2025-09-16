@@ -7,7 +7,8 @@ import {
   TextField,
   Grid,
   Button,
-  Autocomplete
+  Autocomplete,
+  useTheme
 } from '@mui/material';
 import { AddTestDialogState } from '../types';
 import { commonTestNames } from '../constants';
@@ -25,14 +26,25 @@ const AddTestDialog: React.FC<AddTestDialogProps> = ({
   onClose, 
   onSave 
 }) => {
+  const theme = useTheme();
+  
   return (
     <Dialog 
       open={dialogState.open} 
       onClose={onClose}
       maxWidth="sm" 
       fullWidth
+      PaperProps={{
+        sx: {
+          bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
+        }
+      }}
     >
-      <DialogTitle>Add New Biochemical Test</DialogTitle>
+      <DialogTitle sx={{ 
+        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000' 
+      }}>
+        Add New Biochemical Test
+      </DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
           <Grid item xs={12}>
@@ -49,7 +61,11 @@ const AddTestDialog: React.FC<AddTestDialogProps> = ({
                   fullWidth
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      backgroundColor: '#FFFFFF'
+                      backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                    },
+                    '& .MuiFormLabel-root': {
+                      color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                     }
                   }}
                 />
@@ -66,7 +82,11 @@ const AddTestDialog: React.FC<AddTestDialogProps> = ({
               size="small"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                },
+                '& .MuiFormLabel-root': {
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                 }
               }}
             />
@@ -81,7 +101,11 @@ const AddTestDialog: React.FC<AddTestDialogProps> = ({
               size="small"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                },
+                '& .MuiFormLabel-root': {
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                 }
               }}
             />
@@ -96,7 +120,11 @@ const AddTestDialog: React.FC<AddTestDialogProps> = ({
               size="small"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                },
+                '& .MuiFormLabel-root': {
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                 }
               }}
             />
@@ -113,7 +141,11 @@ const AddTestDialog: React.FC<AddTestDialogProps> = ({
               InputLabelProps={{ shrink: true }}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                },
+                '& .MuiFormLabel-root': {
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                 }
               }}
             />
@@ -130,7 +162,11 @@ const AddTestDialog: React.FC<AddTestDialogProps> = ({
               size="small"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                },
+                '& .MuiFormLabel-root': {
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                 }
               }}
             />
@@ -140,14 +176,21 @@ const AddTestDialog: React.FC<AddTestDialogProps> = ({
       <DialogActions>
         <Button 
           onClick={onClose}
-          sx={{ color: '#666' }}
+          sx={{ 
+            color: theme.palette.mode === 'dark' ? '#ffffff' : '#666' 
+          }}
         >
           Cancel
         </Button>
         <Button 
           onClick={onSave}
           variant="contained"
-          sx={{ bgcolor: '#02BE6A', '&:hover': { bgcolor: '#01A85A' } }}
+          sx={{ 
+            bgcolor: '#02BE6A', 
+            '&:hover': { 
+              bgcolor: theme.palette.mode === 'dark' ? '#01A85A' : '#01A85A' 
+            } 
+          }}
         >
           Save Test
         </Button>

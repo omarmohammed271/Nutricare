@@ -10,7 +10,8 @@ import {
   Typography,
   Box,
   Chip,
-  IconButton
+  IconButton,
+  useTheme
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -25,6 +26,8 @@ interface MedicationTableProps {
 }
 
 const MedicationTable: React.FC<MedicationTableProps> = ({ medications, onDeleteMedication }) => {
+  const theme = useTheme();
+  
   const getStatusColor = (status: MedicationInterface['status']) => {
     switch (status) {
       case 'Active':
@@ -41,53 +44,121 @@ const MedicationTable: React.FC<MedicationTableProps> = ({ medications, onDelete
   };
 
   return (
-    <TableContainer component={Paper} sx={{ borderRadius: 2, border: '2px solid #02BE6A' }}>
+    <TableContainer 
+      component={Paper} 
+      sx={{ 
+        borderRadius: 2, 
+        border: `2px solid #02BE6A`,
+        bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
+      }}
+    >
       <Table>
         <TableHead>
-          <TableRow sx={{ bgcolor: '#02BE6A' }}>
-            <TableCell sx={{ fontWeight: 700, color: 'white' }}>Medication</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: 'white' }}>Dosage</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: 'white' }}>Frequency</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: 'white' }}>Route</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: 'white' }}>Indication</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: 'white' }}>Status</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: 'white' }}>Start Date</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: 'white' }}>Actions</TableCell>
+          <TableRow sx={{ 
+            bgcolor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#02BE6A' 
+          }}>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : 'white' 
+            }}>
+              Medication
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : 'white' 
+            }}>
+              Dosage
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : 'white' 
+            }}>
+              Frequency
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : 'white' 
+            }}>
+              Route
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : 'white' 
+            }}>
+              Indication
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : 'white' 
+            }}>
+              Status
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : 'white' 
+            }}>
+              Start Date
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : 'white' 
+            }}>
+              Actions
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {medications.map((medication) => (
             <TableRow key={medication.id} sx={{ 
-              '&:hover': { bgcolor: '#f8fff8' },
-              '&:nth-of-type(even)': { bgcolor: '#fafafa' }
+              '&:hover': { 
+                bgcolor: theme.palette.mode === 'dark' ? '#2a2a2a' : '#f8fff8' 
+              },
+              '&:nth-of-type(even)': { 
+                bgcolor: theme.palette.mode === 'dark' ? '#252525' : '#fafafa' 
+              },
+              bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
             }}>
               <TableCell>
                 <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ 
+                    fontWeight: 600,
+                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                  }}>
                     {medication.name}
                   </Typography>
-                  <Typography variant="caption" sx={{ color: '#666' }}>
+                  <Typography variant="caption" sx={{ 
+                    color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                  }}>
                     Prescribed by: {medication.prescribedBy}
                   </Typography>
                 </Box>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ 
+                  fontWeight: 600,
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                }}>
                   {medication.dosage}
                 </Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" sx={{ color: '#666' }}>
+                <Typography variant="body2" sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                }}>
                   {medication.frequency}
                 </Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" sx={{ color: '#666' }}>
+                <Typography variant="body2" sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                }}>
                   {medication.route}
                 </Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" sx={{ color: '#666' }}>
+                <Typography variant="body2" sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                }}>
                   {medication.indication}
                 </Typography>
               </TableCell>
@@ -104,7 +175,9 @@ const MedicationTable: React.FC<MedicationTableProps> = ({ medications, onDelete
                 />
               </TableCell>
               <TableCell>
-                <Typography variant="body2" sx={{ color: '#666' }}>
+                <Typography variant="body2" sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                }}>
                   {new Date(medication.startDate).toLocaleDateString()}
                 </Typography>
               </TableCell>
@@ -112,21 +185,27 @@ const MedicationTable: React.FC<MedicationTableProps> = ({ medications, onDelete
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <IconButton
                     size="small"
-                    sx={{ color: '#02BE6A' }}
+                    sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#02BE6A' : '#02BE6A' 
+                    }}
                     title="View Details"
                   >
                     <VisibilityIcon fontSize="small" />
                   </IconButton>
                   <IconButton
                     size="small"
-                    sx={{ color: '#ff9800' }}
+                    sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#ff9800' : '#ff9800' 
+                    }}
                     title="Edit"
                   >
                     <EditIcon fontSize="small" />
                   </IconButton>
                   <IconButton
                     size="small"
-                    sx={{ color: '#f44336' }}
+                    sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#f44336' : '#f44336' 
+                    }}
                     onClick={() => onDeleteMedication(medication.id)}
                     title="Delete"
                   >

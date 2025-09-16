@@ -9,7 +9,8 @@ import {
   Typography,
   Box,
   IconButton,
-  Card
+  Card,
+  useTheme
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -17,7 +18,7 @@ import {
   Visibility as ViewIcon
 } from '@mui/icons-material';
 import { MealPlanTemplate } from '../types';
-import { themeColors } from '../constants';
+import { getThemeColors } from '../constants';
 
 interface TemplatesTableProps {
   templates: MealPlanTemplate[];
@@ -32,6 +33,9 @@ const TemplatesTable: React.FC<TemplatesTableProps> = ({
   onDownload,
   onView
 }) => {
+  const theme = useTheme();
+  const themeColors = getThemeColors(theme);
+  
   return (
     <Card 
       sx={{ 
@@ -39,32 +43,72 @@ const TemplatesTable: React.FC<TemplatesTableProps> = ({
         boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
         border: `1px solid ${themeColors.border}`,
         overflow: 'hidden',
-        mb: 3
+        mb: 3,
+        bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
       }}
     >
-      <TableContainer sx={{ bgcolor: 'white' }}>
+      <TableContainer sx={{ 
+        bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : 'white' 
+      }}>
         <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: themeColors.background.tableHeader }}>
-              <TableCell sx={{ fontWeight: 700, color: 'white', py: 2, fontSize: '0.9rem' }}>
+            <TableRow sx={{ 
+              bgcolor: theme.palette.mode === 'dark' ? '#2d2d2d' : themeColors.background.tableHeader 
+            }}>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : 'white', 
+                py: 2, 
+                fontSize: '0.9rem' 
+              }}>
                 Template Name
               </TableCell>
-              <TableCell sx={{ fontWeight: 700, color: 'white', py: 2, fontSize: '0.9rem' }}>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : 'white', 
+                py: 2, 
+                fontSize: '0.9rem' 
+              }}>
                 Calories Needed
               </TableCell>
-              <TableCell sx={{ fontWeight: 700, color: 'white', py: 2, fontSize: '0.9rem' }}>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : 'white', 
+                py: 2, 
+                fontSize: '0.9rem' 
+              }}>
                 Breakfast
               </TableCell>
-              <TableCell sx={{ fontWeight: 700, color: 'white', py: 2, fontSize: '0.9rem' }}>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : 'white', 
+                py: 2, 
+                fontSize: '0.9rem' 
+              }}>
                 Lunch
               </TableCell>
-              <TableCell sx={{ fontWeight: 700, color: 'white', py: 2, fontSize: '0.9rem' }}>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : 'white', 
+                py: 2, 
+                fontSize: '0.9rem' 
+              }}>
                 Dinner
               </TableCell>
-              <TableCell sx={{ fontWeight: 700, color: 'white', py: 2, fontSize: '0.9rem' }}>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : 'white', 
+                py: 2, 
+                fontSize: '0.9rem' 
+              }}>
                 Add Meal
               </TableCell>
-              <TableCell sx={{ fontWeight: 700, color: 'white', py: 2, fontSize: '0.9rem' }}>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : 'white', 
+                py: 2, 
+                fontSize: '0.9rem' 
+              }}>
                 Actions
               </TableCell>
             </TableRow>
@@ -74,49 +118,101 @@ const TemplatesTable: React.FC<TemplatesTableProps> = ({
               <TableRow 
                 key={template.id}
                 sx={{ 
-                  bgcolor: themeColors.background.tableRow,
-                  '&:hover': { bgcolor: themeColors.background.tableRowHover },
+                  bgcolor: theme.palette.mode === 'dark' ? '#2a2a2a' : themeColors.background.tableRow,
+                  '&:hover': { 
+                    bgcolor: theme.palette.mode === 'dark' ? '#3d3d3d' : themeColors.background.tableRowHover 
+                  },
                   borderBottom: 'none'
                 }}
               >
-                <TableCell sx={{ py: 2.5, verticalAlign: 'top', borderBottom: `1px solid ${themeColors.border}` }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: themeColors.text.primary }}>
+                <TableCell sx={{ 
+                  py: 2.5, 
+                  verticalAlign: 'top', 
+                  borderBottom: `1px solid ${themeColors.border}`,
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : themeColors.text.primary
+                }}>
+                  <Typography variant="body2" sx={{ 
+                    fontWeight: 600, 
+                    color: theme.palette.mode === 'dark' ? '#ffffff' : themeColors.text.primary 
+                  }}>
                     {template.templateName}
                   </Typography>
                 </TableCell>
-                <TableCell sx={{ py: 2.5, verticalAlign: 'top', borderBottom: `1px solid ${themeColors.border}` }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: themeColors.primary }}>
+                <TableCell sx={{ 
+                  py: 2.5, 
+                  verticalAlign: 'top', 
+                  borderBottom: `1px solid ${themeColors.border}`,
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : themeColors.primary
+                }}>
+                  <Typography variant="body2" sx={{ 
+                    fontWeight: 600, 
+                    color: theme.palette.mode === 'dark' ? '#02BE6A' : themeColors.primary 
+                  }}>
                     {template.caloriesNeeded} kcal
                   </Typography>
                 </TableCell>
-                <TableCell sx={{ py: 2.5, verticalAlign: 'top', borderBottom: `1px solid ${themeColors.border}` }}>
-                  <Typography variant="body2" sx={{ color: themeColors.text.secondary }}>
+                <TableCell sx={{ 
+                  py: 2.5, 
+                  verticalAlign: 'top', 
+                  borderBottom: `1px solid ${themeColors.border}`,
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : themeColors.text.secondary
+                }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? '#cccccc' : themeColors.text.secondary 
+                  }}>
                     {template.breakfast} kcal
                   </Typography>
                 </TableCell>
-                <TableCell sx={{ py: 2.5, verticalAlign: 'top', borderBottom: `1px solid ${themeColors.border}` }}>
-                  <Typography variant="body2" sx={{ color: themeColors.text.secondary }}>
+                <TableCell sx={{ 
+                  py: 2.5, 
+                  verticalAlign: 'top', 
+                  borderBottom: `1px solid ${themeColors.border}`,
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : themeColors.text.secondary
+                }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? '#cccccc' : themeColors.text.secondary 
+                  }}>
                     {template.lunch} kcal
                   </Typography>
                 </TableCell>
-                <TableCell sx={{ py: 2.5, verticalAlign: 'top', borderBottom: `1px solid ${themeColors.border}` }}>
-                  <Typography variant="body2" sx={{ color: themeColors.text.secondary }}>
+                <TableCell sx={{ 
+                  py: 2.5, 
+                  verticalAlign: 'top', 
+                  borderBottom: `1px solid ${themeColors.border}`,
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : themeColors.text.secondary
+                }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? '#cccccc' : themeColors.text.secondary 
+                  }}>
                     {template.dinner} kcal
                   </Typography>
                 </TableCell>
-                <TableCell sx={{ py: 2.5, verticalAlign: 'top', borderBottom: `1px solid ${themeColors.border}` }}>
-                  <Typography variant="body2" sx={{ color: themeColors.text.secondary }}>
+                <TableCell sx={{ 
+                  py: 2.5, 
+                  verticalAlign: 'top', 
+                  borderBottom: `1px solid ${themeColors.border}`,
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : themeColors.text.secondary
+                }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? '#cccccc' : themeColors.text.secondary 
+                  }}>
                     {template.additionalMeals} kcal
                   </Typography>
                 </TableCell>
-                <TableCell sx={{ py: 2.5, verticalAlign: 'top', borderBottom: `1px solid ${themeColors.border}` }}>
+                <TableCell sx={{ 
+                  py: 2.5, 
+                  verticalAlign: 'top', 
+                  borderBottom: `1px solid ${themeColors.border}` 
+                }}>
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     <IconButton
                       size="small"
                       onClick={() => onEdit?.(template)}
                       sx={{ 
-                        color: themeColors.primary,
-                        '&:hover': { bgcolor: '#e8f5e8' }
+                        color: theme.palette.mode === 'dark' ? '#02BE6A' : themeColors.primary,
+                        '&:hover': { 
+                          bgcolor: theme.palette.mode === 'dark' ? '#02BE6A20' : '#e8f5e8' 
+                        }
                       }}
                       title="Edit Template"
                     >
@@ -126,8 +222,10 @@ const TemplatesTable: React.FC<TemplatesTableProps> = ({
                       size="small"
                       onClick={() => onDownload?.(template)}
                       sx={{ 
-                        color: themeColors.info,
-                        '&:hover': { bgcolor: '#e3f2fd' }
+                        color: theme.palette.mode === 'dark' ? '#2196f3' : themeColors.info,
+                        '&:hover': { 
+                          bgcolor: theme.palette.mode === 'dark' ? '#2196f320' : '#e3f2fd' 
+                        }
                       }}
                       title="Download Template"
                     >
@@ -137,8 +235,10 @@ const TemplatesTable: React.FC<TemplatesTableProps> = ({
                       size="small"
                       onClick={() => onView?.(template)}
                       sx={{ 
-                        color: themeColors.text.secondary,
-                        '&:hover': { bgcolor: '#f5f5f5' }
+                        color: theme.palette.mode === 'dark' ? '#cccccc' : themeColors.text.secondary,
+                        '&:hover': { 
+                          bgcolor: theme.palette.mode === 'dark' ? '#cccccc20' : '#f5f5f5' 
+                        }
                       }}
                       title="View Template"
                     >

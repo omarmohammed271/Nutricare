@@ -19,7 +19,8 @@ import {
   Divider,
   InputAdornment,
   Alert,
-  Autocomplete
+  Autocomplete,
+  useTheme
 } from '@mui/material';
 import { FoodItem, SelectedFood } from '../types';
 import { foodDatabase } from '../data';
@@ -39,6 +40,7 @@ const FoodDropdownDialog: React.FC<FoodDropdownDialogProps> = ({
   onClose,
   onAddFood
 }) => {
+  const theme = useTheme();
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
   const [selectedMealId, setSelectedMealId] = useState<string>(mealId || '');
   const [grams, setGrams] = useState<number>(100);
@@ -118,12 +120,27 @@ const FoodDropdownDialog: React.FC<FoodDropdownDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+    <Dialog 
+      open={open} 
+      onClose={handleClose} 
+      maxWidth="md" 
+      fullWidth
+      PaperProps={{
+        sx: {
+          bgcolor: theme.palette.background.paper
+        }
+      }}
+    >
       <DialogTitle sx={{ pb: 1 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+        <Typography variant="h6" sx={{ 
+          fontWeight: 600,
+          color: theme.palette.text.primary
+        }}>
           Add Food to Meal
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{ 
+          color: theme.palette.text.secondary 
+        }}>
           Select a food item and specify the amount
         </Typography>
       </DialogTitle>
@@ -141,12 +158,18 @@ const FoodDropdownDialog: React.FC<FoodDropdownDialogProps> = ({
                   onChange={(e) => setSelectedMealId(e.target.value as string)}
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      backgroundColor: '#ffffff'
+                      backgroundColor: theme.palette.background.paper,
+                      color: theme.palette.text.primary
+                    },
+                    '& .MuiFormLabel-root': {
+                      color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                     }
                   }}
                 >
                   {availableMeals.map((meal) => (
-                    <MenuItem key={meal.id} value={meal.id}>
+                    <MenuItem key={meal.id} value={meal.id} sx={{ 
+                      color: theme.palette.text.primary
+                    }}>
                       {meal.type}
                     </MenuItem>
                   ))}
@@ -172,7 +195,13 @@ const FoodDropdownDialog: React.FC<FoodDropdownDialogProps> = ({
                 return 'Other';
               }}
               renderOption={(props, option) => (
-                <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1 }}>
+                <Box component="li" {...props} sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 1.5, 
+                  py: 1,
+                  color: theme.palette.text.primary
+                }}>
                   <Avatar 
                     sx={{ 
                       width: 32, 
@@ -187,7 +216,9 @@ const FoodDropdownDialog: React.FC<FoodDropdownDialogProps> = ({
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
                       {option.name}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{ 
+                      color: theme.palette.text.secondary 
+                    }}>
                       {option.caloriesPer100g} kcal/100g • {option.proteinPer100g}g protein
                     </Typography>
                   </Box>
@@ -201,7 +232,11 @@ const FoodDropdownDialog: React.FC<FoodDropdownDialogProps> = ({
                   fullWidth
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      backgroundColor: '#ffffff'
+                      backgroundColor: theme.palette.background.paper,
+                      color: theme.palette.text.primary
+                    },
+                    '& .MuiFormLabel-root': {
+                      color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                     }
                   }}
                 />
@@ -219,9 +254,16 @@ const FoodDropdownDialog: React.FC<FoodDropdownDialogProps> = ({
             <>
               {/* Amount Input */}
               <Grid item xs={12} md={6}>
-                <Card sx={{ bgcolor: '#f8f9fa', border: '1px solid #e9ecef' }}>
+                <Card sx={{ 
+                  bgcolor: theme.palette.background.paper, 
+                  border: `1px solid ${theme.palette.divider}` 
+                }}>
                   <CardContent>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                    <Typography variant="h6" sx={{ 
+                      mb: 2, 
+                      fontWeight: 600,
+                      color: theme.palette.text.primary
+                    }}>
                       Amount
                     </Typography>
                     <TextField
@@ -235,7 +277,11 @@ const FoodDropdownDialog: React.FC<FoodDropdownDialogProps> = ({
                       }}
                       sx={{
                         '& .MuiOutlinedInput-root': {
-                          backgroundColor: '#ffffff'
+                          backgroundColor: theme.palette.background.paper,
+                          color: theme.palette.text.primary
+                        },
+                        '& .MuiFormLabel-root': {
+                          color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                         }
                       }}
                     />
@@ -250,48 +296,91 @@ const FoodDropdownDialog: React.FC<FoodDropdownDialogProps> = ({
 
               {/* Nutritional Breakdown */}
               <Grid item xs={12} md={6}>
-                <Card sx={{ bgcolor: '#f8f9fa', border: '1px solid #e9ecef' }}>
+                <Card sx={{ 
+                  bgcolor: theme.palette.background.paper, 
+                  border: `1px solid ${theme.palette.divider}` 
+                }}>
                   <CardContent>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                    <Typography variant="h6" sx={{ 
+                      mb: 2, 
+                      fontWeight: 600,
+                      color: theme.palette.text.primary
+                    }}>
                       Nutritional Values ({grams}g)
                     </Typography>
                     
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        <Typography variant="body1" sx={{ 
+                          fontWeight: 500,
+                          color: theme.palette.text.primary
+                        }}>
                           Calories
                         </Typography>
-                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#4CAF50' }}>
+                        <Typography variant="h6" sx={{ 
+                          fontWeight: 700, 
+                          color: '#4CAF50' 
+                        }}>
                           {calculatedNutrition.calories} kcal
                         </Typography>
                       </Box>
                       
-                      <Divider />
+                      <Divider sx={{ 
+                        borderColor: theme.palette.divider
+                      }} />
                       
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="body2">Carbohydrates</Typography>
-                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                        <Typography variant="body2" sx={{ 
+                          color: theme.palette.text.secondary 
+                        }}>
+                          Carbohydrates
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          fontWeight: 600,
+                          color: theme.palette.text.primary
+                        }}>
                           {calculatedNutrition.carbs}g
                         </Typography>
                       </Box>
                       
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="body2">Protein</Typography>
-                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                        <Typography variant="body2" sx={{ 
+                          color: theme.palette.text.secondary 
+                        }}>
+                          Protein
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          fontWeight: 600,
+                          color: theme.palette.text.primary
+                        }}>
                           {calculatedNutrition.protein}g
                         </Typography>
                       </Box>
                       
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="body2">Fat</Typography>
-                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                        <Typography variant="body2" sx={{ 
+                          color: theme.palette.text.secondary 
+                        }}>
+                          Fat
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          fontWeight: 600,
+                          color: theme.palette.text.primary
+                        }}>
                           {calculatedNutrition.fat}g
                         </Typography>
                       </Box>
                       
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="body2">Fiber</Typography>
-                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                        <Typography variant="body2" sx={{ 
+                          color: theme.palette.text.secondary 
+                        }}>
+                          Fiber
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          fontWeight: 600,
+                          color: theme.palette.text.primary
+                        }}>
                           {calculatedNutrition.fiber}g
                         </Typography>
                       </Box>
@@ -307,7 +396,7 @@ const FoodDropdownDialog: React.FC<FoodDropdownDialogProps> = ({
                   alignItems: 'center', 
                   gap: 2, 
                   p: 2, 
-                  bgcolor: '#f8f9fa', 
+                  bgcolor: theme.palette.background.paper, 
                   borderRadius: 2 
                 }}>
                   <Avatar 
@@ -321,10 +410,15 @@ const FoodDropdownDialog: React.FC<FoodDropdownDialogProps> = ({
                     {selectedFood.icon}
                   </Avatar>
                   <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    <Typography variant="h6" sx={{ 
+                      fontWeight: 600,
+                      color: theme.palette.text.primary
+                    }}>
                       {selectedFood.name}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{ 
+                      color: theme.palette.text.secondary 
+                    }}>
                       Reference values per 100g: {selectedFood.caloriesPer100g} kcal, 
                       {selectedFood.carbsPer100g}g carbs, {selectedFood.proteinPer100g}g protein, 
                       {selectedFood.fatPer100g}g fat, {selectedFood.fiberPer100g}g fiber
@@ -338,7 +432,9 @@ const FoodDropdownDialog: React.FC<FoodDropdownDialogProps> = ({
       </DialogContent>
       
       <DialogActions sx={{ p: 3, pt: 0 }}>
-        <Button onClick={handleClose} color="inherit">
+        <Button onClick={handleClose} sx={{ 
+          color: theme.palette.text.primary
+        }}>
           Cancel
         </Button>
         <Button 
@@ -346,8 +442,8 @@ const FoodDropdownDialog: React.FC<FoodDropdownDialogProps> = ({
           variant="contained" 
           disabled={!selectedFood || grams <= 0 || !selectedMealId}
           sx={{ 
-            bgcolor: '#4CAF50',
-            '&:hover': { bgcolor: '#45a049' },
+            bgcolor: theme.palette.success.main,
+            '&:hover': { bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark : theme.palette.success.light },
             px: 3
           }}
         >
