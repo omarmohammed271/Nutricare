@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useAuthContext } from "@src/states";
+import { useAuthContext } from "@src/types/states";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { AuthService } from "@src/services";
 import { ErrorHandler } from "@src/utils/errorHandler";

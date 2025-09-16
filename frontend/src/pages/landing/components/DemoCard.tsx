@@ -1,5 +1,5 @@
 import { Box, Link, Typography } from "@mui/material";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 
 export type DemoCardProps = {
   link: string; image: string; name: string;

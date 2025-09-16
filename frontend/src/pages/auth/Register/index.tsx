@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import AuthLayout from "../AuthLayout";
 import { AuthService } from "@src/services";
-import { useAuthContext } from "@src/states";
+import { useAuthContext } from "@src/types/states";
 
 /**
  * Bottom Links goes here

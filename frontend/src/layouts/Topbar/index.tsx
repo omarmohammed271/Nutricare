@@ -8,7 +8,7 @@ import { Box, FilledInput, InputAdornment } from "@mui/material";
 import { LuSearch } from "react-icons/lu";
 import { styled } from "@mui/material";
 import { WithSetting } from "@src/types";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 import MenuToggler from "./MenuToggler";
 import MaximizeScreen from "./MaximizeScreen";
 import LayoutThemeToggler from "./LayoutThemeToggler";

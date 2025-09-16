@@ -6,7 +6,7 @@ import { alpha } from "@mui/material/styles";
 
 import { ContainerBox } from "./Navbar";
 import LogoBox from "@src/layouts/LeftSideBar/LogoBox";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 
 const Footer = () => {
   const { themeMode } = useLayoutContext();

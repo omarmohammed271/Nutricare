@@ -7,6 +7,7 @@ export const axiosInstance = axios.create({
   baseURL: baseURL,
   headers: {
     'Content-Type': 'application/json',
+    'Authorization': `Token {}`,
   },
 });
 
@@ -14,5 +15,6 @@ export const axiosMutateInstance = axios.create({
   baseURL: baseURL,
   headers: {
     'Content-Type': 'multipart/form-data',
+    'Authorization': `Token {}`,
   },
 });

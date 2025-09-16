@@ -8,7 +8,7 @@ import ReactDOM from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import { SnackbarProvider } from "notistack";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider, LayoutProvider } from "./states";
+import { AuthProvider, LayoutProvider } from "./types/states";
 import App from "@src/App";
 
 // Initialize i18n

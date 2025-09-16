@@ -6,7 +6,7 @@ import * as yup from "yup";
 import { PageMetaData } from "@src/components";
 import AuthLayout2 from "../AuthLayout2";
 import { AuthService } from "@src/services";
-import { useAuthContext } from "@src/states";
+import { useAuthContext } from "@src/types/states";
 import { useSnackbar } from "notistack";
 import { ErrorHandler } from "@src/utils/errorHandler";
 

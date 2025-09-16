@@ -9,7 +9,7 @@ import ScrollToTop from "@src/components/ScrollToTop"
 import DefaultLayout from '@src/layouts/DefaultLayout'
 import VerticalLayout from '@src/layouts/VerticalLayout'
 import { defaultLayoutRoutes, verticalLayoutRoutes } from './routes'
-import { useAuthContext } from "@src/states"
+import { useAuthContext } from "@src/types/states"
 import { Navigate } from "react-router-dom"
 
 // Wrapper component for protected routes

@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { PageMetaData } from "@src/components";
 import AuthLayout from "../AuthLayout";
-import { useAuthContext } from "@src/states";
+import { useAuthContext } from "@src/types/states";
 import { useEffect } from "react";
 
 /**

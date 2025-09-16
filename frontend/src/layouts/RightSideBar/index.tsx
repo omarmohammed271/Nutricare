@@ -1,6 +1,6 @@
 import { Drawer } from "@mui/material";
 import ThemeCustomizer from "./ThemeCustomizer";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 
 const RightSideBar = () => {
   const {

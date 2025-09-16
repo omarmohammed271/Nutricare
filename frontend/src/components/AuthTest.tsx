@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Box, Typography, Alert, Card, CardContent, Chip } from '@mui/material';
-import { useAuthContext } from '@src/states';
+import { useAuthContext } from '@src/types/states';
 import { useNavigate } from 'react-router-dom';
 import { StorageService } from '@src/services';
 import { testTokenSending, testAllApiCalls, inspectRequestHeaders } from '@src/utils/tokenTest';

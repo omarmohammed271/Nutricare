@@ -11,7 +11,7 @@ import SimpleBar from "simplebar-react";
 import LayoutThemeToggler from "./LayoutThemeToggler";
 import SidenavModeToggler from "./SidenavModeToggler";
 import SidenavThemeToggler from "./SidenavThemeToggler";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 import { LayoutSidenav, LayoutTheme } from "@src/types";
 
 const ThemeCustomizer = () => {

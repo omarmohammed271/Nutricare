@@ -5,7 +5,7 @@
  */
 
 import { IconButton, Box, Typography } from "@mui/material";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 import { LuMenu } from "react-icons/lu";
 
 const MenuToggler = () => {

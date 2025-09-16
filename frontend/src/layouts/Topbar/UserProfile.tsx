@@ -35,7 +35,7 @@ import {
   LuUserPlus,
 } from "react-icons/lu";
 import { useDropdownMenu } from "@src/hooks";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 import { Link } from "react-router-dom";
 import { IconType } from "react-icons";
 

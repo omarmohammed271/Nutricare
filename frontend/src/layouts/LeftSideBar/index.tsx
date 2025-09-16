@@ -10,7 +10,7 @@ import SimpleBar from "simplebar-react";
 import AppMenu from "./AppMenu";
 import { changeHTMLAttribute, getMenuItems } from "@src/helpers/menu";
 import { WithSetting } from "@src/types";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 import { useViewPort } from "@src/hooks";
 import { useEffect } from "react";
 import { LuLogOut } from "react-icons/lu";

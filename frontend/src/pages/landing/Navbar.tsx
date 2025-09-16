@@ -3,7 +3,7 @@ import { Box, Button, IconButton, Link, SxProps, styled } from "@mui/material";
 import { useScrollEvent } from "@src/hooks";
 import { alpha } from "@mui/material/styles";
 import LogoBox from "@src/layouts/LeftSideBar/LogoBox.tsx";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 
 type WithSx = {
   sx?: SxProps;

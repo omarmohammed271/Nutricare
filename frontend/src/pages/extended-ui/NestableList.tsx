@@ -4,7 +4,7 @@ import { ItemInterface, ReactSortable, Sortable, Store } from "react-sortablejs"
 import { LuMove } from "react-icons/lu";
 import { ComponentContainerCard, PageBreadcrumb } from "@src/components";
 import { ColoredCard } from "@src/pages/base-ui/Cards";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 
 import avatar5 from "@src/assets/images/avatars/avatar5.png";
 import avatar6 from "@src/assets/images/avatars/avatar6.png";

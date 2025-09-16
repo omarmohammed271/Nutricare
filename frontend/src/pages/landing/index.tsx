@@ -10,7 +10,7 @@ import WhatYouGet from "./WhatYouGet";
 
 // styles
 import 'aos/dist/aos.css'
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 import ElementsPreview from "./ElementsPreview";
 
 const LandingPage = () => {

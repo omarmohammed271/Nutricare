@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "@src/states";
+import { useAuthContext } from "@src/types/states";
 import { AuthService } from "@src/services";
 import { useSnackbar } from "notistack";
 

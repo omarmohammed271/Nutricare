@@ -3,7 +3,7 @@
  * File Name: PrivateRoute.tsx
  * Author: Coderthemes
  */
-import { useAuthContext } from "@src/states"
+import { useAuthContext } from "@src/types/states"
 import React from "react"
 import { Navigate } from "react-router-dom"
 

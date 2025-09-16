@@ -9,7 +9,7 @@ import { StyledEngineProvider, ThemeProvider } from "@mui/material";
 import Router from "@src/routes/Router";
 import { createTheme } from "@src/theme";
 import { useLanguage } from "@src/hooks";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 import { Toaster } from "react-hot-toast";
 
 const AppContent = () => {

@@ -1,5 +1,5 @@
 import { Stack, Typography } from "@mui/material";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 import { LuAccessibility } from "react-icons/lu";
 
 type SectionTitleProps = {

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import logo from "@src/assets/images/nutricare-logo.svg";
 import logolight from "@src/assets/images/nutricare-logo.svg"
 import logoDark from "@src/assets/images/NDark.svg";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 import { styled } from "@mui/system";
 import { WithSetting } from "@src/types";
 

@@ -3,7 +3,7 @@ import { Avatar, Box, Card, CardContent, Button, Typography, Divider } from "@mu
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 
 //images
 import logo from "@src/assets/images/nutricare-logo.svg";

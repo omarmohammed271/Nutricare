@@ -39,7 +39,7 @@ import {
   Template,
 } from "./index";
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { getEquations } from "@src/api/admin/adminAPI";
+import { getEquations } from "@src/api/endpoints";
 
 // =====================
 // BasicMenu Component
@@ -131,7 +131,7 @@ export default function ContentManagement() {
   
   // GET equations
   const {
-    data: availableEquations = [], // fallback to [] if undefined
+    data: availableEquations, // fallback to [] if undefined
     isPending,
     error,
   } = useQuery({
@@ -176,9 +176,9 @@ export default function ContentManagement() {
     : filteredTemplates;
 
 
-  const totalPages = Math.max(1, Math.ceil(data.length / rowsPerPage));
+  const totalPages = Math.max(1, Math.ceil(data?.length ?? 0 / rowsPerPage));
   const startIndex = (page - 1) * rowsPerPage;
-  const currentRows = data.slice(startIndex, startIndex + rowsPerPage);
+  const currentRows = data?.slice(startIndex, startIndex + rowsPerPage);
 
   useEffect(() => {
     if (tab === 2 || tab === 3) setPage(1);
@@ -444,9 +444,9 @@ export default function ContentManagement() {
               <TableBody>
                 {/* Equations */}
                 {tab === 0 &&
-                (currentRows as string[]).map((eqName, idx) => (
+                currentRows?.map((eq, idx) => (
                   <TableRow key={startIndex + idx} hover>
-                    <TableCell>{eqName}</TableCell>
+                    <TableCell>{eq.name}</TableCell>
                     <TableCell>-</TableCell>
                     <TableCell>-</TableCell>
                     <TableCell>-</TableCell>

@@ -8,7 +8,7 @@ import muiImg from "@src/assets/images/landing/mui.svg";
 import viteImg from "@src/assets/images/landing/vite.svg";
 import bunImg from "@src/assets/images/landing/bun.svg";
 import typescriptImg from "@src/assets/images/landing/typescript.svg";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 
 const Hero = () => {
   const { themeMode } = useLayoutContext();

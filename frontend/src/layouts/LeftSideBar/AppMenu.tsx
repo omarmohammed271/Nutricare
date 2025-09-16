@@ -4,7 +4,7 @@ import { findAllParent, findMenuItem, getMenuItemFromURL } from "@src/helpers/me
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LuChevronRight } from "react-icons/lu";
 import { Link, useLocation } from "react-router-dom";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 import { getLeftbarTheme, LeftbarThemeType } from "@src/layouts/LeftSideBar/helpers.ts";
 
 type SubMenus = {

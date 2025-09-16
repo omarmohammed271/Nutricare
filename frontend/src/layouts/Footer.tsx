@@ -5,7 +5,7 @@
  */
 
 import { Stack, Typography, styled } from "@mui/material";
-import { useLayoutContext } from "@src/states";
+import { useLayoutContext } from "@src/types/states";
 import { WithSetting } from "@src/types";
 
 const FooterWrapper = styled("div")<WithSetting>(({ theme, settings }) => {
