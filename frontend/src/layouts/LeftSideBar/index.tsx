@@ -14,7 +14,7 @@ import { useLayoutContext } from "@src/states";
 import { useViewPort } from "@src/hooks";
 import { useEffect } from "react";
 import { LuLogOut } from "react-icons/lu";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 /* Sidemenu content */
 const SideBarContent = () => <AppMenu menuItems={getMenuItems()} />;
@@ -39,7 +39,7 @@ const LeftSideBarWrapper = styled("div")<WithSetting>(({ settings }) => {
 
 const LeftSideBarMenu = () => {
   const { settings } = useLayoutContext();
-
+  const location = useLocation()
   return (
     <LeftSideBarWrapper settings={settings} className="app-menu-do-not-remove">
       <LogoBox backgroundColor />
@@ -62,7 +62,9 @@ const LeftSideBarMenu = () => {
           {/* Logout Button */}
           <Button
             component={Link}
-            to="/auth/logout"
+            
+            to= {location.pathname.slice(1).split("/")[0] == "admin" ? "/admin/auth/login" : "/auth/logout" }
+
             fullWidth
             sx={{
               mb: 2,

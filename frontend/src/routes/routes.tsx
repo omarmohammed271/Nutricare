@@ -94,7 +94,7 @@ const otherRotes: RoutesProps[] = [
 
 const authRoutes: RoutesProps[] = [
   { path: "/auth/login", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Login"))} /> },
-  { path: "/admin/auth/login", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Admin/admin"))} /> },
+  { path: "/admin/auth/login", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Admin/adminLogin"))} /> },
   { path: "/admin/auth/recover-password", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Admin/resetPassAdmin"))} /> },
   { path: "/auth/register", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Register"))} /> },
   { path: "/auth/logout", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Logout"))} /> },

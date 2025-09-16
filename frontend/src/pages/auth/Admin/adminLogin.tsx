@@ -18,6 +18,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { handleLogin } from "@src/api/admin/adminAPI";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import useLogin from "../Login/useLogin";
 
 const BottomLink = () => {
   const { t } = useTranslation("auth");
@@ -43,24 +44,11 @@ const BottomLink = () => {
   );
 };
 
-const Login2 = () => {
+const AdminLogin = () => {
+    const { loading, login, control } = useLogin();
   const { t } = useTranslation("auth");
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const { control, handleSubmit } = useForm();
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: handleLogin,
-    mutationKey: ["login"],
-    onSuccess: () => {
-      navigate("/admin/user");
-    },
-    onError: (err:any) => {
-      toast.error(err?.response?.data?.error)
-    },
-  });
-  const onSubmit = (data:any) => {
-    mutate(data);
-  };
+  
 
   const handleClickShowPassword = () => setShowPassword((prev) => !prev);
 
@@ -74,7 +62,7 @@ const Login2 = () => {
         hasThirdPartyLogin
         bottomLinks={<BottomLink />}
       >
-        <form onSubmit={handleSubmit(onSubmit)} style={{ textAlign: "left" }}>
+        <form onSubmit={login} style={{ textAlign: "left" }}>
           {/* Email field */}
           <Controller
             name="email"
@@ -199,25 +187,21 @@ const Login2 = () => {
               variant="contained"
               color="primary"
               type="submit"
-              disabled={isPending}
+              disabled={loading}
               size="large"
               fullWidth
               sx={{ borderRadius: "0.5rem", padding: "12px" }}
             >
-              {isPending ? "Loading..." : t("login.loginButton")}
+              {loading ? "Loading..." : t("login.loginButton")}
             </Button>
           </Box>
 
           {/* Show error message */}
-          {isError && (
-            <Typography color="error" sx={{ mt: 2 }}>
-              {error?.response?.data?.error || "Something went wrong!"}
-            </Typography>
-          )}
+
         </form>
       </AuthLayout2>
     </>
   );
 };
 
-export default Login2;
+export default AdminLogin;
