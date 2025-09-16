@@ -1,4 +1,5 @@
-import { axiosInstance } from "./axiosInstance";
+import httpClient from "@src/helpers/httpClient";
+
 
 type EquationsData = {
     available_equations: {
@@ -11,17 +12,17 @@ type EquationsData = {
 }
 
 export const getEquations = async () => {
-    return axiosInstance.get<EquationsData>("api/nutritions/equations/").then(res => res.data);
+    return httpClient.get<EquationsData>("/nutritions/equations/").then(res => res.data);
 }
 
 export const addEquations = async (data: any) => {
-    return axiosInstance.post("api/nutritions/equations/", data);
+    return httpClient.post("/nutritions/equations/", data);
 }
 
 export const getCaclulations = async () => {
-    return axiosInstance.get("api/nutritions/calculations/").then(res => res.data);
+    return httpClient.get("/nutritions/calculations/").then(res => res.data);
 }
 
 export const addCaclulations = async (data: any) => {
-    return axiosInstance.post("api/nutritions/calculations/", data);
+    return httpClient.post("/nutritions/calculations/", data);
 }
