@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, IconButton } from '@mui/material';
+import { Box, IconButton, useTheme } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -40,6 +40,7 @@ interface CreateRecipePageProps {
 }
 
 const CreateRecipePage: React.FC<CreateRecipePageProps> = ({ onBack, onRecipeCreated }) => {
+  const theme = useTheme();
   const [isPublic, setIsPublic] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [nutritionData, setNutritionData] = useState(INITIAL_NUTRITION_DATA);
@@ -166,16 +167,16 @@ const CreateRecipePage: React.FC<CreateRecipePageProps> = ({ onBack, onRecipeCre
   };
 
   return (
-    <Box sx={{ backgroundColor: 'white', minHeight: '100vh' }}>
+    <Box sx={{ backgroundColor: theme.palette.background.paper, minHeight: '100vh' }}>
       {/* Header with back button */}
       {onBack && (
-        <Box sx={{ p: 2, borderBottom: '1px solid #E5E7EB' }}>
+        <Box sx={{ p: 2, borderBottom: `1px solid ${theme.palette.divider}` }}>
           <IconButton
             onClick={onBack}
             sx={{
-              color: '#6B7280',
+              color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#6B7280',
               '&:hover': {
-                backgroundColor: '#F3F4F6',
+                backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#F3F4F6',
               },
             }}
           >
@@ -201,7 +202,7 @@ const CreateRecipePage: React.FC<CreateRecipePageProps> = ({ onBack, onRecipeCre
               {/* Publish Recipe Card */}
               <Box 
                 sx={{ 
-                  backgroundColor: '#F9F4F2', 
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#F9F4F2', 
                   borderRadius: 3, 
                   p: 3 
                 }}
@@ -216,7 +217,7 @@ const CreateRecipePage: React.FC<CreateRecipePageProps> = ({ onBack, onRecipeCre
               {/* Basic Information Card */}
               <Box 
                 sx={{ 
-                  backgroundColor: '#F9F4F2', 
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#F9F4F2', 
                   borderRadius: 3, 
                   p: 3,
                   height: 'fit-content'
@@ -234,7 +235,7 @@ const CreateRecipePage: React.FC<CreateRecipePageProps> = ({ onBack, onRecipeCre
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               <Box 
                 sx={{ 
-                  backgroundColor: '#F9F4F2', 
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#F9F4F2', 
                   borderRadius: 3, 
                   p: 3 
                 }}
@@ -244,7 +245,7 @@ const CreateRecipePage: React.FC<CreateRecipePageProps> = ({ onBack, onRecipeCre
               
               <Box 
                 sx={{ 
-                  backgroundColor: '#F9F4F2', 
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#F9F4F2', 
                   borderRadius: 3, 
                   p: 3 
                 }}
@@ -256,7 +257,7 @@ const CreateRecipePage: React.FC<CreateRecipePageProps> = ({ onBack, onRecipeCre
             {/* Right: Nutrition Analysis Graph Card */}
             <Box 
               sx={{ 
-                backgroundColor: '#F9F4F2', 
+                backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#F9F4F2', 
                 borderRadius: 3, 
                 p: 3 
               }}

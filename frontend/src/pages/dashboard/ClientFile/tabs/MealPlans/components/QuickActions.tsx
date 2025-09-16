@@ -7,7 +7,8 @@ import {
   Button,
   Box,
   Divider,
-  Avatar
+  Avatar,
+  useTheme
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -26,6 +27,8 @@ interface QuickActionsProps {
 }
 
 const QuickActions: React.FC<QuickActionsProps> = ({ recentActivities }) => {
+  const theme = useTheme();
+  
   const getActivityColor = (type: string) => {
     switch (type) {
       case 'success':
@@ -40,9 +43,17 @@ const QuickActions: React.FC<QuickActionsProps> = ({ recentActivities }) => {
   };
 
   return (
-    <Card sx={{ borderRadius: 3, boxShadow: 2 }}>
+    <Card sx={{ 
+      borderRadius: 3, 
+      boxShadow: 2,
+      bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
+    }}>
       <CardContent sx={{ p: 3 }}>
-        <Typography variant="h6" sx={{ fontWeight: 700, mb: 3 }}>
+        <Typography variant="h6" sx={{ 
+          fontWeight: 700, 
+          mb: 3,
+          color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+        }}>
           Quick Actions
         </Typography>
         
@@ -54,7 +65,9 @@ const QuickActions: React.FC<QuickActionsProps> = ({ recentActivities }) => {
               startIcon={<AddIcon />}
               sx={{
                 bgcolor: '#02BE6A',
-                '&:hover': { bgcolor: '#01A85A' },
+                '&:hover': { 
+                  bgcolor: theme.palette.mode === 'dark' ? '#01A85A' : '#01A85A' 
+                },
                 py: 1.5,
                 borderRadius: 2
               }}
@@ -73,7 +86,9 @@ const QuickActions: React.FC<QuickActionsProps> = ({ recentActivities }) => {
                 borderColor: '#02BE6A',
                 py: 1.5,
                 borderRadius: 2,
-                '&:hover': { bgcolor: '#f1f8e9' }
+                '&:hover': { 
+                  bgcolor: theme.palette.mode === 'dark' ? '#02BE6A10' : '#f1f8e9' 
+                }
               }}
             >
               Browse Templates
@@ -90,7 +105,9 @@ const QuickActions: React.FC<QuickActionsProps> = ({ recentActivities }) => {
                 borderColor: '#ff9800',
                 py: 1.5,
                 borderRadius: 2,
-                '&:hover': { bgcolor: '#fff3e0' }
+                '&:hover': { 
+                  bgcolor: theme.palette.mode === 'dark' ? '#ff980010' : '#fff3e0' 
+                }
               }}
             >
               Generate Report
@@ -98,9 +115,16 @@ const QuickActions: React.FC<QuickActionsProps> = ({ recentActivities }) => {
           </Grid>
         </Grid>
 
-        <Divider sx={{ my: 3 }} />
+        <Divider sx={{ 
+          my: 3,
+          borderColor: theme.palette.mode === 'dark' ? '#333333' : undefined
+        }} />
 
-        <Typography variant="body2" sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography variant="body2" sx={{ 
+          fontWeight: 600, 
+          mb: 2,
+          color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+        }}>
           Recent Activity
         </Typography>
         
@@ -115,7 +139,10 @@ const QuickActions: React.FC<QuickActionsProps> = ({ recentActivities }) => {
               }}>
                 {activity.icon}
               </Avatar>
-              <Typography variant="body2" sx={{ color: '#666', fontSize: '0.875rem' }}>
+              <Typography variant="body2" sx={{ 
+                color: theme.palette.mode === 'dark' ? '#cccccc' : '#666', 
+                fontSize: '0.875rem' 
+              }}>
                 {activity.message}
               </Typography>
             </Box>

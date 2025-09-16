@@ -8,7 +8,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Chip
+  Chip,
+  useTheme
 } from '@mui/material';
 import { AssessmentData } from '../types';
 import {
@@ -26,6 +27,7 @@ interface AssessmentFormProps {
 }
 
 const AssessmentForm: React.FC<AssessmentFormProps> = ({ formData, onInputChange }) => {
+  const theme = useTheme();
   return (
     <Grid container spacing={3}>
       {/* Name Field */}
@@ -42,7 +44,8 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ formData, onInputChange
             size="small"
             sx={{
               '& .MuiOutlinedInput-root': {
-                backgroundColor: '#FFFFFF'
+                backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF',
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
               }
             }}
           />
@@ -63,7 +66,8 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ formData, onInputChange
             size="small"
             sx={{
               '& .MuiOutlinedInput-root': {
-                backgroundColor: '#FFFFFF'
+                backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF',
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
               }
             }}
           />
@@ -86,7 +90,8 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ formData, onInputChange
             InputLabelProps={{ shrink: true }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                backgroundColor: '#FFFFFF'
+                backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF',
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
               }
             }}
           />
@@ -107,7 +112,8 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ formData, onInputChange
             size="small"
             sx={{
               '& .MuiOutlinedInput-root': {
-                backgroundColor: '#FFFFFF'
+                backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF',
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
               }
             }}
             InputProps={{
@@ -131,7 +137,8 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ formData, onInputChange
             size="small"
             sx={{
               '& .MuiOutlinedInput-root': {
-                backgroundColor: '#FFFFFF'
+                backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF',
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
               }
             }}
             InputProps={{
@@ -153,7 +160,8 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ formData, onInputChange
               value={formData.weightTypeSelection}
               onChange={onInputChange('weightTypeSelection')}
               sx={{
-                backgroundColor: '#FFFFFF'
+                backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF',
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
               }}
             >
               {weightTypeOptions.map((option) => (
@@ -199,7 +207,8 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ formData, onInputChange
                 value={formData[item.field as keyof AssessmentData]}
                 onChange={onInputChange(item.field as keyof AssessmentData)}
                 sx={{
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
                 }}
               >
                 {item.options.map((option) => (

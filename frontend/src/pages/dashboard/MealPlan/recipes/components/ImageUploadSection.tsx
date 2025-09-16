@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import { LuImage, LuUpload } from 'react-icons/lu';
 
 interface ImageUploadSectionProps {
@@ -7,6 +7,8 @@ interface ImageUploadSectionProps {
 }
 
 const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({ onImageSelect }) => {
+  const theme = useTheme();
+  
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
     onImageSelect(file);
@@ -29,18 +31,17 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({ onImageSelect }
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-      
 
         border: '2px dashed #22C55E',
         borderRadius: 2,
         p: 6,
         height:'400px',
         textAlign: 'center',
-        backgroundColor: '#F9FAFB',
+        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9FAFB',
         cursor: 'pointer',
         transition: 'all 0.2s ease',
         '&:hover': {
-          backgroundColor: '#F3F4F6',
+          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#F3F4F6',
           borderColor: '#16A34A',
         },
       }}
@@ -52,10 +53,10 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({ onImageSelect }
       <Typography sx={{ color: '#22C55E', fontWeight: 500, mb: 1 }}>
         Click to upload
       </Typography>
-      <Typography sx={{ color: '#6B7280', fontSize: '14px', mb: 1 }}>
+      <Typography sx={{ color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#6B7280', fontSize: '14px', mb: 1 }}>
         or drag and drop
       </Typography>
-      <Typography sx={{ color: '#9CA3AF', fontSize: '12px' }}>
+      <Typography sx={{ color: theme.palette.mode === 'dark' ? '#a3a3a3' : '#9CA3AF', fontSize: '12px' }}>
         JPG, JPEG, PNG files less than 1MB
       </Typography>
       

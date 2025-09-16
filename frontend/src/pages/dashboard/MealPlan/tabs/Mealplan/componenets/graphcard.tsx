@@ -130,10 +130,10 @@ const GraphCard: React.FC<GraphCardProps> = ({ nutritionSummary, targetCalories 
         
         {/* Energy Info */}
         <Box sx={{ mb: 3 }}>
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+          <Typography variant="body2" sx={{ mb: 1, fontWeight: 500, color: theme.palette.text.primary }}>
             Energy
           </Typography>
-          <Typography variant="h6" sx={{ mb: 2, textAlign: 'right', fontWeight: 600 }}>
+          <Typography variant="h6" sx={{ mb: 2, textAlign: 'right', fontWeight: 600, color: theme.palette.text.primary }}>
             {Math.round(nutritionSummary.totalCalories)}/{targetCalories} kcal
           </Typography>
           <LinearProgress 
@@ -180,11 +180,11 @@ const GraphCard: React.FC<GraphCardProps> = ({ nutritionSummary, targetCalories 
                           mr: 1
                         }} 
                       />
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                         {macro.name}
                       </Typography>
                     </Box>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                       {macro.calories}
                     </Typography>
                   </Box>
@@ -208,7 +208,7 @@ const GraphCard: React.FC<GraphCardProps> = ({ nutritionSummary, targetCalories 
 
         {/* Meals Section */}
         <Box sx={{ mt: 4 }}>
-          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: theme.palette.text.primary }}>
             Meals
           </Typography>
           <Grid container spacing={2}>
@@ -225,7 +225,7 @@ const GraphCard: React.FC<GraphCardProps> = ({ nutritionSummary, targetCalories 
                     type="donut"
                     height={120}
                   />
-                  <Typography variant="body2" sx={{ mt: 1, fontWeight: 500 }}>
+                  <Typography variant="body2" sx={{ mt: 1, fontWeight: 500, color: theme.palette.text.primary }}>
                     {meal.name}
                   </Typography>
                 </Box>
@@ -236,16 +236,16 @@ const GraphCard: React.FC<GraphCardProps> = ({ nutritionSummary, targetCalories 
 
         {/* Micronutrients Distribution */}
         <Box sx={{ mt: 4 }}>
-          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: theme.palette.text.primary }}>
             Micronutrients distribution
           </Typography>
           {micronutrients.map((micro, index) => (
             <Box key={index} sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                <Typography variant="body2" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                   {micro.name}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                   {micro.value} {micro.unit}
                 </Typography>
               </Box>
@@ -267,10 +267,10 @@ const GraphCard: React.FC<GraphCardProps> = ({ nutritionSummary, targetCalories 
 
         {/* Macronutrients Table */}
         <Box sx={{ mt: 4 }}>
-          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: theme.palette.text.primary }}>
             Macronutrients
           </Typography>
-          <TableContainer component={Paper} sx={{ boxShadow: 1, borderRadius: 2 }}>
+          <TableContainer component={Paper} sx={{ boxShadow: 1, borderRadius: 2, backgroundColor: theme.palette.background.paper }}>
             <Table>
               <TableHead>
                 <TableRow sx={{ backgroundColor: theme.palette.success.main }}>
@@ -297,14 +297,14 @@ const GraphCard: React.FC<GraphCardProps> = ({ nutritionSummary, targetCalories 
                       }
                     }}
                   >
-                    <TableCell sx={{ fontWeight: index === macronutrientsTable.length - 1 ? 600 : 400 }}>
+                    <TableCell sx={{ fontWeight: index === macronutrientsTable.length - 1 ? 600 : 400, color: theme.palette.text.primary }}>
                       {row.meal}
                     </TableCell>
-                    <TableCell>{row.calories}</TableCell>
-                    <TableCell>{row.protein}</TableCell>
-                    <TableCell>{row.carbs}</TableCell>
-                    <TableCell>{row.fats}</TableCell>
-                    <TableCell>{row.supplements}</TableCell>
+                    <TableCell sx={{ color: theme.palette.text.primary }}>{row.calories}</TableCell>
+                    <TableCell sx={{ color: theme.palette.text.primary }}>{row.protein}</TableCell>
+                    <TableCell sx={{ color: theme.palette.text.primary }}>{row.carbs}</TableCell>
+                    <TableCell sx={{ color: theme.palette.text.primary }}>{row.fats}</TableCell>
+                    <TableCell sx={{ color: theme.palette.text.primary }}>{row.supplements}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

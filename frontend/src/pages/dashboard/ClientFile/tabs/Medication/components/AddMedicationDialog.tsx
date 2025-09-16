@@ -11,7 +11,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Autocomplete
+  Autocomplete,
+  useTheme
 } from '@mui/material';
 import { AddMedicationDialogState } from '../types';
 import { medicationOptions, frequencyOptions, routeOptions } from '../constants';
@@ -29,14 +30,25 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
   onClose, 
   onSave 
 }) => {
+  const theme = useTheme();
+  
   return (
     <Dialog 
       open={dialogState.open} 
       onClose={onClose}
       maxWidth="md" 
       fullWidth
+      PaperProps={{
+        sx: {
+          bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
+        }
+      }}
     >
-      <DialogTitle>Add New Medication</DialogTitle>
+      <DialogTitle sx={{ 
+        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000' 
+      }}>
+        Add New Medication
+      </DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
           <Grid item xs={12} md={6}>
@@ -53,7 +65,11 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
                   fullWidth
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      backgroundColor: '#FFFFFF'
+                      backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                    },
+                    '& .MuiFormLabel-root': {
+                      color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                     }
                   }}
                 />
@@ -71,7 +87,11 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
               placeholder="e.g., 500mg, 10mg"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                },
+                '& .MuiFormLabel-root': {
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                 }
               }}
             />
@@ -84,7 +104,8 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
                 value={dialogState.frequency}
                 onChange={(e) => onDialogChange('frequency', e.target.value)}
                 sx={{
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
                 }}
               >
                 {frequencyOptions.map((freq) => (
@@ -101,7 +122,8 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
                 value={dialogState.route}
                 onChange={(e) => onDialogChange('route', e.target.value)}
                 sx={{
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
                 }}
               >
                 {routeOptions.map((route) => (
@@ -122,7 +144,11 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
               InputLabelProps={{ shrink: true }}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                },
+                '& .MuiFormLabel-root': {
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                 }
               }}
             />
@@ -139,7 +165,11 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
               InputLabelProps={{ shrink: true }}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                },
+                '& .MuiFormLabel-root': {
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                 }
               }}
             />
@@ -155,7 +185,11 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
               placeholder="e.g., Dr. Smith"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                },
+                '& .MuiFormLabel-root': {
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                 }
               }}
             />
@@ -171,7 +205,11 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
               placeholder="e.g., Diabetes, Hypertension"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                },
+                '& .MuiFormLabel-root': {
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                 }
               }}
             />
@@ -189,7 +227,11 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
               placeholder="Special instructions, side effects to monitor, etc."
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                },
+                '& .MuiFormLabel-root': {
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
                 }
               }}
             />
@@ -199,14 +241,21 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
       <DialogActions>
         <Button 
           onClick={onClose}
-          sx={{ color: '#666' }}
+          sx={{ 
+            color: theme.palette.mode === 'dark' ? '#ffffff' : '#666' 
+          }}
         >
           Cancel
         </Button>
         <Button 
           onClick={onSave}
           variant="contained"
-          sx={{ bgcolor: '#02BE6A', '&:hover': { bgcolor: '#01A85A' } }}
+          sx={{ 
+            bgcolor: '#02BE6A', 
+            '&:hover': { 
+              bgcolor: theme.palette.mode === 'dark' ? '#01A85A' : '#01A85A' 
+            } 
+          }}
         >
           Save Medication
         </Button>
