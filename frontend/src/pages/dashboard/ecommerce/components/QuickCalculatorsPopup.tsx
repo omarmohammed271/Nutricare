@@ -1,16 +1,6 @@
 import { 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions, 
-  Button, 
-  Typography, 
-  Box, 
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  IconButton
+  Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, TextField,
+  Select, MenuItem, FormControl, IconButton, Snackbar, Alert
 } from "@mui/material";
 import { LuX } from "react-icons/lu";
 import { useState } from "react";
@@ -28,18 +18,23 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
     calculatorType: "bmi", // default
   });
 
+  const [toast, setToast] = useState<{ open: boolean; message: string; severity: "success" | "error" }>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
   // POST Calculation
-  const {
-    mutate,
-    isSuccess
-  } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: addCaclulations,
     mutationKey: ["new_calculation"],
-    onSuccess(data, variables, context) {
-        console.log("✅ Created Successfully")
-        console.log(data)
+    onSuccess(data) {
+      setToast({ open: true, message: "✅ Calculation added successfully!", severity: "success" });
     },
-  })
+    onError(err: any) {
+      setToast({ open: true, message: "❌ Failed to add calculation.", severity: "error" });
+    }
+  });
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -53,7 +48,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
     (eq) => eq.code === formData.calculatorType
   );
 
-  const handleLogData = () => {
+  const handleAddCaculation = () => {
     if (!selectedEquation) return;
   
     // Build inputs object
@@ -71,11 +66,10 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
     };
 
     mutate(payload);
-  
-    console.log(payload);
   };
 
   return (
+    <>
     <Dialog
       open={open}
       onClose={onClose}
@@ -264,7 +258,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
         </Button>
 
         <Button
-          onClick={handleLogData}
+          onClick={handleAddCaculation}
           variant="contained"
           sx={{
             backgroundColor: "#02BE6A",
@@ -280,10 +274,23 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
             },
           }}
         >
-          Log Data
+          Add Caculation
         </Button>
       </DialogActions>
     </Dialog>
+
+    {/* Snackbar for toaster */}
+    <Snackbar
+      open={toast.open}
+      autoHideDuration={3000}
+      onClose={() => setToast(prev => ({ ...prev, open: false }))}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+    >
+      <Alert onClose={() => setToast(prev => ({ ...prev, open: false }))} severity={toast.severity} sx={{ width: '100%' }}>
+        {toast.message}
+      </Alert>
+    </Snackbar>
+    </>
   );
 };
 
