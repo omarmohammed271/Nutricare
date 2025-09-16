@@ -81,9 +81,9 @@ const Router = (props: RouteProps) => {
             {...props} 
             element={
               <VerticalLayout>
-                <ProtectedRoute>
+                {/* <ProtectedRoute> */}
                   {route.element}
-                </ProtectedRoute>
+                {/* </ProtectedRoute> */}
               </VerticalLayout>
             } 
           />

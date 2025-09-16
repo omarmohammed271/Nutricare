@@ -38,6 +38,8 @@ import {
   recipes,
   Template,
 } from "./index";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { getEquations } from "@src/api/admin/adminAPI";
 
 // =====================
 // BasicMenu Component
@@ -103,6 +105,12 @@ export default function ContentManagement() {
   const [libraryState, setLibraryState] = useState<LibraryFile[]>(initialLibraryFiles);
   const [templatesState, setTemplatesState] = useState<Template[]>(initialTemplates);
 
+  const [openEquationDialog, setOpenEquationDialog] = useState(false);
+  const [newEquationName, setNewEquationName] = useState("");
+  const [newEquationFormula, setNewEquationFormula] = useState("");
+  const [newEquationInput, setNewEquationInput] = useState("");
+  const [newEquationUnits, setNewEquationUnits] = useState("");
+
   // Library UI state
   const [searchLib, setSearchLib] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<"All" | string>("All");
@@ -119,6 +127,18 @@ export default function ContentManagement() {
   const [newTemplateName, setNewTemplateName] = useState("");
   const [newTemplateCalories, setNewTemplateCalories] = useState("");
   const [newTemplateCategory, setNewTemplateCategory] = useState("Meal Plan");
+
+  
+  // GET equations
+  const {
+    data: availableEquations = [], // fallback to [] if undefined
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ['equations'],
+    queryFn: getEquations,
+    select: (data) => data.available_equations, // 👈 pick only what you need
+  })
 
   const handleApproval = (id: number, val: boolean) => {
     setRecipeState((prev) => prev.map((r) => (r.id === id ? { ...r, request: val ? "Approved" : "Rejected" } : r)));
@@ -146,7 +166,15 @@ export default function ContentManagement() {
     return matchesSearch && matchesCategory;
   });
 
-  const data = tab === 0 ? equations : tab === 1 ? recipeState : tab === 2 ? filteredLibrary : filteredTemplates;
+  const data =
+  tab === 0
+    ? availableEquations // array of strings
+    : tab === 1
+    ? recipeState
+    : tab === 2
+    ? filteredLibrary
+    : filteredTemplates;
+
 
   const totalPages = Math.max(1, Math.ceil(data.length / rowsPerPage));
   const startIndex = (page - 1) * rowsPerPage;
@@ -208,6 +236,17 @@ export default function ContentManagement() {
   //   setOpenTemplateDialog(false);
   //   if (tab === 3) setPage(1);
   // };
+
+
+  // POST equations
+  // const {
+  //   mutate,
+  //   isSuccess,
+  //   isPending,
+  //   isError
+  // } = useMutation({
+  //   mutationFn: 
+  // });
 
   return (
     <>
@@ -325,7 +364,10 @@ export default function ContentManagement() {
 
           <Button
             variant="contained"
-            onClick={() => (tab === 2 ? setOpenUpload(true) : null)}
+            onClick={() => {
+              if (tab === 0) setOpenEquationDialog(true);
+              if (tab === 2) setOpenUpload(true);
+            }}
             sx={{
               bgcolor: (theme) => theme.palette.primary.main,
               "&:hover": { bgcolor: (theme) => theme.palette.secondary.main },
@@ -336,10 +378,10 @@ export default function ContentManagement() {
             {tab === 0
               ? "Create New Equation"
               : tab === 1
-                ? "Recipe Requests"
-                : tab === 2
-                  ? "Upload New File"
-                  : "Create New Templates"}
+              ? "Recipe Requests"
+              : tab === 2
+              ? "Upload New File"
+              : "Create New Templates"}
           </Button>
         </Box>
 
@@ -402,22 +444,22 @@ export default function ContentManagement() {
               <TableBody>
                 {/* Equations */}
                 {tab === 0 &&
-                  (currentRows as Equation[]).map((eq) => (
-                    <TableRow key={eq.id} hover>
-                      <TableCell>{eq.name}</TableCell>
-                      <TableCell>{eq.equation}</TableCell>
-                      <TableCell>{eq.input}</TableCell>
-                      <TableCell>{eq.units}</TableCell>
-                      <TableCell>
-                        <IconButton color="success">
-                          <Edit />
-                        </IconButton>
-                        <IconButton color="error">
-                          <Delete />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                (currentRows as string[]).map((eqName, idx) => (
+                  <TableRow key={startIndex + idx} hover>
+                    <TableCell>{eqName}</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>
+                      <IconButton color="success">
+                        <Edit />
+                      </IconButton>
+                      <IconButton color="error">
+                        <Delete />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
 
                 {/* Recipes */}
                 {tab === 1 &&
@@ -571,6 +613,69 @@ export default function ContentManagement() {
             </Button>
           </Box>
         </Box>
+
+        {/* New equation (Equations) */}
+        <Dialog open={openEquationDialog} onClose={() => setOpenEquationDialog(false)} maxWidth="sm" fullWidth>
+          <DialogTitle>Create New Equation</DialogTitle>
+          <DialogContent>
+            <TextField
+              fullWidth
+              label="Equation Name"
+              value={newEquationName}
+              onChange={(e) => setNewEquationName(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Equation Formula"
+              value={newEquationFormula}
+              onChange={(e) => setNewEquationFormula(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Input"
+              value={newEquationInput}
+              onChange={(e) => setNewEquationInput(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Units"
+              value={newEquationUnits}
+              onChange={(e) => setNewEquationUnits(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+
+            <Box display="flex" justifyContent="space-between" mt={2}>
+              <Button variant="outlined" onClick={() => setOpenEquationDialog(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ bgcolor: (theme) => theme.palette.primary.main }}
+                onClick={() => {
+                  // Here you can call a mutation (POST to API) instead of just console.log
+                  console.log({
+                    name: newEquationName,
+                    equation: newEquationFormula,
+                    input: newEquationInput,
+                    units: newEquationUnits,
+                  });
+
+                  // reset + close
+                  setNewEquationName("");
+                  setNewEquationFormula("");
+                  setNewEquationInput("");
+                  setNewEquationUnits("");
+                  setOpenEquationDialog(false);
+                }}>
+                Save Equation
+              </Button>
+            </Box>
+          </DialogContent>
+        </Dialog>
+
 
         {/* Upload Dialog (Library) */}
         <Dialog open={openUpload} onClose={() => setOpenUpload(false)} maxWidth="sm" fullWidth>
