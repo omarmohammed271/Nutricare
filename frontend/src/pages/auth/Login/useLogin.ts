@@ -5,9 +5,9 @@ import { useAuthContext } from "@src/states";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { AuthService } from "@src/services";
 import { ErrorHandler } from "@src/utils/errorHandler";
+import { useSnackbar } from "notistack";
 import type { LoginRequest } from "@src/types";
 import * as yup from "yup";
-import { useSnackbar } from "notistack";
 
 export default function useLogin() {
   const [loading, setLoading] = useState(false);

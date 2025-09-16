@@ -98,14 +98,13 @@ const authRoutes: RoutesProps[] = [
   { path: "/admin/auth/recover-password", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Admin/resetPassAdmin"))} /> },
   { path: "/auth/register", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Register"))} /> },
   { path: "/auth/logout", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Logout"))} /> },
-  { path: "/auth/recover-password", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ResetPasswordCode"))} />, },
   { path: "/auth/lock-screen", element: <LoadComponent component={lazy(() => import("@src/pages/auth/LockScreen"))} /> },
   { path: "/auth/confirm-mail", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ConfirmMail"))} />, },
   { path: "/auth/login2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Login2"))} /> },
   { path: "/auth/register2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Register2"))} /> },
   { path: "/auth/activate-account", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ActivateAccount"))} /> },
   { path: "/auth/recover-password-code", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ResetPasswordCode"))} />, },
-
+  { path: "/auth/recover-password", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ResetPasswordDone"))} />, },
   { path: "/auth/logout2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/Logout2"))} /> },
   { path: "/auth/recover-password2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/ResetPassword2"))} />, },
   { path: "/auth/lock-screen2", element: <LoadComponent component={lazy(() => import("@src/pages/auth/LockScreen"))} />, },
@@ -117,6 +116,7 @@ const authRoutes: RoutesProps[] = [
 const adminRoutes: RoutesProps[] = [
   { path: "/ecommerce", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ecommerce/"))} /> },
   { path: "/my-profile", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/Profile/" ))} /> },
+  { path: "/auth-test", element: <LoadComponent component={lazy(() => import("@src/components/AuthTest"))} /> },
   { path: "/meal-plan", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/MealPlan"))} /> },
   { path: "/meal-plan/templates", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/MealPlan"))} /> },
   { path: "/meal-plan/recipes", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/MealPlan"))} /> },

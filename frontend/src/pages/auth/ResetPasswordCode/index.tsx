@@ -8,6 +8,8 @@ import AuthLayout2 from "../AuthLayout2";
 import { AuthService } from "@src/services";
 import { useAuthContext } from "@src/states";
 import { useState, useEffect } from "react";
+import { useSnackbar } from "notistack";
+import { ErrorHandler } from "@src/utils/errorHandler";
 
 const BottomLink = () => {
   return (
@@ -28,11 +30,8 @@ const ResetPasswordcode = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { saveSession } = useAuthContext();
+  const { enqueueSnackbar } = useSnackbar();
   const [email, setEmail] = useState("");
-  
-
-
-
 
   useEffect(() => {
     if (location.state && (location.state as any).email) {
@@ -76,39 +75,59 @@ const ResetPasswordcode = () => {
         email: email, // Email from registration flow
         reset_code: data.reset_code // Code from form input
       });
-      
 
-    
+      if (response.status === 200) {
+        console.log("Password reset email sent successfully!");
+        navigate("/auth/recover-password", { state: { email: email } }); 
+      } else {
+        console.log("Unexpected response:", response);
+      }
     } catch (error: any) {
-      console.error("Activation failed:", error);
-      // Handle activation errors
-      setError("reset_code", {
-        type: "manual",
-        message: "Invalid activation code. Please try again."
-      });
+      // Process server error and display appropriate message
+      const errorInfo = ErrorHandler.processLoginError(error);
+      enqueueSnackbar(errorInfo.message, { variant: "error" });
+      
+      // Handle specific field errors
+      if (error?.response?.data) {
+        const errorData = error.response.data;
+        if (errorData.reset_code) {
+          const message = Array.isArray(errorData.reset_code) ? errorData.reset_code[0] : errorData.reset_code;
+          setError("reset_code", { type: "server", message });
+        } else if (errorData.detail) {
+          setError("reset_code", { type: "server", message: errorData.detail });
+        } else if (errorData.non_field_errors) {
+          const message = Array.isArray(errorData.non_field_errors) ? errorData.non_field_errors[0] : errorData.non_field_errors;
+          setError("reset_code", { type: "server", message });
+        }
+      }
     }
   };
 
   // Function to request a new activation code
-const requestNewCode = async () => {
-  try {
-    const response = await AuthService.ResetPassword({ email });
-    
-    if (response.status === "success") {
-      console.log("reset code sent successfully. Please check your email.");
-    } else {
+  const requestNewCode = async () => {
+    try {
+      const response = await AuthService.ResetPassword({ email });
+      
+      if (response.status === "success") {
+        console.log("reset code sent successfully. Please check your email.");
+        enqueueSnackbar("Reset code sent successfully. Please check your email.", { variant: "success" });
+      } else {
+        setError("reset_code", {
+          type: "manual",
+          message: response.message || "Failed to send reset code. Please try again."
+        });
+      }
+    } catch (error: any) {
+      // Process server error and display appropriate message
+      const errorInfo = ErrorHandler.processLoginError(error);
+      enqueueSnackbar(errorInfo.message, { variant: "error" });
+      
       setError("reset_code", {
         type: "manual",
-        message: response.message || "Failed to send reset code. Please try again."
+        message: error?.response?.data?.message || "An unexpected error occurred."
       });
     }
-  } catch (error: any) {
-    setError("reset_code", {
-      type: "manual",
-      message: error?.response?.data?.message || "An unexpected error occurred."
-    });
-  }
-};
+  };
 
 
   return (
