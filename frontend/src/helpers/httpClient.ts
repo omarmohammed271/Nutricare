@@ -11,11 +11,10 @@ const axiosInstance: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'X-CSRFTOKEN': '4FxcMgwPMIrvx0xJij8Sfn64E22yOkj86b9efxeRpFkMIfsSqN9vTP1HrMfFfd3B'
     
   },
-  withCredentials: true, // Important for httpOnly cookies
 });
+
 
 // Request interceptor to add auth token from memory
 axiosInstance.interceptors.request.use(
