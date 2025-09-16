@@ -4,9 +4,7 @@ import HttpClient from "@src/helpers/httpClient";
 export interface DrugCategory {
   id: number;
   name: string;
-  description?: string;
-  created_at?: string;
-  updated_at?: string;
+  drugs: Drug[];
 }
 
 export interface Drug {
@@ -14,10 +12,6 @@ export interface Drug {
   name: string;
   drug_effect: string;
   nutritional_implications: string;
-  category: {
-    id: number;
-    name: string;
-  };
 }
 
 export interface DrugDetail extends Drug {
@@ -26,52 +20,46 @@ export interface DrugDetail extends Drug {
 
 // Mock data for development when API is not available
 const mockDrugCategories: DrugCategory[] = [
-  { id: 1, name: "Anticoagulants", description: "Blood thinning medications" },
-  { id: 2, name: "Antidiabetics", description: "Diabetes management medications" },
-  { id: 3, name: "Cardiovascular", description: "Heart and blood vessel medications" },
-  { id: 4, name: "Antibiotics", description: "Infection fighting medications" },
-];
-
-const mockDrugs: Drug[] = [
   { 
     id: 1, 
-    name: "Warfarin", 
-    drug_effect: "Vitamin K rich foods", 
-    nutritional_implications: "Limit leafy greens",
-    category: { id: 1, name: "Anticoagulants" }
+    name: "Anticoagulants", 
+    drugs: [
+      { id: 1, name: "Warfarin", drug_effect: "Vitamin K rich foods", nutritional_implications: "Limit leafy greens" },
+      { id: 2, name: "Aspirin", drug_effect: "Garlic, Ginger", nutritional_implications: "Monitor bleeding risk" }
+    ]
   },
   { 
     id: 2, 
-    name: "Aspirin", 
-    drug_effect: "Garlic, Ginger", 
-    nutritional_implications: "Monitor bleeding risk",
-    category: { id: 1, name: "Anticoagulants" }
+    name: "Antidiabetics", 
+    drugs: [
+      { id: 3, name: "Metformin", drug_effect: "Alcohol", nutritional_implications: "Avoid alcohol consumption" }
+    ]
   },
   { 
     id: 3, 
-    name: "Metformin", 
-    drug_effect: "Alcohol", 
-    nutritional_implications: "Avoid alcohol consumption",
-    category: { id: 2, name: "Antidiabetics" }
+    name: "Cardiovascular", 
+    drugs: [
+      { id: 4, name: "Digoxin", drug_effect: "High fiber foods", nutritional_implications: "Take with food" }
+    ]
   },
   { 
     id: 4, 
-    name: "Digoxin", 
-    drug_effect: "High fiber foods", 
-    nutritional_implications: "Take with food",
-    category: { id: 3, name: "Cardiovascular" }
+    name: "Antibiotics", 
+    drugs: [
+      { id: 5, name: "Amoxicillin", drug_effect: "GI distress", nutritional_implications: "Take with food" }
+    ]
   },
 ];
 
 // API service functions with fallback to mock data
 export const nutritionApi = {
-  // Get all drug categories - using the drug-categories endpoint
+  // Get all drug categories with their drugs - using the drugs endpoint
   getDrugCategories: async (): Promise<DrugCategory[]> => {
     try {
-      const response = await HttpClient.get('/nutritions/drug-categories/');
-      console.log('📂 API Response for categories:', response.data);
+      const response = await HttpClient.get('/nutritions/drugs/');
+      console.log('📂 API Response for drugs (categories):', response.data);
       
-      // Handle different response structures
+      // The API returns categories with nested drugs
       if (Array.isArray(response.data)) {
         return response.data;
       } else if (response.data && Array.isArray(response.data.results)) {
@@ -88,15 +76,42 @@ export const nutritionApi = {
     }
   },
 
-  // Get drug details by ID - using the drug-details endpoint (no trailing slash)
+  // Get drug details by ID - search through all categories from drugs endpoint
   getDrugDetails: async (id: number): Promise<DrugDetail> => {
     try {
-      const response = await HttpClient.get(`/nutritions/drug-details/${id}`);
-      console.log('💊 API Response for drug details:', response.data);
-      return response.data;
+      // First try the dedicated drug-details endpoint
+      try {
+        const response = await HttpClient.get(`/nutritions/drug-details/${id}`);
+        console.log('💊 API Response for drug details:', response.data);
+        return response.data;
+      } catch (apiError) {
+        // If drug-details endpoint fails, search through categories from drugs endpoint
+        console.log('Drug-details endpoint failed, searching through drugs endpoint...');
+        const categories = await nutritionApi.getDrugCategories();
+        
+        for (const category of categories) {
+          if (category.drugs) {
+            const drug = category.drugs.find(drug => drug.id === id);
+            if (drug) {
+              console.log('💊 Found drug in categories:', drug);
+              return drug;
+            }
+          }
+        }
+        
+        throw new Error('Drug not found in any category');
+      }
     } catch (error: any) {
-      console.warn('Nutrition API not available, using mock data:', error.message);
-      const mockDrug = mockDrugs.find(drug => drug.id === id);
+      console.warn('Error getting drug details:', error.message);
+      // Fallback to mock data
+      const allMockDrugs: Drug[] = [];
+      mockDrugCategories.forEach(category => {
+        if (category.drugs) {
+          allMockDrugs.push(...category.drugs);
+        }
+      });
+      
+      const mockDrug = allMockDrugs.find(drug => drug.id === id);
       if (mockDrug) {
         return mockDrug;
       }
@@ -104,38 +119,65 @@ export const nutritionApi = {
     }
   },
 
-  // Get drugs by category ID - no trailing slash
+  // Get drugs by category ID - extract from drugs endpoint
   getDrugsByCategory: async (categoryId: number): Promise<Drug[]> => {
     try {
-      const response = await HttpClient.get(`/nutritions/drugs/${categoryId}`);
-      console.log('💊 API Response for drugs by category:', response.data);
+      // Get all categories with their drugs from drugs endpoint
+      const categories = await nutritionApi.getDrugCategories();
+      const category = categories.find(cat => cat.id === categoryId);
       
-      // Handle different response structures
-      if (Array.isArray(response.data)) {
-        return response.data;
-      } else if (response.data && Array.isArray(response.data.results)) {
-        return response.data.results;
-      } else if (response.data && Array.isArray(response.data.drugs)) {
-        return response.data.drugs;
+      if (category && category.drugs) {
+        console.log('💊 Drugs for category:', category.drugs);
+        return category.drugs;
       } else {
-        console.warn('Unexpected API response structure for drugs:', response.data);
-        return mockDrugs.filter(drug => drug.category.id === categoryId);
+        console.warn('Category not found or has no drugs:', categoryId);
+        return [];
       }
     } catch (error: any) {
-      console.warn('Nutrition API not available, using mock data:', error.message);
-      return mockDrugs.filter(drug => drug.category.id === categoryId);
+      console.warn('Error getting drugs by category:', error.message);
+      // Fallback to mock data
+      const mockCategory = mockDrugCategories.find(cat => cat.id === categoryId);
+      return mockCategory ? mockCategory.drugs : [];
     }
   },
 
-  // Search drugs by name (if the API supports it)
+  // Search drugs by name across all categories using drugs endpoint
   searchDrugs: async (query: string): Promise<Drug[]> => {
     try {
-      const response = await HttpClient.get(`/nutritions/drugs/?search=${encodeURIComponent(query)}`);
-      return response.data;
+      // Get all categories with their drugs from drugs endpoint
+      const categories = await nutritionApi.getDrugCategories();
+      
+      // Search through all drugs in all categories
+      const allDrugs: Drug[] = [];
+      categories.forEach(category => {
+        if (category.drugs) {
+          allDrugs.push(...category.drugs);
+        }
+      });
+      
+      // Filter drugs that match the search query
+      const searchResults = allDrugs.filter(drug => 
+        drug.name.toLowerCase().includes(query.toLowerCase()) ||
+        drug.drug_effect.toLowerCase().includes(query.toLowerCase()) ||
+        drug.nutritional_implications.toLowerCase().includes(query.toLowerCase())
+      );
+      
+      console.log('🔍 Search results for query:', query, searchResults);
+      return searchResults;
     } catch (error: any) {
-      console.warn('Nutrition API not available, using mock data:', error.message);
-      return mockDrugs.filter(drug => 
-        drug.name.toLowerCase().includes(query.toLowerCase())
+      console.warn('Error searching drugs:', error.message);
+      // Fallback to mock data search
+      const allMockDrugs: Drug[] = [];
+      mockDrugCategories.forEach(category => {
+        if (category.drugs) {
+          allMockDrugs.push(...category.drugs);
+        }
+      });
+      
+      return allMockDrugs.filter(drug => 
+        drug.name.toLowerCase().includes(query.toLowerCase()) ||
+        drug.drug_effect.toLowerCase().includes(query.toLowerCase()) ||
+        drug.nutritional_implications.toLowerCase().includes(query.toLowerCase())
       );
     }
   }
