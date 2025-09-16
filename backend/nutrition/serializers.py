@@ -21,20 +21,46 @@ class CalculationSerializer(serializers.ModelSerializer):
         return calc
 
 
-class DrugCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DrugCategory
-        fields = ['id', 'name']
-
-
 class DrugSerializer(serializers.ModelSerializer):
-    category = DrugCategorySerializer(read_only=True)
-    category_id = serializers.PrimaryKeyRelatedField(
-        queryset=DrugCategory.objects.all(), source='category', write_only=True
-    )
-
     class Meta:
         model = Drug
-        fields = ['id', 'name', 'drug_effect', 'nutritional_implications', 'category', 'category_id']
+        fields = ['id', 'name', 'drug_effect', 'nutritional_implications']
 
 
+class DrugCategorySerializer(serializers.ModelSerializer):
+    drugs = DrugSerializer(many=True, read_only=True)
+    class Meta:
+        model = DrugCategory
+        fields = ['id', 'name','drugs']
+
+
+
+
+
+class ScreeningToolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ScreeningTool
+        fields = '__all__'
+
+class ScreeningResultSerializer(serializers.ModelSerializer):
+    tool_name = serializers.CharField(source='tool.name', read_only=True)
+    
+    class Meta:
+        model = ScreeningResult
+        fields = '__all__'
+        read_only_fields = ('patient', 'date_administered')
+
+class MNA_SF_DataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MNA_SF_Data
+        fields = '__all__'
+
+class GNRI_DataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GNRI_Data
+        fields = '__all__'
+
+class NUTRIC_DataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NUTRIC_Data
+        fields = '__all__'

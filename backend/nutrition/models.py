@@ -68,73 +68,79 @@ class Drug(models.Model):
 
 class ScreeningTool(models.Model):
     TOOL_TYPES = [
-        ('MNA_SF', 'Mini Nutritional Assessment - Short Form (MNA SF)'),
-        ('MNA_LF', 'Mini Nutritional Assessment Long Form (MNA LF)'),
-        ('NRS_2002', 'Nutrition Risk Screening 2002 (NRS 2002)'),
-        ('PG_SGA', 'Patient-Generated Subjective Global Assessment (PG-SGA)'),
-        ('MST', 'Malnutrition Screening Tool (MST)'),
-        ('MUST', 'Malnutrition Universal Screening Tool (MUST)'),
-        ('GNRI', 'Geriatric Nutritional Risk Index (GNRI)'),
-        ('SNAQ', 'Short Nutritional Assessment Questionnaire (SNAQ)'),
-        ('PYMS', 'Paediatric Yorkhill Malnutrition Score (PYMS)'),
-        ('STAMP', 'Screening Tool for the Assessment of Malnutrition in Pediatrics (STAMP)'),
-        ('STRONGkids', 'STRONGkids – Screening Tool for Risk on Nutritional Status and Growth'),
-        ('NUTRIC', 'NUTRIC Score – Nutrition Risk in the Critically Ill'),
+        ('MNA_SF', 'Mini Nutritional Assessment - Short Form'),
+        ('MNA_LF', 'Mini Nutritional Assessment - Long Form'),
+        ('NRS_2002', 'Nutrition Risk Screening 2002'),
+        ('PG_SGA', 'Patient-Generated Subjective Global Assessment'),
+        ('MST', 'Malnutrition Screening Tool'),
+        ('MUST', 'Malnutrition Universal Screening Tool'),
+        ('GNRI', 'Geriatric Nutritional Risk Index'),
+        ('SNAQ', 'Short Nutritional Assessment Questionnaire'),
+        ('PYMS', 'Paediatric Yorkhill Malnutrition Score'),
+        ('STAMP', 'Screening Tool for the Assessment of Malnutrition in Pediatrics'),
+        ('STRONGkids', 'STRONGkids Screening Tool'),
+        ('NUTRIC', 'NUTRIC Score'),
     ]
     
     TARGET_POPULATIONS = [
-        ('ELDERLY', '>65 years'),
-        ('ADULT_HOSPITALIZED', 'Adult Hospitalized'),
-        ('ADULT_COMMUNITY', 'Adult (Community/Hospital)'),
-        ('CANCER', 'Cancer Patient'),
-        ('PEDIATRICS', 'Pediatrics'),
-        ('CRITICAL_ILL', 'Adult, Critical ill'),
+        ('geriatric', '>65 years'),
+        ('adult_hospitalized', 'Adult Hospitalized'),
+        ('cancer', 'Cancer Patient'),
+        ('adult_community', 'Adult (Community/Hospital)'),
+        ('pediatric', 'Pediatrics'),
+        ('critical', 'Adult, Critical ill'),
     ]
     
-    name = models.CharField(max_length=100, choices=TOOL_TYPES)
-    target_population = models.CharField(max_length=50, choices=TARGET_POPULATIONS)
-    definition = models.TextField()
+    name = models.CharField(max_length=100)
+    tool_type = models.CharField(max_length=20, choices=TOOL_TYPES, unique=True)
+    description = models.TextField()
+    target_population = models.CharField(max_length=20, choices=TARGET_POPULATIONS)
     manual_version_url = models.URLField(blank=True)
-    automated_version_url = models.URLField(blank=True)
+    digital_version_url = models.URLField(blank=True)
     score_interpretation = models.TextField()
     logic_reference = models.URLField(blank=True)
     general_notes = models.TextField(blank=True)
     
     def __str__(self):
-        return self.get_name_display()
-
-class Patient(models.Model):
-    GENDER_CHOICES = [
-        ('M', 'Male'),
-        ('F', 'Female'),
-    ]
-    
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    date_of_birth = models.DateField()
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
-    height = models.FloatField(help_text="Height in cm", null=True, blank=True)
-    weight = models.FloatField(help_text="Weight in kg", null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}"
-    
-    def age(self):
-        import datetime
-        return int((datetime.date.today() - self.date_of_birth).days / 365.25)
+        return self.name
 
 class ScreeningResult(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='screening_results')
+    patient = models.ForeignKey('patients.Patient', on_delete=models.CASCADE)
     tool = models.ForeignKey(ScreeningTool, on_delete=models.CASCADE)
-    score = models.FloatField(null=True, blank=True)
-    risk_level = models.CharField(max_length=50, blank=True)
-    completed_at = models.DateTimeField(auto_now_add=True)
-    data = models.JSONField(default=dict)  # Store all the answers and calculations
+    date_administered = models.DateTimeField(auto_now_add=True)
+    total_score = models.DecimalField(max_digits=5, decimal_places=2)
+    risk_level = models.CharField(max_length=50)
+    raw_data = models.JSONField()  # Store all question responses
     
     class Meta:
-        ordering = ['-completed_at']
+        ordering = ['-date_administered']
     
     def __str__(self):
-        return f"{self.patient} - {self.tool} - {self.completed_at.date()}"
+        return f"{self.patient} - {self.tool} - {self.date_administered}"
+
+# Specific tool models with their unique fields
+class MNA_SF_Data(models.Model):
+    screening_result = models.OneToOneField(ScreeningResult, on_delete=models.CASCADE)
+    has_appetite_loss = models.BooleanField()
+    weight_loss = models.DecimalField(max_digits=5, decimal_places=2)
+    mobility = models.CharField(max_length=20)
+    psychological_stress = models.BooleanField()
+    neuropsychological_problems = models.BooleanField()
+    bmi = models.DecimalField(max_digits=5, decimal_places=2)
+
+class GNRI_Data(models.Model):
+    screening_result = models.OneToOneField(ScreeningResult, on_delete=models.CASCADE)
+    gender = models.CharField(max_length=10, choices=[('M', 'Male'), ('F', 'Female')])
+    height = models.DecimalField(max_digits=5, decimal_places=2)  # in cm
+    current_weight = models.DecimalField(max_digits=5, decimal_places=2)  # in kg
+    serum_albumin = models.DecimalField(max_digits=5, decimal_places=2)  # g/L
+    calculated_gnri = models.DecimalField(max_digits=5, decimal_places=2)
+
+class NUTRIC_Data(models.Model):
+    screening_result = models.OneToOneField(ScreeningResult, on_delete=models.CASCADE)
+    age = models.IntegerField()
+    apache_ii = models.IntegerField()
+    sofa = models.IntegerField()
+    comorbidities = models.IntegerField()
+    days_hospitalized = models.IntegerField()
+    il_6 = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)

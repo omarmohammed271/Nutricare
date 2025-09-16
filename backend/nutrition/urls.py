@@ -8,8 +8,8 @@ router.register("calculations", views.CalculationViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("drug-categories/", views.DrugCategoryListAPIView.as_view(), name="DrugCategoryListAPIView"),
-    path("drugs/<int:category_id>", views.DrugListAPIView.as_view(), name="DrugListAPIView"),
+    
+    path("drugs/", views.DrugCategoryListAPIView.as_view(), name="DrugListAPIView"),
     path("drug-details/<int:id>", views.DrugDetailAPIView.as_view(), name="DrugDetailAPIView"),
  
   
