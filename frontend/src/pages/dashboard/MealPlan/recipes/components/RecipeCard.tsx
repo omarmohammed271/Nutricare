@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Card, Chip } from '@mui/material';
+import { Box, Typography, Card, Chip, useTheme } from '@mui/material';
 import { LuHeart, LuClock, LuUsers, LuZap } from 'react-icons/lu';
 
 interface RecipeCardProps {
@@ -27,6 +27,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   onFavoriteClick,
   onClick
 }) => {
+  const theme = useTheme();
+  
   return (
     <Card
       onClick={onClick}
@@ -34,16 +36,16 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         width: '100%',
         borderRadius: 3,
         overflow: 'hidden',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        boxShadow: theme.palette.mode === 'dark' ? '0 2px 8px rgba(0, 0, 0, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.1)',
         transition: 'all 0.3s ease',
         cursor: 'pointer',
         display: 'flex',
         flexDirection: 'row',
         height: 120,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: theme.palette.background.paper,
         '&:hover': {
           transform: 'translateY(-2px)',
-          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
+          boxShadow: theme.palette.mode === 'dark' ? '0 4px 16px rgba(0, 0, 0, 0.5)' : '0 4px 16px rgba(0, 0, 0, 0.15)',
         },
       }}
     >
@@ -96,14 +98,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             width: 28,
             height: 28,
             borderRadius: '50%',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            backgroundColor: theme.palette.mode === 'dark' ? 'rgba(42, 42, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             '&:hover': {
-              backgroundColor: 'white',
+              backgroundColor: theme.palette.mode === 'dark' ? 'rgba(66, 66, 66, 0.9)' : 'white',
               transform: 'scale(1.1)',
             },
           }}
@@ -111,7 +113,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
           <LuHeart
             size={14}
             style={{
-              color: isFavorite ? '#EF4444' : '#6B7280',
+              color: isFavorite ? '#EF4444' : theme.palette.mode === 'dark' ? '#d4d4d4' : '#6B7280',
               fill: isFavorite ? '#EF4444' : 'none',
             }}
           />
@@ -146,7 +148,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             sx={{
               fontSize: '16px',
               fontWeight: 700,
-              color: '#1F2937',
+              color: theme.palette.text.primary,
               mb: 0.5,
               lineHeight: 1.2,
             }}
@@ -158,7 +160,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
           <Typography
             sx={{
               fontSize: '12px',
-              color: '#6B7280',
+              color: theme.palette.text.secondary,
               fontStyle: 'italic',
             }}
           >
@@ -178,7 +180,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
           {/* Energy */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <LuZap size={12} style={{ color: '#F59E0B' }} />
-            <Typography sx={{ fontSize: '11px', color: '#6B7280' }}>
+            <Typography sx={{ fontSize: '11px', color: theme.palette.text.secondary }}>
               {energy} kcal
             </Typography>
           </Box>
@@ -193,7 +195,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                 backgroundColor: '#10B981',
               }}
             />
-            <Typography sx={{ fontSize: '11px', color: '#6B7280' }}>
+            <Typography sx={{ fontSize: '11px', color: theme.palette.text.secondary }}>
               {weight}g
             </Typography>
           </Box>
@@ -201,7 +203,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
           {/* Servings */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <LuUsers size={12} style={{ color: '#8B5CF6' }} />
-            <Typography sx={{ fontSize: '11px', color: '#6B7280' }}>
+            <Typography sx={{ fontSize: '11px', color: theme.palette.text.secondary }}>
               {servings}
             </Typography>
           </Box>

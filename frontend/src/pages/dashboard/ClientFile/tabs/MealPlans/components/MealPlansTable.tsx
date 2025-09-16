@@ -11,7 +11,8 @@ import {
   Box,
   Chip,
   IconButton,
-  LinearProgress
+  LinearProgress,
+  useTheme
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -29,6 +30,8 @@ interface MealPlansTableProps {
 }
 
 const MealPlansTable: React.FC<MealPlansTableProps> = ({ mealPlans, onDeletePlan }) => {
+  const theme = useTheme();
+  
   const getStatusColor = (status: MealPlan['status']) => {
     switch (status) {
       case 'Active':
@@ -58,43 +61,110 @@ const MealPlansTable: React.FC<MealPlansTableProps> = ({ mealPlans, onDeletePlan
   };
 
   return (
-    <TableContainer component={Paper} sx={{ borderRadius: 2, border: '1px solid #e0e0e0' }}>
+    <TableContainer 
+      component={Paper} 
+      sx={{ 
+        borderRadius: 2, 
+        border: `1px solid ${theme.palette.mode === 'dark' ? '#333333' : '#e0e0e0'}`,
+        bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
+      }}
+    >
       <Table>
         <TableHead>
-          <TableRow sx={{ bgcolor: '#f8f9fa' }}>
-            <TableCell sx={{ fontWeight: 700, color: '#333' }}>Plan Name</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: '#333' }}>Type</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: '#333' }}>Calories</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: '#333' }}>Duration</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: '#333' }}>Progress</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: '#333' }}>Status</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: '#333' }}>Assigned By</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: '#333' }}>Actions</TableCell>
+          <TableRow sx={{ 
+            bgcolor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f8f9fa' 
+          }}>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#333' 
+            }}>
+              Plan Name
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#333' 
+            }}>
+              Type
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#333' 
+            }}>
+              Calories
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#333' 
+            }}>
+              Duration
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#333' 
+            }}>
+              Progress
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#333' 
+            }}>
+              Status
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#333' 
+            }}>
+              Assigned By
+            </TableCell>
+            <TableCell sx={{ 
+              fontWeight: 700, 
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#333' 
+            }}>
+              Actions
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {mealPlans.map((plan) => (
-            <TableRow key={plan.id} sx={{ '&:hover': { bgcolor: '#f8f9fa' } }}>
+            <TableRow 
+              key={plan.id} 
+              sx={{ 
+                '&:hover': { 
+                  bgcolor: theme.palette.mode === 'dark' ? '#2a2a2a' : '#f8f9fa' 
+                },
+                bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
+              }}
+            >
               <TableCell>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   {getTypeIcon(plan.type)}
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ 
+                    fontWeight: 600,
+                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                  }}>
                     {plan.name}
                   </Typography>
                 </Box>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" sx={{ color: '#666' }}>
+                <Typography variant="body2" sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                }}>
                   {plan.type}
                 </Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ 
+                  fontWeight: 600,
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                }}>
                   {plan.calories}
                 </Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" sx={{ color: '#666' }}>
+                <Typography variant="body2" sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                }}>
                   {new Date(plan.startDate).toLocaleDateString()} - {new Date(plan.endDate).toLocaleDateString()}
                 </Typography>
               </TableCell>
@@ -107,14 +177,17 @@ const MealPlansTable: React.FC<MealPlansTableProps> = ({ mealPlans, onDeletePlan
                       width: 60,
                       height: 6,
                       borderRadius: 3,
-                      bgcolor: '#f0f0f0',
+                      bgcolor: theme.palette.mode === 'dark' ? '#333333' : '#f0f0f0',
                       '& .MuiLinearProgress-bar': {
                         bgcolor: getStatusColor(plan.status),
                         borderRadius: 3
                       }
                     }}
                   />
-                  <Typography variant="body2" sx={{ color: '#666', fontSize: '0.875rem' }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? '#cccccc' : '#666', 
+                    fontSize: '0.875rem' 
+                  }}>
                     {plan.progress}%
                   </Typography>
                 </Box>
@@ -132,7 +205,9 @@ const MealPlansTable: React.FC<MealPlansTableProps> = ({ mealPlans, onDeletePlan
                 />
               </TableCell>
               <TableCell>
-                <Typography variant="body2" sx={{ color: '#666' }}>
+                <Typography variant="body2" sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                }}>
                   {plan.assignedBy}
                 </Typography>
               </TableCell>
@@ -140,21 +215,27 @@ const MealPlansTable: React.FC<MealPlansTableProps> = ({ mealPlans, onDeletePlan
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <IconButton
                     size="small"
-                    sx={{ color: '#02BE6A' }}
+                    sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#02BE6A' : '#02BE6A' 
+                    }}
                     title="View Details"
                   >
                     <VisibilityIcon fontSize="small" />
                   </IconButton>
                   <IconButton
                     size="small"
-                    sx={{ color: '#ff9800' }}
+                    sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#ff9800' : '#ff9800' 
+                    }}
                     title="Edit"
                   >
                     <EditIcon fontSize="small" />
                   </IconButton>
                   <IconButton
                     size="small"
-                    sx={{ color: '#f44336' }}
+                    sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#f44336' : '#f44336' 
+                    }}
                     onClick={() => onDeletePlan(plan.id)}
                     title="Delete"
                   >

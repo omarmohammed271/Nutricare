@@ -5,7 +5,8 @@ import {
   Grid,
   Slider,
   Button,
-  Divider
+  Divider,
+  useTheme
 } from '@mui/material';
 import { CalculationResults } from '../types';
 
@@ -15,6 +16,7 @@ interface CalculationsPanelProps {
 }
 
 const CalculationsPanel: React.FC<CalculationsPanelProps> = ({ calculations, onMacroSliderChange }) => {
+  const theme = useTheme();
   return (
     <Box>
       <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#02BE6A' }}>
@@ -35,7 +37,7 @@ const CalculationsPanel: React.FC<CalculationsPanelProps> = ({ calculations, onM
           <Grid item xs={12} key={index}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 1 }}>
               <Box>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#333' }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.mode ==='dark' ? '#fff': '#666'  }}>
                   {item.label}
                 </Typography>
                 {item.subLabel && (

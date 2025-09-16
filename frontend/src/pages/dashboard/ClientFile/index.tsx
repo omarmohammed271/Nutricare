@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, Tabs, Tab } from '@mui/material';
+import { Box, Tabs, Tab, useTheme } from '@mui/material';
 import { PageBreadcrumb } from '@src/components';
 import { Assessments, BiochemicalData, Medication, MealPlans } from './tabs';
 
@@ -14,6 +14,7 @@ function a11yProps(index: number) {
 const ClientFile = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const theme = useTheme();
 
   // Define the tab routes and their corresponding components
   const tabRoutes = [
@@ -57,15 +58,15 @@ const ClientFile = () => {
                 backgroundColor: 'none',
                 borderBottom:'none',
                 height:0,
-                color: '#FFFFFF'
+                color: theme.palette.mode === 'dark' ? '#FFFFFF' : '#FFFFFF'
               },
               '& .MuiTab-root': {
                 textTransform: 'none',
                 fontWeight: 600,
                 fontSize: '0.9rem',
                 minHeight: 15,
-                color: '#666',
-                backgroundColor: '#f8f9fa',
+                color: theme.palette.mode === 'dark' ? '#cccccc' : '#666',
+                backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f8f9fa',
                 borderBottom:'0px',
                 borderRadius: '12px',
                 margin: 0,

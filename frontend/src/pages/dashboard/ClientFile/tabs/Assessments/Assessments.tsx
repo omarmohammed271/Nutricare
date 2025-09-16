@@ -4,13 +4,15 @@ import {
   Card,
   CardContent,
   Grid,
-  Button
+  Button,
+  useTheme
 } from '@mui/material';
 import { AssessmentData, CalculationResults, AdimeNote } from './types';
 import { defaultAssessmentData, defaultCalculations, defaultAdimeNote } from './constants';
 import { AssessmentForm, CalculationsPanel, AdimeNotePanel } from './components';
 
 const Assessments = () => {
+  const theme = useTheme();
   const [formData, setFormData] = useState<AssessmentData>(defaultAssessmentData);
   const [calculations, setCalculations] = useState<CalculationResults>(defaultCalculations);
   const [adimeNote] = useState<AdimeNote>(defaultAdimeNote);
@@ -38,7 +40,12 @@ const Assessments = () => {
       <Grid container spacing={3}>
         {/* Left Side - Assessment Form */}
         <Grid item xs={12} md={7}>
-          <Card sx={{ borderRadius: 3, boxShadow: 2, bgcolor: '#F9F4F2', mb: 3 }}>
+          <Card sx={{ 
+            borderRadius: 3, 
+            boxShadow: 2, 
+            bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2', 
+            mb: 3 
+          }}>
             <CardContent sx={{ p: 3 }}>
               <AssessmentForm 
                 formData={formData}
@@ -68,7 +75,12 @@ const Assessments = () => {
         {/* Right Side - Calculations and Notes */}
         <Grid item xs={12} md={5}>
           {/* Real-Time Auto Calculations */}
-          <Card sx={{ borderRadius: 3, boxShadow: 2, mb: 3 ,bgcolor: '#F9F4F2' }}>
+          <Card sx={{ 
+            borderRadius: 3, 
+            boxShadow: 2, 
+            mb: 3,
+            bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2'
+          }}>
             <CardContent sx={{ p: 3 }}>
               <CalculationsPanel 
                 calculations={calculations}
@@ -78,7 +90,11 @@ const Assessments = () => {
           </Card>
 
           {/* ADIME Note */}
-          <Card sx={{ borderRadius: 3, boxShadow: 2 , bgcolor: '#F9F4F2' }}>
+          <Card sx={{ 
+            borderRadius: 3, 
+            boxShadow: 2,
+            bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2'
+          }}>
             <CardContent sx={{ p: 3 }}>
               <AdimeNotePanel adimeNote={adimeNote} />
             </CardContent>

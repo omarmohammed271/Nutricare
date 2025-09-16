@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, TextField, FormControl, Select, MenuItem, Chip, OutlinedInput } from '@mui/material';
+import { Box, Typography, TextField, FormControl, Select, MenuItem, Chip, OutlinedInput, useTheme } from '@mui/material';
 import { Control, Controller } from 'react-hook-form';
 import { RecipeFormData } from '../types/recipeTypes';
 import { TAG_OPTIONS, FORM_STYLES } from '../constants/recipeConstants';
@@ -9,16 +9,28 @@ interface BasicInformationSectionProps {
 }
 
 const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ control }) => {
+  const theme = useTheme();
+  
   return (
     <Box>
-      <Typography sx={FORM_STYLES.sectionTitle}>
+      <Typography sx={{ 
+        ...FORM_STYLES.sectionTitle,
+        color: theme.palette.mode === 'dark' ? '#ffffff' : '#1F2937'
+      }}>
         Basic Information
       </Typography>
       
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
         {/* Recipe Name */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography sx={{ ...FORM_STYLES.formLabel, minWidth: '120px', mb: 0 }}>Recipe Name</Typography>
+          <Typography sx={{ 
+            ...FORM_STYLES.formLabel, 
+            minWidth: '120px', 
+            mb: 0,
+            color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#374151'
+          }}>
+            Recipe Name
+          </Typography>
           <Controller
             name="recipeName"
             control={control}
@@ -33,13 +45,20 @@ const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ contr
                 helperText={fieldState.error?.message}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'white',
+                    backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : 'white',
+                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
                     '&:hover .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#22C55E',
                     },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#22C55E',
                     },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: theme.palette.mode === 'dark' ? '#404040' : '#E5E7EB',
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
                   },
                 }}
               />
@@ -49,7 +68,14 @@ const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ contr
 
         {/* Select Tags */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography sx={{ ...FORM_STYLES.formLabel, minWidth: '120px', mb: 0 }}>Select tags</Typography>
+          <Typography sx={{ 
+            ...FORM_STYLES.formLabel, 
+            minWidth: '120px', 
+            mb: 0,
+            color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#374151'
+          }}>
+            Select tags
+          </Typography>
           <Controller
             name="tags"
             control={control}
@@ -64,7 +90,11 @@ const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ contr
                   placeholder="Write or select"
                   renderValue={(selected) => {
                     if (selected.length === 0) {
-                      return <em style={{ color: '#9CA3AF' }}>Write or select</em>;
+                      return <em style={{ 
+                        color: theme.palette.mode === 'dark' ? '#a3a3a3' : '#9CA3AF' 
+                      }}>
+                        Write or select
+                      </em>;
                     }
                     return (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -74,7 +104,7 @@ const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ contr
                             label={TAG_OPTIONS.find(tag => tag.value === value)?.label || value}
                             size="small"
                             sx={{
-                              backgroundColor: '#E5F7ED',
+                              backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#E5F7ED',
                               color: '#22C55E',
                               '& .MuiChip-deleteIcon': {
                                 color: '#22C55E',
@@ -86,8 +116,12 @@ const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ contr
                     );
                   }}
                   sx={{
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : 'white',
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                    },
                     '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#E5E7EB',
+                      borderColor: theme.palette.mode === 'dark' ? '#404040' : '#E5E7EB',
                     },
                     '&:hover .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#22C55E',
@@ -98,7 +132,23 @@ const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ contr
                   }}
                 >
                   {TAG_OPTIONS.map((tag) => (
-                    <MenuItem key={tag.value} value={tag.value}>
+                    <MenuItem 
+                      key={tag.value} 
+                      value={tag.value}
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                        '&.Mui-selected': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                        '&.Mui-selected:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#404040' : '#e0e0e0',
+                        },
+                      }}
+                    >
                       {tag.label}
                     </MenuItem>
                   ))}
@@ -110,7 +160,14 @@ const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ contr
 
         {/* Final Weight */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography sx={{ ...FORM_STYLES.formLabel, minWidth: '120px', mb: 0 }}>Final Weight</Typography>
+          <Typography sx={{ 
+            ...FORM_STYLES.formLabel, 
+            minWidth: '120px', 
+            mb: 0,
+            color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#374151'
+          }}>
+            Final Weight
+          </Typography>
           <Controller
             name="finalWeight"
             control={control}
@@ -125,13 +182,20 @@ const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ contr
                 helperText={fieldState.error?.message}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'white',
+                    backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : 'white',
+                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
                     '&:hover .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#22C55E',
                     },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#22C55E',
                     },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: theme.palette.mode === 'dark' ? '#404040' : '#E5E7EB',
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
                   },
                 }}
               />
@@ -140,34 +204,41 @@ const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ contr
         </Box>
 
         {/* Description */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 8}} >
-          <Typography sx={FORM_STYLES.formLabel}>Description</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 8 }} >
+          <Typography sx={{ 
+            ...FORM_STYLES.formLabel,
+            color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#374151'
+          }}>
+            Description
+          </Typography>
           <Controller
             name="description"
             control={control}
             render={({ field, fieldState }) => (
               <TextField
                 {...field}
-
                 placeholder="Right the description"
                 fullWidth
                 multiline
-               
                 variant="outlined"
                 error={!!fieldState.error}
                 helperText={fieldState.error?.message}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'white',
+                    backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : 'white',
+                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
                     '&:hover .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#22C55E',
                     },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#22C55E',
-                      
                     },
-                    width:'100%',
-                 
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: theme.palette.mode === 'dark' ? '#404040' : '#E5E7EB',
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
                   },
                 }}
               />
@@ -177,7 +248,14 @@ const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ contr
 
         {/* Number of portions */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography sx={{ ...FORM_STYLES.formLabel, minWidth: '120px', mb: 0 }}>Number of portions</Typography>
+          <Typography sx={{ 
+            ...FORM_STYLES.formLabel, 
+            minWidth: '120px', 
+            mb: 0,
+            color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#374151'
+          }}>
+            Number of portions
+          </Typography>
           <Controller
             name="numberOfPortions"
             control={control}
@@ -192,13 +270,20 @@ const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ contr
                 helperText={fieldState.error?.message}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'white',
+                    backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : 'white',
+                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
                     '&:hover .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#22C55E',
                     },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#22C55E',
                     },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: theme.palette.mode === 'dark' ? '#404040' : '#E5E7EB',
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
                   },
                 }}
               />
@@ -208,7 +293,14 @@ const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ contr
 
         {/* Weight of portions */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography sx={{ ...FORM_STYLES.formLabel, minWidth: '120px', mb: 0 }}>Weight of portions</Typography>
+          <Typography sx={{ 
+            ...FORM_STYLES.formLabel, 
+            minWidth: '120px', 
+            mb: 0,
+            color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#374151'
+          }}>
+            Weight of portions
+          </Typography>
           <Controller
             name="weightOfPortions"
             control={control}
@@ -223,13 +315,20 @@ const BasicInformationSection: React.FC<BasicInformationSectionProps> = ({ contr
                 helperText={fieldState.error?.message}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'white',
+                    backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : 'white',
+                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
                     '&:hover .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#22C55E',
                     },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#22C55E',
                     },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: theme.palette.mode === 'dark' ? '#404040' : '#E5E7EB',
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
                   },
                 }}
               />

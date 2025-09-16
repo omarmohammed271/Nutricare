@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Tabs, Tab, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Box, Tabs, Tab, FormControl, InputLabel, Select, MenuItem, useTheme } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 import { TabPanel } from './components/TabPanel';
@@ -9,6 +9,7 @@ import { FilterCategory } from './types';
 import { THEME_COLORS, DATAGRID_CONFIG, TAB_CONFIG } from './constants';
 
 const WeeklyPlan = () => {
+  const theme = useTheme();
   const [tabValue, setTabValue] = useState(0);
   const [filterCategory, setFilterCategory] = useState<FilterCategory>('all');
 
@@ -50,14 +51,36 @@ const WeeklyPlan = () => {
                   '&.Mui-focused fieldset': {
                     borderColor: THEME_COLORS.primary,
                   },
+                  '& fieldset': {
+                    borderColor: theme.palette.mode === 'dark' ? '#404040' : 'rgba(0, 0, 0, 0.23)',
+                  },
                 },
                 '& .MuiInputLabel-root.Mui-focused': {
                   color: THEME_COLORS.primary,
                 },
+                '& .MuiSvgIcon-root': {
+                  color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
+                },
               }}
             >
               {filterCategories.map((category) => (
-                <MenuItem key={category.value} value={category.value}>
+                <MenuItem 
+                  key={category.value} 
+                  value={category.value}
+                  sx={{
+                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                    backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                    '&:hover': {
+                      backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                    },
+                    '&.Mui-selected': {
+                      backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                    },
+                    '&.Mui-selected:hover': {
+                      backgroundColor: theme.palette.mode === 'dark' ? '#404040' : '#e0e0e0',
+                    },
+                  }}
+                >
                   {category.label}
                 </MenuItem>
               ))}
@@ -79,7 +102,7 @@ const WeeklyPlan = () => {
                 fontWeight: 600,
                 fontSize: '1rem',
                 minHeight: TAB_CONFIG.minHeight,
-                color: THEME_COLORS.textSecondary,
+                color: theme.palette.mode === 'dark' ? '#cccccc' : THEME_COLORS.textSecondary,
                 minWidth: TAB_CONFIG.minWidth,
                 '&.Mui-selected': {
                   color: THEME_COLORS.primary,
@@ -111,10 +134,17 @@ const WeeklyPlan = () => {
               border: `2px solid ${THEME_COLORS.primary}`,
               borderRadius: '12px',
               '& .MuiDataGrid-cell': {
-                borderBottom: `1px solid ${THEME_COLORS.border}`,
+                borderBottom: `1px solid ${theme.palette.mode === 'dark' ? '#404040' : THEME_COLORS.border}`,
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
               },
               '& .MuiDataGrid-columnHeaders': {
                 borderBottom: 'none',
+                backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+              },
+              '& .MuiDataGrid-footerContainer': {
+                backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : THEME_COLORS.background,
+                borderTop: `1px solid ${theme.palette.mode === 'dark' ? '#404040' : THEME_COLORS.border}`,
               },
             },
           }}
@@ -130,8 +160,8 @@ const WeeklyPlan = () => {
             pageSizeOptions={DATAGRID_CONFIG.pageSizeOptions}
             sx={{
               '& .MuiDataGrid-footerContainer': {
-                backgroundColor: THEME_COLORS.background,
-                borderTop: `1px solid ${THEME_COLORS.border}`,
+                backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : THEME_COLORS.background,
+                borderTop: `1px solid ${theme.palette.mode === 'dark' ? '#404040' : THEME_COLORS.border}`,
               },
             }}
           />
@@ -152,10 +182,17 @@ const WeeklyPlan = () => {
               border: `2px solid ${THEME_COLORS.primary}`,
               borderRadius: '12px',
               '& .MuiDataGrid-cell': {
-                borderBottom: `1px solid ${THEME_COLORS.border}`,
+                borderBottom: `1px solid ${theme.palette.mode === 'dark' ? '#404040' : THEME_COLORS.border}`,
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
               },
               '& .MuiDataGrid-columnHeaders': {
                 borderBottom: 'none',
+                backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+              },
+              '& .MuiDataGrid-footerContainer': {
+                backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : THEME_COLORS.background,
+                borderTop: `1px solid ${theme.palette.mode === 'dark' ? '#404040' : THEME_COLORS.border}`,
               },
             },
           }}
@@ -171,8 +208,8 @@ const WeeklyPlan = () => {
             pageSizeOptions={DATAGRID_CONFIG.pageSizeOptions}
             sx={{
               '& .MuiDataGrid-footerContainer': {
-                backgroundColor: THEME_COLORS.background,
-                borderTop: `1px solid ${THEME_COLORS.border}`,
+                backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : THEME_COLORS.background,
+                borderTop: `1px solid ${theme.palette.mode === 'dark' ? '#404040' : THEME_COLORS.border}`,
               },
             }}
           />

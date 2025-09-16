@@ -11,7 +11,8 @@ import {
   Paper,
   Chip,
   IconButton,
-  Button
+  Button,
+  useTheme
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -26,6 +27,8 @@ interface TestResultsTableProps {
 }
 
 const TestResultsTable: React.FC<TestResultsTableProps> = ({ tests, onDeleteTest }) => {
+  const theme = useTheme();
+  
   const getStatusColor = (status: BiochemicalTest['status']) => {
     switch (status) {
       case 'Normal':
@@ -51,19 +54,24 @@ const TestResultsTable: React.FC<TestResultsTableProps> = ({ tests, onDeleteTest
           p: 3, 
           mb: 3, 
           textAlign: 'center',
-          bgcolor: '#f8fff8',
-              display: 'flex',
+          bgcolor: theme.palette.mode === 'dark' ? '#02BE6A20' : '#f8fff8',
+          display: 'flex',
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignContent:'center'
-      
-        
-      
         }}
       >
         <Box>
-        <CloudUploadIcon sx={{ fontSize: 32, color: '#02BE6A', mb: 1  }} />
-        <Typography  sx={{ fontWeight: 600, mb: 1 }}>
+        <CloudUploadIcon sx={{ 
+          fontSize: 32, 
+          color: '#02BE6A', 
+          mb: 1  
+        }} />
+        <Typography sx={{ 
+          fontWeight: 600, 
+          mb: 1,
+          color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+        }}>
           Upload Test
         </Typography>
         </Box>
@@ -73,22 +81,18 @@ const TestResultsTable: React.FC<TestResultsTableProps> = ({ tests, onDeleteTest
           alignContent:'center',
           alignItems:'center',
           justifyContent:'center'
-
-
-}}>
+        }}>
         <Button
           variant="contained"
           sx={{
             display:'flex',
-            
             justifyContent: 'center',
             alignItems: 'center',
             bgcolor: '#02BE6A',
-            '&:hover': { bgcolor: '#01A85A' },
+            '&:hover': { 
+              bgcolor: theme.palette.mode === 'dark' ? '#01A85A' : '#01A85A' 
+            },
             borderRadius: 2,
-          
-        
-         
           }}
         >
           Choose File
@@ -97,34 +101,89 @@ const TestResultsTable: React.FC<TestResultsTableProps> = ({ tests, onDeleteTest
       </Box>
 
       {/* Test Results Table */}
-      <TableContainer component={Paper} sx={{ borderRadius: 2, border: '1px solid #e0e0e0' }}>
+      <TableContainer 
+        component={Paper} 
+        sx={{ 
+          borderRadius: 2, 
+          border: `1px solid ${theme.palette.mode === 'dark' ? '#333333' : '#e0e0e0'}`,
+          bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
+        }}
+      >
         <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: '#02BE6A' }}>
-              <TableCell sx={{ fontWeight: 700, color: '#FFFFFF' }}>Test Name</TableCell>
-              <TableCell sx={{ fontWeight: 700, color: '#FFFFFF' }}>Date</TableCell>
-              <TableCell sx={{ fontWeight: 700, color: '#FFFFFF' }}>Results</TableCell>
-              <TableCell sx={{ fontWeight: 700, color: '#FFFFFF' }}>Reference Range</TableCell>
-              <TableCell sx={{ fontWeight: 700, color: '#FFFFFF' }}>Clinical Interpretation</TableCell>
-              <TableCell sx={{ fontWeight: 700, color: '#FFFFFF' }}>Actions</TableCell>
+            <TableRow sx={{ 
+              bgcolor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#02BE6A' 
+            }}>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#FFFFFF' 
+              }}>
+                Test Name
+              </TableCell>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#FFFFFF' 
+              }}>
+                Date
+              </TableCell>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#FFFFFF' 
+              }}>
+                Results
+              </TableCell>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#FFFFFF' 
+              }}>
+                Reference Range
+              </TableCell>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#FFFFFF' 
+              }}>
+                Clinical Interpretation
+              </TableCell>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#FFFFFF' 
+              }}>
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {tests.map((test) => (
-              <TableRow key={test.id} sx={{ '&:hover': { bgcolor: '#F9F4F2' } }}>
+              <TableRow 
+                key={test.id} 
+                sx={{ 
+                  '&:hover': { 
+                    bgcolor: theme.palette.mode === 'dark' ? '#2a2a2a' : '#F9F4F2' 
+                  },
+                  bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
+                }}
+              >
                 <TableCell>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ 
+                    fontWeight: 600,
+                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                  }}>
                     {test.testName}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body2" sx={{ color: '#666' }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                  }}>
                     {new Date(test.date).toLocaleDateString()}
                   </Typography>
                 </TableCell>
                 <TableCell>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: getStatusColor(test.status) }}>
+                    <Typography variant="body2" sx={{ 
+                      fontWeight: 600, 
+                      color: getStatusColor(test.status) 
+                    }}>
                       {test.result} {test.unit}
                     </Typography>
                     <Chip
@@ -141,12 +200,16 @@ const TestResultsTable: React.FC<TestResultsTableProps> = ({ tests, onDeleteTest
                   </Box>
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body2" sx={{ color: '#666' }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                  }}>
                     {test.referenceRange} {test.unit}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body2" sx={{ color: '#666' }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                  }}>
                     {test.status === 'High' ? 'Iron deficiency or chronic disease' : 
                      test.status === 'Normal' ? 'Ideal no deficiency found' :
                      'Iron deficiency or chronic disease'}
@@ -156,14 +219,18 @@ const TestResultsTable: React.FC<TestResultsTableProps> = ({ tests, onDeleteTest
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     <IconButton
                       size="small"
-                      sx={{ color: '#02BE6A' }}
+                      sx={{ 
+                        color: theme.palette.mode === 'dark' ? '#02BE6A' : '#02BE6A' 
+                      }}
                       title="Edit"
                     >
                       <EditIcon fontSize="small" />
                     </IconButton>
                     <IconButton
                       size="small"
-                      sx={{ color: '#f44336' }}
+                      sx={{ 
+                        color: theme.palette.mode === 'dark' ? '#f44336' : '#f44336' 
+                      }}
                       onClick={() => onDeleteTest(test.id)}
                       title="Delete"
                     >

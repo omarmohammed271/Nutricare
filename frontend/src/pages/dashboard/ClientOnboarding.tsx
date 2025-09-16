@@ -26,7 +26,8 @@ import {
   Paper,
   Chip,
   InputAdornment,
-  Pagination
+  Pagination,
+  useTheme
 } from "@mui/material";
 import { LuEye, LuX, LuUserPlus, LuList, LuSquare, LuSearch, LuPlus, LuCalendar, LuTrash2, LuFilter } from "react-icons/lu";
 import PageMetaData from "@src/components/PageMetaData";
@@ -47,6 +48,7 @@ interface Client {
 }
 
 const ClientOnboarding = () => {
+  const theme = useTheme();
   const [clients, setClients] = useState<Client[]>([
     {
       id: 1,
@@ -196,11 +198,11 @@ const ClientOnboarding = () => {
             <IconButton
               onClick={() => setViewMode('table')}
               sx={{
-                backgroundColor: viewMode === 'table' ? "#02BE6A" : "transparent",
-                color: viewMode === 'table' ? "white" : "#7f8c8d",
+                backgroundColor: viewMode === 'table' ? "#02BE6A" : (theme.palette.mode === 'dark' ? "transparent" : "transparent"),
+                color: viewMode === 'table' ? "white" : (theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d"),
                 borderRadius: 2,
                 "&:hover": {
-                  backgroundColor: viewMode === 'table' ? "#029e56" : "#f8f9fa",
+                  backgroundColor: viewMode === 'table' ? "#029e56" : (theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa"),
                 }
               }}
             >
@@ -209,11 +211,11 @@ const ClientOnboarding = () => {
             <IconButton
               onClick={() => setViewMode('card')}
               sx={{
-                backgroundColor: viewMode === 'card' ? "#02BE6A" : "transparent",
-                color: viewMode === 'card' ? "white" : "#7f8c8d",
+                backgroundColor: viewMode === 'card' ? "#02BE6A" : (theme.palette.mode === 'dark' ? "transparent" : "transparent"),
+                color: viewMode === 'card' ? "white" : (theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d"),
                 borderRadius: 2,
                 "&:hover": {
-                  backgroundColor: viewMode === 'card' ? "#029e56" : "#f8f9fa",
+                  backgroundColor: viewMode === 'card' ? "#029e56" : (theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa"),
                 }
               }}
             >
@@ -231,7 +233,7 @@ const ClientOnboarding = () => {
         }}>
           <Typography variant="h5" sx={{ 
             fontWeight: 700, 
-            color: "#2c3e50",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             fontSize: "24px"
           }}>
             Clients
@@ -245,7 +247,7 @@ const ClientOnboarding = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <LuSearch size={20} color="#7f8c8d" />
+                    <LuSearch size={20} color={theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d"} />
                   </InputAdornment>
                 ),
               }}
@@ -253,7 +255,20 @@ const ClientOnboarding = () => {
                 minWidth: "250px",
                 "& .MuiOutlinedInput-root": {
                   borderRadius: 2,
-                  backgroundColor: "background.paper",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "background.paper",
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  "& fieldset": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                },
+                "& .MuiInputBase-input::placeholder": {
+                  color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d",
                 }
               }}
             />
@@ -265,14 +280,54 @@ const ClientOnboarding = () => {
                 displayEmpty
                 sx={{
                   borderRadius: 2,
-                  backgroundColor: "background.paper",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "background.paper",
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#02BE6A",
+                  },
                 }}
               >
-                <MenuItem value="" disabled>By Age</MenuItem>
-                <MenuItem value="18-25">18-25</MenuItem>
-                <MenuItem value="26-35">26-35</MenuItem>
-                <MenuItem value="36-45">36-45</MenuItem>
-                <MenuItem value="46+">46+</MenuItem>
+                <MenuItem value="" disabled sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>By Age</MenuItem>
+                <MenuItem value="18-25" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>18-25</MenuItem>
+                <MenuItem value="26-35" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>26-35</MenuItem>
+                <MenuItem value="36-45" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>36-45</MenuItem>
+                <MenuItem value="46+" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>46+</MenuItem>
               </Select>
             </FormControl>
             
@@ -283,13 +338,47 @@ const ClientOnboarding = () => {
                 displayEmpty
                 sx={{
                   borderRadius: 2,
-                  backgroundColor: "background.paper",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "background.paper",
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#02BE6A",
+                  },
                 }}
               >
-                <MenuItem value="" disabled>By Ward</MenuItem>
-                <MenuItem value="ward1">Ward 1</MenuItem>
-                <MenuItem value="ward2">Ward 2</MenuItem>
-                <MenuItem value="ward3">Ward 3</MenuItem>
+                <MenuItem value="" disabled sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>By Ward</MenuItem>
+                <MenuItem value="ward1" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>Ward 1</MenuItem>
+                <MenuItem value="ward2" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>Ward 2</MenuItem>
+                <MenuItem value="ward3" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>Ward 3</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -299,8 +388,10 @@ const ClientOnboarding = () => {
         {viewMode === 'table' ? (
           <TableContainer component={Paper} sx={{ 
             borderRadius: 3, 
-            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-            backgroundColor: "background.paper"
+            boxShadow: theme.palette.mode === 'dark' 
+              ? "0 2px 8px rgba(255,255,255,0.08)" 
+              : "0 2px 8px rgba(0,0,0,0.08)",
+            backgroundColor: theme.palette.mode === 'dark' ? "#1a1a1a" : "background.paper"
           }}>
             <Table>
               <TableHead>
@@ -324,7 +415,12 @@ const ClientOnboarding = () => {
               </TableHead>
               <TableBody>
                 {clients.map((client) => (
-                  <TableRow key={client.id} sx={{ "&:hover": { backgroundColor: "#f8f9fa" } }}>
+                  <TableRow key={client.id} sx={{ 
+                    "&:hover": { 
+                      backgroundColor: theme.palette.mode === 'dark' ? "#2d2d2d" : "#f8f9fa" 
+                    },
+                    backgroundColor: theme.palette.mode === 'dark' ? "#1a1a1a" : "#ffffff"
+                  }}>
                     <TableCell>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                         <Avatar
@@ -343,28 +439,28 @@ const ClientOnboarding = () => {
                             }
                           }}
                         />
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: "#2c3e50" }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50" }}>
                           {client.name}
                         </Typography>
                       </Box>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2" sx={{ color: "#2c3e50" }}>
+                      <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50" }}>
                         {client.age} y.o
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2" sx={{ color: "#2c3e50" }}>
+                      <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50" }}>
                         {client.ward}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2" sx={{ color: "#2c3e50" }}>
+                      <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50" }}>
                         {client.lastAppointment}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2" sx={{ color: "#2c3e50" }}>
+                      <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50" }}>
                         {client.nextFollowUp}
                       </Typography>
                     </TableCell>
@@ -373,11 +469,12 @@ const ClientOnboarding = () => {
                         <IconButton
                           onClick={() => handleViewClient(client)}
                           sx={{
-                            backgroundColor: "#f8f9fa",
+                            backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
                             width: 32,
                             height: 32,
                             borderRadius: "50%",
+                            border: theme.palette.mode === 'dark' ? "0.8px solid #333333" : "0.8px solid #e9ecef",
                             "&:hover": {
                               backgroundColor: "#02BE6A",
                               color: "white",
@@ -388,11 +485,12 @@ const ClientOnboarding = () => {
                         </IconButton>
                         <IconButton
                           sx={{
-                            backgroundColor: "#f8f9fa",
+                            backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
                             width: 32,
                             height: 32,
                             borderRadius: "50%",
+                            border: theme.palette.mode === 'dark' ? "0.8px solid #333333" : "0.8px solid #e9ecef",
                             "&:hover": {
                               backgroundColor: "#02BE6A",
                               color: "white",
@@ -403,11 +501,12 @@ const ClientOnboarding = () => {
                         </IconButton>
                         <IconButton
                           sx={{
-                            backgroundColor: "#f8f9fa",
+                            backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
                             width: 32,
                             height: 32,
                             borderRadius: "50%",
+                            border: theme.palette.mode === 'dark' ? "0.8px solid #333333" : "0.8px solid #e9ecef",
                             "&:hover": {
                               backgroundColor: "#02BE6A",
                               color: "white",
@@ -418,11 +517,12 @@ const ClientOnboarding = () => {
                         </IconButton>
                         <IconButton
                           sx={{
-                            backgroundColor: "#f8f9fa",
+                            backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
                             width: 32,
                             height: 32,
                             borderRadius: "50%",
+                            border: theme.palette.mode === 'dark' ? "0.8px solid #333333" : "0.8px solid #e9ecef",
                             "&:hover": {
                               backgroundColor: "#02BE6A",
                               color: "white",
@@ -445,13 +545,17 @@ const ClientOnboarding = () => {
                 <Card
                   sx={{
                     borderRadius: 3,
-                    backgroundColor: "background.paper",
+                    backgroundColor: theme.palette.mode === 'dark' ? "#1a1a1a" : "background.paper",
                     border: "1px solid",
-                    borderColor: "divider",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                    borderColor: theme.palette.mode === 'dark' ? "#404040" : "divider",
+                    boxShadow: theme.palette.mode === 'dark' 
+                      ? "0 2px 8px rgba(255,255,255,0.08)" 
+                      : "0 2px 8px rgba(0,0,0,0.08)",
                     transition: "all 0.3s ease",
                     "&:hover": {
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                      boxShadow: theme.palette.mode === 'dark' 
+                        ? "0 8px 24px rgba(255,255,255,0.12)" 
+                        : "0 8px 24px rgba(0,0,0,0.12)",
                       transform: "translateY(-4px)",
                     }
                   }}
@@ -482,7 +586,7 @@ const ClientOnboarding = () => {
                       
                       <Typography variant="h6" sx={{ 
                         fontWeight: 600, 
-                        color: "#2c3e50",
+                        color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                         fontSize: "18px",
                         mb: 0.5
                       }}>
@@ -490,7 +594,7 @@ const ClientOnboarding = () => {
                       </Typography>
                       
                       <Typography variant="body2" sx={{ 
-                        color: "#7f8c8d",
+                        color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d",
                         fontSize: "14px",
                         mb: 1
                       }}>
@@ -498,7 +602,7 @@ const ClientOnboarding = () => {
                       </Typography>
                       
                       <Typography variant="body2" sx={{ 
-                        color: "#7f8c8d",
+                        color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d",
                         fontSize: "14px",
                         mb: 1
                       }}>
@@ -506,7 +610,7 @@ const ClientOnboarding = () => {
                       </Typography>
                       
                       <Typography variant="body2" sx={{ 
-                        color: "#7f8c8d",
+                        color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d",
                         fontSize: "14px",
                         mb: 1
                       }}>
@@ -514,7 +618,7 @@ const ClientOnboarding = () => {
                       </Typography>
                       
                       <Typography variant="body2" sx={{ 
-                        color: "#7f8c8d",
+                        color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d",
                         fontSize: "14px",
                         mb: 1
                       }}>
@@ -522,7 +626,7 @@ const ClientOnboarding = () => {
                       </Typography>
                       
                       <Typography variant="body2" sx={{ 
-                        color: "#7f8c8d",
+                        color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d",
                         fontSize: "14px",
                         mb: 2
                       }}>
@@ -533,13 +637,15 @@ const ClientOnboarding = () => {
                         <IconButton
                           onClick={() => handleViewClient(client)}
                           sx={{
-                            backgroundColor: "#f8f9fa",
+                            backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
                             width: 32,
                             height: 32,
                             borderRadius: "50%",
+                            border: theme.palette.mode === 'dark' ? "0.8px solid #333333" : "0.8px solid #e9ecef",
                             "&:hover": {
                               backgroundColor: "#02BE6A",
+                              color: "white",
                             }
                           }}
                         >
@@ -547,11 +653,12 @@ const ClientOnboarding = () => {
                         </IconButton>
                         <IconButton
                           sx={{
-                            backgroundColor: "#f8f9fa",
+                            backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
                             width: 32,
                             height: 32,
                             borderRadius: "50%",
+                            border: theme.palette.mode === 'dark' ? "0.8px solid #333333" : "0.8px solid #e9ecef",
                             "&:hover": {
                               backgroundColor: "#02BE6A",
                               color: "white",
@@ -562,11 +669,12 @@ const ClientOnboarding = () => {
                         </IconButton>
                         <IconButton
                           sx={{
-                            backgroundColor: "#f8f9fa",
+                            backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
                             width: 32,
                             height: 32,
                             borderRadius: "50%",
+                            border: theme.palette.mode === 'dark' ? "0.8px solid #333333" : "0.8px solid #e9ecef",
                             "&:hover": {
                               backgroundColor: "#02BE6A",
                               color: "white",
@@ -577,11 +685,12 @@ const ClientOnboarding = () => {
                         </IconButton>
                         <IconButton
                           sx={{
-                            backgroundColor: "#f8f9fa",
+                            backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
                             width: 32,
                             height: 32,
                             borderRadius: "50%",
+                            border: theme.palette.mode === 'dark' ? "0.8px solid #333333" : "0.8px solid #e9ecef",
                             "&:hover": {
                               backgroundColor: "#02BE6A",
                               color: "white",
@@ -608,6 +717,9 @@ const ClientOnboarding = () => {
             sx={{
               "& .MuiPaginationItem-root": {
                 borderRadius: 2,
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                backgroundColor: theme.palette.mode === 'dark' ? "#1a1a1a" : "#ffffff",
+                border: theme.palette.mode === 'dark' ? "1px solid #404040" : "1px solid #e0e0e0",
               },
               "& .Mui-selected": {
                 backgroundColor: "#02BE6A",
@@ -630,26 +742,28 @@ const ClientOnboarding = () => {
         PaperProps={{
           sx: {
             borderRadius: 3,
-            backgroundColor: "background.paper",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.12)"
+            backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "background.paper",
+            boxShadow: theme.palette.mode === 'dark' 
+              ? "0 8px 32px rgba(255,255,255,0.12)" 
+              : "0 8px 32px rgba(0,0,0,0.12)"
           }
         }}
       >
         <DialogTitle sx={{ 
           pb: 2, 
-          borderBottom: "1px solid #f0f0f0",
+          borderBottom: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #f0f0f0",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center"
         }}>
           <Typography variant="h5" sx={{ 
             fontWeight: 700, 
-            color: "#2c3e50",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             fontSize: "24px"
           }}>
             Add New Client
           </Typography>
-          <IconButton onClick={() => setShowAddForm(false)} sx={{ color: "#7f8c8d" }}>
+          <IconButton onClick={() => setShowAddForm(false)} sx={{ color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d" }}>
             <LuX size={24} />
           </IconButton>
         </DialogTitle>
@@ -662,6 +776,30 @@ const ClientOnboarding = () => {
               onChange={(e) => setNewClient({...newClient, name: e.target.value})}
               fullWidth
               required
+              InputProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                }
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+                }
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
+                },
+              }}
             />
             <TextField
               label="Profession"
@@ -669,6 +807,30 @@ const ClientOnboarding = () => {
               onChange={(e) => setNewClient({...newClient, profession: e.target.value})}
               fullWidth
               required
+              InputProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                }
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+                }
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
+                },
+              }}
             />
             <TextField
               label="Email"
@@ -677,23 +839,112 @@ const ClientOnboarding = () => {
               onChange={(e) => setNewClient({...newClient, email: e.target.value})}
               fullWidth
               required
+              InputProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                }
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+                }
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
+                },
+              }}
             />
             <TextField
               label="Phone Number"
               value={newClient.phone}
               onChange={(e) => setNewClient({...newClient, phone: e.target.value})}
               fullWidth
+              InputProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                }
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+                }
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#02BE6A",
+                  },
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
+                },
+              }}
             />
             <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
+              <InputLabel sx={{ 
+                color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
+              }}>
+                Status
+              </InputLabel>
               <Select
                 value={newClient.status}
                 onChange={(e) => setNewClient({...newClient, status: e.target.value})}
                 label="Status"
+                sx={{
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#02BE6A",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#02BE6A",
+                  },
+                  backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
+                }}
               >
-                <MenuItem value="Pending">Pending</MenuItem>
-                <MenuItem value="Active">Active</MenuItem>
-                <MenuItem value="Inactive">Inactive</MenuItem>
+                <MenuItem value="Pending" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>
+                  Pending
+                </MenuItem>
+                <MenuItem value="Active" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>
+                  Active
+                </MenuItem>
+                <MenuItem value="Inactive" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                  backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "#ffffff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f5f5f5",
+                  }
+                }}>
+                  Inactive
+                </MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -704,8 +955,8 @@ const ClientOnboarding = () => {
             onClick={() => setShowAddForm(false)}
             variant="outlined"
             sx={{
-              borderColor: "#e0e0e0",
-              color: "#2c3e50",
+              borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+              color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
               px: 4,
               py: 1.5,
               borderRadius: 2,
@@ -714,7 +965,7 @@ const ClientOnboarding = () => {
               fontSize: "14px",
               "&:hover": {
                 borderColor: "#02BE6A",
-                backgroundColor: "#f8f9fa",
+                backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
               }
             }}
           >
@@ -751,26 +1002,28 @@ const ClientOnboarding = () => {
         PaperProps={{
           sx: {
             borderRadius: 3,
-            backgroundColor: "background.paper",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.12)"
+            backgroundColor: theme.palette.mode === 'dark' ? "#000000" : "background.paper",
+            boxShadow: theme.palette.mode === 'dark' 
+              ? "0 8px 32px rgba(255,255,255,0.12)" 
+              : "0 8px 32px rgba(0,0,0,0.12)"
           }
         }}
       >
         <DialogTitle sx={{ 
           pb: 2, 
-          borderBottom: "1px solid #f0f0f0",
+          borderBottom: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #f0f0f0",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center"
         }}>
           <Typography variant="h5" sx={{ 
             fontWeight: 700, 
-            color: "#2c3e50",
+            color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
             fontSize: "24px"
           }}>
             Client Details
           </Typography>
-          <IconButton onClick={() => setShowViewDialog(false)} sx={{ color: "#7f8c8d" }}>
+          <IconButton onClick={() => setShowViewDialog(false)} sx={{ color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d" }}>
             <LuX size={24} />
           </IconButton>
         </DialogTitle>
@@ -785,21 +1038,23 @@ const ClientOnboarding = () => {
                   sx={{
                     width: 80,
                     height: 80,
-                    border: "3px solid #ffffff",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+                    border: theme.palette.mode === 'dark' ? "3px solid #333333" : "3px solid #ffffff",
+                    boxShadow: theme.palette.mode === 'dark' 
+                      ? "0 4px 12px rgba(255,255,255,0.1)" 
+                      : "0 4px 12px rgba(0,0,0,0.1)"
                   }}
                 />
                 <Box>
                   <Typography variant="h5" sx={{ 
                     fontWeight: 700, 
-                    color: "#2c3e50",
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                     fontSize: "24px",
                     mb: 1
                   }}>
                     {selectedClient.name}
                   </Typography>
                   <Typography variant="h6" sx={{ 
-                    color: "#7f8c8d",
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d",
                     fontSize: "16px",
                     mb: 2
                   }}>
@@ -810,8 +1065,12 @@ const ClientOnboarding = () => {
                     px: 2,
                     py: 0.5,
                     borderRadius: 2,
-                    backgroundColor: selectedClient.status === "Active" ? "#d4edda" : "#fff3cd",
-                    color: selectedClient.status === "Active" ? "#155724" : "#856404",
+                    backgroundColor: selectedClient.status === "Active" 
+                      ? (theme.palette.mode === 'dark' ? "#004d1a" : "#d4edda") 
+                      : (theme.palette.mode === 'dark' ? "#4d4d00" : "#fff3cd"),
+                    color: selectedClient.status === "Active" 
+                      ? (theme.palette.mode === 'dark' ? "#66ff99" : "#155724") 
+                      : (theme.palette.mode === 'dark' ? "#ffff99" : "#856404"),
                     fontSize: "12px",
                     fontWeight: 600
                   }}>
@@ -822,26 +1081,44 @@ const ClientOnboarding = () => {
 
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <Box>
-                  <Typography variant="body2" sx={{ color: "#7f8c8d", mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
+                    mb: 0.5 
+                  }}>
                     Email
                   </Typography>
-                  <Typography variant="body1" sx={{ color: "#2c3e50", fontWeight: 500 }}>
+                  <Typography variant="body1" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50", 
+                    fontWeight: 500 
+                  }}>
                     {selectedClient.email}
                   </Typography>
                 </Box>
                 <Box>
-                  <Typography variant="body2" sx={{ color: "#7f8c8d", mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
+                    mb: 0.5 
+                  }}>
                     Phone
                   </Typography>
-                  <Typography variant="body1" sx={{ color: "#2c3e50", fontWeight: 500 }}>
+                  <Typography variant="body1" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50", 
+                    fontWeight: 500 
+                  }}>
                     {selectedClient.phone}
                   </Typography>
                 </Box>
                 <Box>
-                  <Typography variant="body2" sx={{ color: "#7f8c8d", mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
+                    mb: 0.5 
+                  }}>
                     Client ID
                   </Typography>
-                  <Typography variant="body1" sx={{ color: "#2c3e50", fontWeight: 500 }}>
+                  <Typography variant="body1" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50", 
+                    fontWeight: 500 
+                  }}>
                     #{selectedClient.id.toString().padStart(4, '0')}
                   </Typography>
                 </Box>
@@ -855,8 +1132,8 @@ const ClientOnboarding = () => {
             onClick={() => setShowViewDialog(false)}
             variant="outlined"
             sx={{
-              borderColor: "#e0e0e0",
-              color: "#2c3e50",
+              borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+              color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
               px: 4,
               py: 1.5,
               borderRadius: 2,
@@ -865,7 +1142,7 @@ const ClientOnboarding = () => {
               fontSize: "14px",
               "&:hover": {
                 borderColor: "#02BE6A",
-                backgroundColor: "#f8f9fa",
+                backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
               }
             }}
           >

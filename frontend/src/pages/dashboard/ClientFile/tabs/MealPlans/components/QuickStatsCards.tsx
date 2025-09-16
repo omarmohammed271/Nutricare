@@ -3,7 +3,8 @@ import {
   Grid,
   Card,
   CardContent,
-  Typography
+  Typography,
+  useTheme
 } from '@mui/material';
 import { QuickStats } from '../types';
 
@@ -12,36 +13,38 @@ interface QuickStatsCardsProps {
 }
 
 const QuickStatsCards: React.FC<QuickStatsCardsProps> = ({ stats }) => {
+  const theme = useTheme();
+  
   const statsData = [
     {
       value: stats.totalPlans || 0,
       label: 'Total Plans',
       color: '#02BE6A',
-      bgColor: '#e8f5e8'
+      bgColor: theme.palette.mode === 'dark' ? '#02BE6A20' : '#e8f5e8'
     },
     {
       value: stats.activePlans || 0,
       label: 'Active Plans',
       color: '#2196f3',
-      bgColor: '#e3f2fd'
+      bgColor: theme.palette.mode === 'dark' ? '#2196f320' : '#e3f2fd'
     },
     {
       value: stats.completedPlans || 0,
       label: 'Completed',
       color: '#9c27b0',
-      bgColor: '#f3e5f5'
+      bgColor: theme.palette.mode === 'dark' ? '#9c27b020' : '#f3e5f5'
     },
     {
-      value: stats.avgCalories ? Math.round(stats.avgCalories) : 0,
+      value: `${stats.avgCalories ? Math.round(stats.avgCalories) : 0}`,
       label: 'Avg Calories',
       color: '#ff9800',
-      bgColor: '#fff3e0'
+      bgColor: theme.palette.mode === 'dark' ? '#ff980020' : '#fff3e0'
     },
     {
       value: `${stats.adherenceRate || 0}%`,
       label: 'Adherence Rate',
       color: '#e91e63',
-      bgColor: '#fce4ec'
+      bgColor: theme.palette.mode === 'dark' ? '#e91e6320' : '#fce4ec'
     }
   ];
 
@@ -61,10 +64,17 @@ const QuickStatsCards: React.FC<QuickStatsCardsProps> = ({ stats }) => {
             }
           }}>
             <CardContent sx={{ textAlign: 'center', py: 2 }}>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: item.color, mb: 0.5 }}>
+              <Typography variant="h4" sx={{ 
+                fontWeight: 700, 
+                color: item.color, 
+                mb: 0.5 
+              }}>
                 {item.value}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>
+              <Typography variant="body2" sx={{ 
+                color: theme.palette.mode === 'dark' ? '#cccccc' : '#666', 
+                fontWeight: 500 
+              }}>
                 {item.label}
               </Typography>
             </CardContent>

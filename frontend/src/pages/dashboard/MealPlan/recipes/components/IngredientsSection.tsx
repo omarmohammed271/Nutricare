@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, TextField, Button, IconButton, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Box, Typography, TextField, Button, IconButton, FormControl, InputLabel, Select, MenuItem, useTheme } from '@mui/material';
 import { Control, Controller, useFieldArray } from 'react-hook-form';
 import { LuPlus, LuX } from 'react-icons/lu';
 import { RecipeFormData } from '../types/recipeTypes';
@@ -10,6 +10,7 @@ interface IngredientsSectionProps {
 }
 
 const IngredientsSection: React.FC<IngredientsSectionProps> = ({ control }) => {
+  const theme = useTheme();
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'ingredients',
@@ -21,7 +22,10 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({ control }) => {
 
   return (
     <Box>
-      <Typography sx={FORM_STYLES.sectionTitle}>
+      <Typography sx={{ 
+        ...FORM_STYLES.sectionTitle,
+        color: theme.palette.mode === 'dark' ? '#ffffff' : '#1F2937'
+      }}>
         Ingredients
       </Typography>
       
@@ -34,15 +38,25 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({ control }) => {
               control={control}
               render={({ field: inputField }) => (
                 <FormControl sx={{ minWidth: 200, flex: 2 }}>
-                  <InputLabel>Ingredient Name</InputLabel>
+                  <InputLabel 
+                    sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
+                      '&.Mui-focused': {
+                        color: '#22C55E',
+                      }
+                    }}
+                  >
+                    Ingredient Name
+                  </InputLabel>
                   <Select
                     {...inputField}
                     label="Ingredient Name"
                     displayEmpty
                     sx={{
-                      backgroundColor: 'white',
+                      backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : 'white',
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
                       '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#E5E7EB',
+                        borderColor: theme.palette.mode === 'dark' ? '#404040' : '#E5E7EB',
                       },
                       '&:hover .MuiOutlinedInput-notchedOutline': {
                         borderColor: '#22C55E',
@@ -50,19 +64,110 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({ control }) => {
                       '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                         borderColor: '#22C55E',
                       },
+                      '& .MuiSvgIcon-root': {
+                        color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
+                      },
                     }}
                   >
                     <MenuItem value="" disabled>
                    
                     </MenuItem>
-                    <MenuItem value="chicken">Chicken</MenuItem>
-                    <MenuItem value="beef">Beef</MenuItem>
-                    <MenuItem value="rice">Rice</MenuItem>
-                    <MenuItem value="vegetables">Vegetables</MenuItem>
-                    <MenuItem value="olive-oil">Olive Oil</MenuItem>
-                    <MenuItem value="onion">Onion</MenuItem>
-                    <MenuItem value="garlic">Garlic</MenuItem>
-                    <MenuItem value="tomato">Tomato</MenuItem>
+                    <MenuItem 
+                      value="chicken"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      Chicken
+                    </MenuItem>
+                    <MenuItem 
+                      value="beef"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      Beef
+                    </MenuItem>
+                    <MenuItem 
+                      value="rice"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      Rice
+                    </MenuItem>
+                    <MenuItem 
+                      value="vegetables"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      Vegetables
+                    </MenuItem>
+                    <MenuItem 
+                      value="olive-oil"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      Olive Oil
+                    </MenuItem>
+                    <MenuItem 
+                      value="onion"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      Onion
+                    </MenuItem>
+                    <MenuItem 
+                      value="garlic"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      Garlic
+                    </MenuItem>
+                    <MenuItem 
+                      value="tomato"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      Tomato
+                    </MenuItem>
                   </Select>
                 </FormControl>
               )}
@@ -82,13 +187,20 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({ control }) => {
                     flex: 1,
                     minWidth: 80,
                     '& .MuiOutlinedInput-root': {
-                      backgroundColor: 'white',
+                      backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : 'white',
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
                       '&:hover .MuiOutlinedInput-notchedOutline': {
                         borderColor: '#22C55E',
                       },
                       '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                         borderColor: '#22C55E',
                       },
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: theme.palette.mode === 'dark' ? '#404040' : '#E5E7EB',
+                      },
+                    },
+                    '& input': {
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
                     },
                   }}
                 />
@@ -105,9 +217,10 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({ control }) => {
                     {...inputField}
                     size="small"
                     sx={{
-                      backgroundColor: 'white',
+                      backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : 'white',
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
                       '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#E5E7EB',
+                        borderColor: theme.palette.mode === 'dark' ? '#404040' : '#E5E7EB',
                       },
                       '&:hover .MuiOutlinedInput-notchedOutline': {
                         borderColor: '#22C55E',
@@ -115,15 +228,95 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({ control }) => {
                       '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                         borderColor: '#22C55E',
                       },
+                      '& .MuiSvgIcon-root': {
+                        color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
+                      },
                     }}
                   >
-                    <MenuItem value="g">g</MenuItem>
-                    <MenuItem value="kg">kg</MenuItem>
-                    <MenuItem value="ml">ml</MenuItem>
-                    <MenuItem value="l">l</MenuItem>
-                    <MenuItem value="cup">cup</MenuItem>
-                    <MenuItem value="tbsp">tbsp</MenuItem>
-                    <MenuItem value="tsp">tsp</MenuItem>
+                    <MenuItem 
+                      value="g"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      g
+                    </MenuItem>
+                    <MenuItem 
+                      value="kg"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      kg
+                    </MenuItem>
+                    <MenuItem 
+                      value="ml"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      ml
+                    </MenuItem>
+                    <MenuItem 
+                      value="l"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      l
+                    </MenuItem>
+                    <MenuItem 
+                      value="cup"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      cup
+                    </MenuItem>
+                    <MenuItem 
+                      value="tbsp"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      tbsp
+                    </MenuItem>
+                    <MenuItem 
+                      value="tsp"
+                      sx={{
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                        '&:hover': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                        },
+                      }}
+                    >
+                      tsp
+                    </MenuItem>
                   </Select>
                 </FormControl>
               )}
@@ -135,7 +328,7 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({ control }) => {
                 sx={{
                   color: '#EF4444',
                   '&:hover': {
-                    backgroundColor: '#FEE2E2',
+                    backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FEE2E2',
                   },
                 }}
               >

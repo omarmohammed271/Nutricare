@@ -15,7 +15,8 @@ import {
   Avatar,
   Chip,
   IconButton,
-  Tooltip
+  Tooltip,
+  useTheme
 } from '@mui/material';
 import { 
   Add as AddIcon,
@@ -61,6 +62,7 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
   basketItems,
   onRemoveFromBasket
 }) => {
+  const theme = useTheme();
   const [tabValue, setTabValue] = useState(0);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -86,7 +88,7 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
         borderRadius: 3,
         boxShadow: 2,
         mb: 3,
-        backgroundColor: '#FAFAFA'
+        backgroundColor: theme.palette.background.paper
       }}
     >
       <CardContent sx={{ p: 0 }}>
@@ -105,7 +107,7 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
                 py: 1.5,
                 borderRadius: '25px',
                 mr: 1,
-                color: '#666',
+                color: theme.palette.text.secondary,
                 '&.Mui-selected': {
                   color: 'white',
                   backgroundColor: '#4CAF50'
@@ -132,14 +134,14 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
                   label={`${category.name} (${category.foods.length})`}
                   onClick={() => setSelectedCategory(index)}
                   sx={{ 
-                    backgroundColor: selectedCategory === index ? '#81C784' : 'transparent', 
-                    color: selectedCategory === index ? 'white' : '#666',
+                    backgroundColor: selectedCategory === index ? '#81C784' : theme.palette.background.paper, 
+                    color: selectedCategory === index ? 'white' : theme.palette.text.primary,
                     fontWeight: 600,
                     px: 2,
-                    border: selectedCategory === index ? 'none' : '1px solid #E0E0E0',
+                    border: selectedCategory === index ? 'none' : `1px solid ${theme.palette.divider}`,
                     cursor: 'pointer',
                     '&:hover': {
-                      backgroundColor: selectedCategory === index ? '#66BB6A' : '#F5F5F5'
+                      backgroundColor: selectedCategory === index ? '#66BB6A' : theme.palette.mode === 'dark' ? '#2d2d2d' : '#F5F5F5'
                     }
                   }} 
                 />
@@ -151,22 +153,58 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 600, border: 'none', pb: 1, width: '35%' }}>
+                    <TableCell sx={{ 
+                      fontWeight: 600, 
+                      border: 'none', 
+                      pb: 1, 
+                      width: '35%',
+                      color: theme.palette.text.primary
+                    }}>
                       Food Item
                     </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1, width: '15%' }}>
+                    <TableCell align="center" sx={{ 
+                      fontWeight: 600, 
+                      border: 'none', 
+                      pb: 1, 
+                      width: '15%',
+                      color: theme.palette.text.primary
+                    }}>
                       Calories
                     </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1, width: '15%' }}>
+                    <TableCell align="center" sx={{ 
+                      fontWeight: 600, 
+                      border: 'none', 
+                      pb: 1, 
+                      width: '15%',
+                      color: theme.palette.text.primary
+                    }}>
                       Protein
                     </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1, width: '15%' }}>
+                    <TableCell align="center" sx={{ 
+                      fontWeight: 600, 
+                      border: 'none', 
+                      pb: 1, 
+                      width: '15%',
+                      color: theme.palette.text.primary
+                    }}>
                       Carbs
                     </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1, width: '15%' }}>
+                    <TableCell align="center" sx={{ 
+                      fontWeight: 600, 
+                      border: 'none', 
+                      pb: 1, 
+                      width: '15%',
+                      color: theme.palette.text.primary
+                    }}>
                       Fat
                     </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1, width: '5%' }}>
+                    <TableCell align="center" sx={{ 
+                      fontWeight: 600, 
+                      border: 'none', 
+                      pb: 1, 
+                      width: '5%',
+                      color: theme.palette.text.primary
+                    }}>
                       Action
                     </TableCell>
                   </TableRow>
@@ -177,8 +215,9 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
                       key={food.id} 
                       sx={{ 
                         '&:last-child td': { border: 0 },
-                        '&:hover': { backgroundColor: '#f8f9fa' },
-                        cursor: 'pointer'
+                        '&:hover': { backgroundColor: theme.palette.mode === 'dark' ? '#2a2a2a' : '#f8f9fa' },
+                        cursor: 'pointer',
+                        backgroundColor: theme.palette.background.paper
                       }}
                       onClick={() => onFoodSelect(food)}
                     >
@@ -195,7 +234,10 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
                           >
                             {food.icon}
                           </Avatar>
-                          <Typography variant="body2" sx={{ fontWeight: 500, color: '#333' }}>
+                          <Typography variant="body2" sx={{ 
+                            fontWeight: 500, 
+                            color: theme.palette.text.primary
+                          }}>
                             {food.name}
                           </Typography>
                         </Box>
@@ -203,37 +245,45 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
                       
                       {/* Nutritional Values per 100g */}
                       <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                           {food.caloriesPer100g}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{ 
+                          color: theme.palette.text.secondary 
+                        }}>
                           kcal/100g
                         </Typography>
                       </TableCell>
                       
                       <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                           {food.proteinPer100g}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{ 
+                          color: theme.palette.text.secondary 
+                        }}>
                           g/100g
                         </Typography>
                       </TableCell>
                       
                       <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                           {food.carbsPer100g}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{ 
+                          color: theme.palette.text.secondary 
+                        }}>
                           g/100g
                         </Typography>
                       </TableCell>
                       
                       <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                           {food.fatPer100g}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{ 
+                          color: theme.palette.text.secondary 
+                        }}>
                           g/100g
                         </Typography>
                       </TableCell>
@@ -247,9 +297,9 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
                               onFoodSelect(food);
                             }}
                             sx={{ 
-                              bgcolor: '#4CAF50', 
-                              color: 'white',
-                              '&:hover': { bgcolor: '#45a049' }
+                              bgcolor: theme.palette.success.main, 
+                              color: theme.palette.success.contrastText,
+                              '&:hover': { bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark : theme.palette.success.light }
                             }}
                           >
                             <AddIcon fontSize="small" />
@@ -264,7 +314,9 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
             
             {foodCategories[selectedCategory].foods.length === 0 && (
               <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant="body1" sx={{ 
+                  color: theme.palette.text.secondary 
+                }}>
                   No foods found in this category.
                 </Typography>
               </Box>
@@ -274,7 +326,11 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
 
         <TabPanel value={tabValue} index={1}>
           <Box sx={{ px: 3, pb: 3 }}>
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+            <Typography variant="h6" sx={{ 
+              mb: 2, 
+              fontWeight: 600,
+              color: theme.palette.text.primary
+            }}>
               Food Basket ({basketItems.length} items)
             </Typography>
             
@@ -283,19 +339,44 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell sx={{ fontWeight: 600, border: 'none', pb: 1 }}>
+                      <TableCell sx={{ 
+                        fontWeight: 600, 
+                        border: 'none', 
+                        pb: 1,
+                        color: theme.palette.text.primary
+                      }}>
                         Food Item
                       </TableCell>
-                      <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1 }}>
+                      <TableCell align="center" sx={{ 
+                        fontWeight: 600, 
+                        border: 'none', 
+                        pb: 1,
+                        color: theme.palette.text.primary
+                      }}>
                         Amount
                       </TableCell>
-                      <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1 }}>
+                      <TableCell align="center" sx={{ 
+                        fontWeight: 600, 
+                        border: 'none', 
+                        pb: 1,
+                        color: theme.palette.text.primary
+                      }}>
                         Calories
                       </TableCell>
-                      <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1 }}>
+                      <TableCell align="center" sx={{ 
+                        fontWeight: 600, 
+                        border: 'none', 
+                        pb: 1,
+                        color: theme.palette.text.primary
+                      }}>
                         Meal
                       </TableCell>
-                      <TableCell align="center" sx={{ fontWeight: 600, border: 'none', pb: 1 }}>
+                      <TableCell align="center" sx={{ 
+                        fontWeight: 600, 
+                        border: 'none', 
+                        pb: 1,
+                        color: theme.palette.text.primary
+                      }}>
                         Action
                       </TableCell>
                     </TableRow>
@@ -304,7 +385,12 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
                     {basketItems.map((item, index) => {
                       const food = foodDatabase.find(f => f.id === item.foodId);
                       return (
-                        <TableRow key={`${item.foodId}-${item.mealId}-${index}`}>
+                        <TableRow 
+                          key={`${item.foodId}-${item.mealId}-${index}`}
+                          sx={{ 
+                            backgroundColor: theme.palette.background.paper
+                          }}
+                        >
                           <TableCell sx={{ border: 'none', py: 1.5 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                               <Avatar 
@@ -317,18 +403,24 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
                               >
                                 {food?.icon || '🍽️'}
                               </Avatar>
-                              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              <Typography variant="body2" sx={{ 
+                                fontWeight: 500,
+                                color: theme.palette.text.primary
+                              }}>
                                 {item.name}
                               </Typography>
                             </Box>
                           </TableCell>
                           <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
-                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                               {item.grams}g
                             </Typography>
                           </TableCell>
                           <TableCell align="center" sx={{ border: 'none', py: 1.5 }}>
-                            <Typography variant="body2" sx={{ fontWeight: 600, color: '#4CAF50' }}>
+                            <Typography variant="body2" sx={{ 
+                              fontWeight: 600, 
+                              color: theme.palette.success.main 
+                            }}>
                               {item.calories} kcal
                             </Typography>
                           </TableCell>
@@ -337,9 +429,10 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
                               label={item.mealId.replace(/-.+/, '').replace(/([A-Z])/g, ' $1').toLowerCase().replace(/^\w/, c => c.toUpperCase())}
                               size="small"
                               sx={{ 
-                                bgcolor: '#e8f5e8',
-                                color: '#2e7d32',
-                                fontWeight: 500
+                                bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark + '20' : theme.palette.success.light + '40',
+                                color: theme.palette.success.main,
+                                fontWeight: 500,
+                                border: `1px solid ${theme.palette.success.main}`
                               }}
                             />
                           </TableCell>
@@ -349,8 +442,10 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
                                 size="small"
                                 onClick={() => onRemoveFromBasket(item.foodId, item.mealId)}
                                 sx={{ 
-                                  color: '#f44336',
-                                  '&:hover': { bgcolor: '#ffebee' }
+                                  color: theme.palette.error.main,
+                                  '&:hover': { 
+                                    bgcolor: theme.palette.mode === 'dark' ? theme.palette.error.dark + '20' : theme.palette.error.light + '40' 
+                                  }
                                 }}
                               >
                                 <DeleteIcon fontSize="small" />
@@ -365,10 +460,15 @@ const FoodListingCard: React.FC<FoodListingCardProps> = ({
               </TableContainer>
             ) : (
               <Box sx={{ textAlign: 'center', py: 6 }}>
-                <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                <Typography variant="h6" sx={{ 
+                  mb: 1,
+                  color: theme.palette.text.secondary
+                }}>
                   Your basket is empty
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ 
+                  color: theme.palette.text.secondary
+                }}>
                   Add foods from the Food Listing tab to see them here
                 </Typography>
               </Box>

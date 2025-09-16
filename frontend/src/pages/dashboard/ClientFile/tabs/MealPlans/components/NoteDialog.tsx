@@ -5,9 +5,10 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Button
+  Button,
+  useTheme
 } from '@mui/material';
-import { themeColors } from '../constants';
+import { getThemeColors } from '../constants';
 
 interface NoteDialogProps {
   open: boolean;
@@ -24,9 +25,26 @@ const NoteDialog: React.FC<NoteDialogProps> = ({
   onSave,
   onNoteChange
 }) => {
+  const theme = useTheme();
+  const themeColors = getThemeColors(theme);
+  
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Add Note to Meal Plan</DialogTitle>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="sm" 
+      fullWidth
+      PaperProps={{
+        sx: {
+          bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000' 
+      }}>
+        Add Note to Meal Plan
+      </DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
@@ -40,16 +58,31 @@ const NoteDialog: React.FC<NoteDialogProps> = ({
           onChange={(e) => onNoteChange(e.target.value)}
           sx={{
             '& .MuiOutlinedInput-root': {
-              backgroundColor: '#FFFFFF'
+              backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+              color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+            },
+            '& .MuiFormLabel-root': {
+              color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
             }
           }}
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>
+        <Button onClick={onClose} sx={{ 
+          color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000' 
+        }}>
           Cancel
         </Button>
-        <Button onClick={onSave} variant="contained" sx={{ bgcolor: themeColors.primary }}>
+        <Button 
+          onClick={onSave} 
+          variant="contained" 
+          sx={{ 
+            bgcolor: themeColors.primary,
+            '&:hover': {
+              bgcolor: theme.palette.mode === 'dark' ? '#01A85A' : '#02BE6A'
+            }
+          }}
+        >
           Save
         </Button>
       </DialogActions>

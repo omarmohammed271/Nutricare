@@ -3,7 +3,8 @@ import {
   Grid,
   Card,
   CardContent,
-  Typography
+  Typography,
+  useTheme
 } from '@mui/material';
 import { BiochemicalSummary } from '../types';
 
@@ -12,30 +13,32 @@ interface SummaryCardsProps {
 }
 
 const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
+  const theme = useTheme();
+  
   const summaryData = [
     {
       count: summary.highValues,
       label: 'High Values',
       color: '#ff9800',
-      bgColor: '#fff3e0'
+      bgColor: theme.palette.mode === 'dark' ? '#ff980020' : '#fff3e0'
     },
     {
       count: summary.normalValues,
       label: 'Normal Values',
       color: '#02BE6A',
-      bgColor: '#e8f5e8'
+      bgColor: theme.palette.mode === 'dark' ? '#02BE6A20' : '#e8f5e8'
     },
     {
       count: summary.lowValues,
       label: 'Low Values',
       color: '#2196f3',
-      bgColor: '#e3f2fd'
+      bgColor: theme.palette.mode === 'dark' ? '#2196f320' : '#e3f2fd'
     },
     {
       count: summary.criticalValues,
       label: 'Critical Values',
       color: '#f44336',
-      bgColor: '#ffebee'
+      bgColor: theme.palette.mode === 'dark' ? '#f4433620' : '#ffebee'
     }
   ];
 
@@ -43,12 +46,21 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
     <Grid container spacing={2}>
       {summaryData.map((item, index) => (
         <Grid item xs={12} sm={6} md={3} key={index}>
-          <Card sx={{ borderRadius: 2, bgcolor: item.bgColor }}>
+          <Card sx={{ 
+            borderRadius: 2, 
+            bgcolor: item.bgColor,
+            border: `1px solid ${item.color}20`
+          }}>
             <CardContent sx={{ textAlign: 'center', py: 2 }}>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: item.color }}>
+              <Typography variant="h4" sx={{ 
+                fontWeight: 700, 
+                color: item.color 
+              }}>
                 {item.count}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#666' }}>
+              <Typography variant="body2" sx={{ 
+                color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+              }}>
                 {item.label}
               </Typography>
             </CardContent>
