@@ -49,7 +49,7 @@ const MealPlan = () => {
     <>
       <PageBreadcrumb title="Meal Plan" subName="Dashboard" />
       
-      <Box sx={{  }}>
+      <Box sx={{}}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs 
             value={getCurrentTab()} 
@@ -57,35 +57,30 @@ const MealPlan = () => {
             aria-label="meal plan tabs"
             variant="fullWidth"
             sx={{
-           
               '& .MuiTabs-indicator': {
-                  backgroundColor: 'none',
-                    borderBottom:'none',
-                    height:0,
-                    color: theme.palette.primary.contrastText
+                backgroundColor: 'none',
+                borderBottom:'none',
+                height:0,
+                color: theme.palette.mode === 'dark' ? '#FFFFFF' : '#FFFFFF'
               },
               '& .MuiTab-root': {
                 textTransform: 'none',
                 fontWeight: 600,
                 fontSize: '0.9rem',
                 minHeight: 15,
-                color: theme.palette.text.secondary,
-                backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#f8f9fa',
+                color: theme.palette.mode === 'dark' ? '#cccccc' : '#666',
+                backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f8f9fa',
                 borderBottom:'0px',
                 borderRadius: '12px',
-                
                 margin: 0,
-              
                 '&.Mui-selected': {
-                  color: theme.palette.primary.contrastText,
-                  backgroundColor: theme.palette.primary.main,
+                  color: '#FFFFFF',
+                  backgroundColor: '#02BE6A',
                   fontWeight: 700,
                 },
-              
                 '&:not(:last-child)': {
                   borderRight: 'none',
                 },
-               
               },
             }}
           >

@@ -4,7 +4,8 @@ import {
   Card,
   CardContent,
   Typography,
-  Box
+  Box,
+  useTheme
 } from '@mui/material';
 import { Warning as WarningIcon } from '@mui/icons-material';
 import { MedicationSummary } from '../types';
@@ -14,31 +15,33 @@ interface SummaryCardsProps {
 }
 
 const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
+  const theme = useTheme();
+  
   const summaryData = [
     {
       count: summary.activeMedications,
       label: 'Active Medications',
       color: '#02BE6A',
-      bgColor: '#e8f5e8'
+      bgColor: theme.palette.mode === 'dark' ? '#02BE6A20' : '#e8f5e8'
     },
     {
       count: summary.drugInteractions,
       label: 'Drug Interactions',
       color: '#ff9800',
-      bgColor: '#fff3e0',
+      bgColor: theme.palette.mode === 'dark' ? '#ff980020' : '#fff3e0',
       icon: <WarningIcon sx={{ color: '#ff9800' }} />
     },
     {
       count: summary.completed,
       label: 'Completed',
       color: '#2196f3',
-      bgColor: '#e3f2fd'
+      bgColor: theme.palette.mode === 'dark' ? '#2196f320' : '#e3f2fd'
     },
     {
       count: summary.discontinued,
       label: 'Discontinued',
       color: '#f44336',
-      bgColor: '#ffebee'
+      bgColor: theme.palette.mode === 'dark' ? '#f4433620' : '#ffebee'
     }
   ];
 
@@ -70,7 +73,10 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
                   {item.count}
                 </Typography>
               )}
-              <Typography variant="body2" sx={{ color: '#555', fontWeight: 600 }}>
+              <Typography variant="body2" sx={{ 
+                color: theme.palette.mode === 'dark' ? '#cccccc' : '#555', 
+                fontWeight: 600 
+              }}>
                 {item.label}
               </Typography>
             </CardContent>

@@ -3,7 +3,8 @@ import {
   Box,
   Grid,
   Button,
-  Tab
+  Tab,
+  useTheme
 } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 
@@ -31,6 +32,7 @@ import { themeColors, mockMealPlans } from './constants';
 import { removeFromBasket, addToBasket } from './utils';
 
 const MealPlans: React.FC = () => {
+  const theme = useTheme();
   const [tabValue, setTabValue] = useState('1');
   const [basketItems, setBasketItems] = useState<SelectedFood[]>([]);
   const [mealPlans, setMealPlans] = useState<MealPlan[]>(mockMealPlans);
@@ -114,14 +116,24 @@ const MealPlans: React.FC = () => {
   }, [basketItems, updateNutrition]);
 
   return (
-    <Box sx={{ width: '100%', bgcolor: 'white', minHeight: '100vh' }}>
+    <Box sx={{ 
+      width: '100%', 
+      bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : 'white', 
+      minHeight: '100vh' 
+    }}>
       <Grid container spacing={3} sx={{ p: 1 }}>
         {/* Left Column - Main Content */}
         <Grid item xs={12} lg={8}>
           {/* Tabs */}
           <Box sx={{ mb: 3 }}>
             <TabContext value={tabValue}>
-              <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Box sx={{ 
+                borderBottom: 1, 
+                borderColor: 'divider', 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center' 
+              }}>
                 <TabList 
                   onChange={handleTabChange} 
                   aria-label="meal plans tabs"
@@ -132,7 +144,7 @@ const MealPlans: React.FC = () => {
                     '& .MuiTab-root': {
                       textTransform: 'none',
                       fontWeight: 600,
-                      color: themeColors.secondary,
+                      color: theme.palette.mode === 'dark' ? '#cccccc' : themeColors.secondary,
                       '&.Mui-selected': {
                         color: themeColors.primary,
                         fontWeight: 700,

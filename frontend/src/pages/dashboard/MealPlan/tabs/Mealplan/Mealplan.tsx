@@ -244,10 +244,10 @@ const Mealplan = () => {
       <Grid container spacing={3}>
         {/* Form Section - Left Side */}
         <Grid item xs={12} md={7}>
-          <Card sx={{ mb: 4, borderRadius: 3, boxShadow: 2, bgcolor:'#F9F4F2' }}>
+          <Card sx={{ mb: 4, borderRadius: 3, boxShadow: 2, bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2' }}>
             <CardContent sx={{ p: 2 }}>
               <Box sx={{display:'flex', flexDirection:'column', gap:1}}>
-                <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, textAlign: 'left' }}>
+                <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, textAlign: 'left', color: theme.palette.text.primary }}>
                   Create New Plan
                 </Typography>
     <TabContext value={value}>
@@ -279,7 +279,7 @@ const Mealplan = () => {
           <Grid container spacing={3} sx={{mt:2}}  >
             {/* Client Name */}
             <Grid item xs={12} md={12} sx={{display: 'flex', flexDirection:'row' ,gap:1, alignItems:'center'}}>
-                <Typography variant="h6" sx={{fontWeight: 600 ,width:'20%'}}>
+                <Typography variant="h6" sx={{fontWeight: 600 ,width:'20%', color: theme.palette.text.primary}}>
                   Client Name
                 </Typography>
               <Autocomplete
@@ -296,8 +296,24 @@ const Mealplan = () => {
                     sx={{
                         minWidth: '100%',
                       '& .MuiOutlinedInput-root': {
-                        backgroundColor: '#FFFFFF'
-                      }
+                         backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF',
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                        '& .MuiOutlinedInput-notchedOutline': {
+                          borderColor: theme.palette.mode === 'dark' ? '#404040' : 'rgba(0, 0, 0, 0.23)',
+                        },
+                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                          borderColor: theme.palette.mode === 'dark' ? '#737373' : '#02BE6A',
+                        },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                          borderColor: '#02BE6A',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
+                        '&.Mui-focused': {
+                          color: '#02BE6A',
+                        },
+                      },
                     }}
                   />
                 )}
@@ -306,21 +322,44 @@ const Mealplan = () => {
 
             {/* Diagnosis */}
             <Grid item xs={12} md={12} sx={{display: 'flex', flexDirection:'row' ,gap:1, alignItems:'center'}}>
-            <Typography variant="h6" sx={{fontWeight: 600 ,width:'20%'}}>
+            <Typography variant="h6" sx={{fontWeight: 600 ,width:'20%', color: theme.palette.text.primary}}>
                   Diagnosis
                 </Typography>
               <FormControl sx={{width:'100%'}}>
-                <InputLabel>Diagnosis</InputLabel>
+                <InputLabel 
+                  sx={{
+                    
+                    color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
+                    '&.Mui-focused': {
+                      color: '#02BE6A',
+                    },
+                  }}
+                >Diagnosis</InputLabel>
                 <Select
                   value={formData.diagnosis}
                   label="Diagnosis"
                   onChange={(e) => setFormData(prev => ({ ...prev, diagnosis: e.target.value }))}
                   sx={{
-                    backgroundColor: '#FFFFFF'
+  backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF',              color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: theme.palette.mode === 'dark' ? '#404040' : 'rgba(0, 0, 0, 0.23)',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: theme.palette.mode === 'dark' ? '#737373' : '#02BE6A',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#02BE6A',
+                    },
                   }}
                 >
                   {diagnosisOptions.map((option) => (
-                    <MenuItem key={option} value={option}>{option}</MenuItem>
+                    <MenuItem key={option} value={option} sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                      backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                      '&:hover': {
+                        backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                      },
+                    }}>{option}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -328,7 +367,7 @@ const Mealplan = () => {
 
             {/* Calorie Need */}
             <Grid item xs={12} md={12} sx={{display: 'flex', flexDirection:'row' ,gap:1, alignItems:'center'}}>
-            <Typography variant="h6" sx={{fontWeight: 600 ,width:'20%'}}>
+            <Typography variant="h6" sx={{fontWeight: 600 ,width:'20%', color: theme.palette.text.primary}}>
                   Calorie Need
                 </Typography>
               <TextField
@@ -340,8 +379,24 @@ const Mealplan = () => {
                 sx={{
                   width:'100%',
                   '& .MuiOutlinedInput-root': {
-                    backgroundColor: '#FFFFFF'
-                  }
+                      backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF',   
+                     color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                    '& fieldset': {
+                      borderColor: theme.palette.mode === 'dark' ? '#404040' : 'rgba(0, 0, 0, 0.23)',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: theme.palette.mode === 'dark' ? '#737373' : '#02BE6A',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#02BE6A',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
+                    '&.Mui-focused': {
+                      color: '#02BE6A',
+                    },
+                  },
                 }}
               />
             </Grid>
@@ -350,13 +405,13 @@ const Mealplan = () => {
           
             {/* Macronutrient Distribution */}
             <Grid item xs={12}>
-              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: theme.palette.text.primary }}>
                 Macronutrients Distribution %
               </Typography>
               
               <Grid container spacing={4}>
                 <Grid item xs={12} md={4}>
-                  <Typography gutterBottom>Carbs</Typography>
+                  <Typography gutterBottom sx={{ color: theme.palette.text.primary }}>Carbs</Typography>
                   <Box sx={{ px: 2 }}>
                     <Slider
                       value={formData.carbs}
@@ -364,16 +419,27 @@ const Mealplan = () => {
                       valueLabelDisplay="auto"
                       min={0}
                       max={100}
-                      sx={{ color: '#4CAF50' }}
+                      sx={{ 
+                        color: '#4CAF50',
+                        '& .MuiSlider-thumb': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#4CAF50' : '#4CAF50',
+                        },
+                        '& .MuiSlider-track': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#4CAF50' : '#4CAF50',
+                        },
+                        '& .MuiSlider-rail': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#404040' : '#bdbdbd',
+                        },
+                      }}
                     />
                   </Box>
-                  <Typography variant="body2" color="text.secondary" align="center">
+                  <Typography variant="body2" color="text.secondary" align="center" sx={{ color: theme.palette.text.secondary }}>
                     {Math.round(formData.carbs)}%
                   </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={4}>
-                  <Typography gutterBottom>Proteins</Typography>
+                  <Typography gutterBottom sx={{ color: theme.palette.text.primary }}>Proteins</Typography>
                   <Box sx={{ px: 2 }}>
                     <Slider
                       value={formData.protein}
@@ -381,16 +447,27 @@ const Mealplan = () => {
                       valueLabelDisplay="auto"
                       min={0}
                       max={100}
-                      sx={{ color: '#4CAF50' }}
+                      sx={{ 
+                        color: '#4CAF50',
+                        '& .MuiSlider-thumb': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#4CAF50' : '#4CAF50',
+                        },
+                        '& .MuiSlider-track': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#4CAF50' : '#4CAF50',
+                        },
+                        '& .MuiSlider-rail': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#404040' : '#bdbdbd',
+                        },
+                      }}
                     />
                   </Box>
-                  <Typography variant="body2" color="text.secondary" align="center">
+                  <Typography variant="body2" color="text.secondary" align="center" sx={{ color: theme.palette.text.secondary }}>
                     {Math.round(formData.protein)}%
                   </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={4}>
-                  <Typography gutterBottom>Fats</Typography>
+                  <Typography gutterBottom sx={{ color: theme.palette.text.primary }}>Fats</Typography>
                   <Box sx={{ px: 2 }}>
                     <Slider
                       value={formData.fat}
@@ -398,10 +475,21 @@ const Mealplan = () => {
                       valueLabelDisplay="auto"
                       min={0}
                       max={100}
-                      sx={{ color: '#4CAF50' }}
+                      sx={{ 
+                        color: '#4CAF50',
+                        '& .MuiSlider-thumb': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#4CAF50' : '#4CAF50',
+                        },
+                        '& .MuiSlider-track': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#4CAF50' : '#4CAF50',
+                        },
+                        '& .MuiSlider-rail': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#404040' : '#bdbdbd',
+                        },
+                      }}
                     />
                   </Box>
-                  <Typography variant="body2" color="text.secondary" align="center">
+                  <Typography variant="body2" color="text.secondary" align="center" sx={{ color: theme.palette.text.secondary }}>
                     {Math.round(formData.fat)}%
                   </Typography>
                 </Grid>
@@ -410,36 +498,62 @@ const Mealplan = () => {
             
             {/* Food Excluded */}
             <Grid item xs={12} md={12} sx={{display: 'flex', flexDirection:'row' ,gap:1, alignItems:'center'}}>
-                <Typography variant="h6" sx={{fontWeight: 600 }}>
+                <Typography variant="h6" sx={{fontWeight: 600, color: theme.palette.text.primary }}>
                   Food Excluded
                 </Typography>
               <FormControl sx={{width:'85%'}}>
-                <InputLabel>Food Excluded</InputLabel>
+                <InputLabel
+                  sx={{
+                    color: theme.palette.mode === 'dark' ? '#d4d4d4' : '#000000',
+                    '&.Mui-focused': {
+                      color: '#02BE6A',
+                    },
+                  }}
+                >Food Excluded</InputLabel>
                 <Select
                   multiple
                   value={formData.foodExcluded}
                   onChange={(e) => setFormData(prev => ({ ...prev, foodExcluded: e.target.value as string[] }))}
                   input={<OutlinedInput label="Food Excluded" />}
                   sx={{
-                    backgroundColor: '#FFFFFF'
+                    backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF',
+                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: theme.palette.mode === 'dark' ? '#404040' : 'rgba(0, 0, 0, 0.23)',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: theme.palette.mode === 'dark' ? '#737373' : '#02BE6A',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#02BE6A',
+                    },
                   }}
                   renderValue={(selected) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {selected.map((value) => (
-                        <Chip key={value} label={value} size="small" />
+                        <Chip key={value} label={value} size="small" sx={{ 
+                          bgcolor: theme.palette.mode === 'dark' ? theme.palette.grey[700] : undefined,
+                          color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                        }} />
                       ))}
                     </Box>
                   )}
                 >
                   {foodExcludedOptions.map((option) => (
-                    <MenuItem key={option} value={option}>{option}</MenuItem>
+                    <MenuItem key={option} value={option} sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                      backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                      '&:hover': {
+                        backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+                      },
+                    }}>{option}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Grid>
           </Grid>
 
-    <Divider variant="middle" component="li" sx={{mt: 4 ,borderColor:'#9B9B9B'}} />
+    <Divider variant="middle" component="li" sx={{mt: 4, borderColor: theme.palette.divider}} />
           {/* Meal Counters */}
           <Box sx={{ mt: 4 }}>
             <Grid container spacing={2}>
@@ -454,24 +568,40 @@ const Mealplan = () => {
                     borderRadius: 2,
                     bgcolor: theme.palette.background.paper
                   }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                       {meal.label}
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <IconButton 
                         size="small" 
                         onClick={() => handleCounterChange(meal.key as keyof MealCounter, false)}
-                        sx={{ bgcolor: theme.palette.success.main, color: theme.palette.success.contrastText, width: 24, height: 24 }}
+                        sx={{ 
+                          bgcolor: theme.palette.success.main, 
+                          color: theme.palette.success.contrastText, 
+                          width: 24, 
+                          height: 24,
+                          '&:hover': {
+                            bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark : theme.palette.success.light
+                          }
+                        }}
                       >
                         <RemoveIcon fontSize="small" />
                       </IconButton>
-                      <Typography sx={{ minWidth: 20, textAlign: 'center', fontWeight: 600 }}>
+                      <Typography sx={{ minWidth: 20, textAlign: 'center', fontWeight: 600, color: theme.palette.text.primary }}>
                         {mealCounters[meal.key as keyof MealCounter]}
                       </Typography>
                       <IconButton 
                         size="small" 
                         onClick={() => handleCounterChange(meal.key as keyof MealCounter, true)}
-                        sx={{ bgcolor: theme.palette.success.main, color: theme.palette.success.contrastText, width: 24, height: 24 }}
+                        sx={{ 
+                          bgcolor: theme.palette.success.main, 
+                          color: theme.palette.success.contrastText, 
+                          width: 24, 
+                          height: 24,
+                          '&:hover': {
+                            bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark : theme.palette.success.light
+                          }
+                        }}
                       >
                         <AddIcon fontSize="small" />
                       </IconButton>
@@ -492,7 +622,7 @@ const Mealplan = () => {
               mt: 4,
               py: 2,
               bgcolor: theme.palette.success.main,
-              '&:hover': { bgcolor: theme.palette.success.dark },
+              '&:hover': { bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark : theme.palette.success.light },
               borderRadius: 2,
               fontWeight: 600,
               fontSize: '1.1rem'
@@ -504,10 +634,10 @@ const Mealplan = () => {
             </TabPanel>
 
         <TabPanel value="2" sx={{width:'100%', p: 2}}>
-          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: theme.palette.text.primary }}>
             Meal Templates
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
             Browse and select from pre-made meal templates to quickly create meal plans.
           </Typography>
         </TabPanel>
@@ -539,13 +669,19 @@ const Mealplan = () => {
               <Card sx={{ borderRadius: 2, boxShadow: 2, p: 1, bgcolor: theme.palette.background.paper }}>
                 <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Typography variant="h6" sx={{ fontWeight: 600, flexGrow: 1 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 600, flexGrow: 1, color: theme.palette.text.primary }}>
                         {meal.type}
                       </Typography>
                       <Chip 
                         label={meal.id.split('-')[1] ? `#${parseInt(meal.id.split('-')[1]) + 1}` : '#1'}
                         size="small"
-                        sx={{ bgcolor: theme.palette.success.main, color: theme.palette.success.contrastText }}
+                        sx={{ 
+                          bgcolor: theme.palette.success.main, 
+                          color: theme.palette.success.contrastText,
+                          '&:hover': {
+                            bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark : theme.palette.success.light
+                          }
+                        }}
                       />
                     </Box>
                     
@@ -569,7 +705,9 @@ const Mealplan = () => {
                         sx={{ 
                           bgcolor: theme.palette.success.main,
                           color: theme.palette.success.contrastText,
-                          '&:hover': { bgcolor: theme.palette.success.dark }
+                          '&:hover': { 
+                            bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark : theme.palette.success.light
+                          }
                         }}
                       >
                         <AddIcon />
@@ -579,7 +717,7 @@ const Mealplan = () => {
                     {/* Display foods in this meal */}
                     {meal.foods.length > 0 && (
                       <Box sx={{ mt: 2 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, mb: 1, color: theme.palette.text.primary }}>
                           Foods ({meal.foods.length}):
                         </Typography>
                         {meal.foods.map((food, index) => {
@@ -595,13 +733,13 @@ const Mealplan = () => {
                               mb: 1 
                             }}>
                               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Typography variant="body2">
+                                <Typography variant="body2" sx={{ color: theme.palette.text.primary }}>
                                   {foodItem?.icon || '🍽️'}
                                 </Typography>
-                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                <Typography variant="body2" sx={{ fontWeight: 500, color: theme.palette.text.primary }}>
                                   {food.name}
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
                                   ({food.grams}g)
                                 </Typography>
                               </Box>
@@ -614,7 +752,7 @@ const Mealplan = () => {
                         
                         {/* Meal nutrition summary */}
                         <Box sx={{ mt: 1, p: 1, bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark + '20' : theme.palette.success.light + '20', borderRadius: 1 }}>
-                          <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                          <Typography variant="caption" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
                             Meal Total: {Math.round(meal.foods.reduce((sum, food) => sum + food.calories, 0))} kcal
                           </Typography>
                         </Box>
@@ -630,7 +768,10 @@ const Mealplan = () => {
                         mt: 1,
                         color: theme.palette.success.main,
                         borderColor: theme.palette.success.main,
-                        '&:hover': { bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark + '20' : theme.palette.success.light + '20' }
+                        '&:hover': { 
+                          bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark + '20' : theme.palette.success.light + '20',
+                          borderColor: theme.palette.mode === 'dark' ? theme.palette.success.light : theme.palette.success.main
+                        }
                       }}
                     >
                       Add Note
@@ -638,7 +779,7 @@ const Mealplan = () => {
                     
                     {meal.notes && (
                       <Box sx={{ mt: 2, p: 2, bgcolor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[100], borderRadius: 1 }}>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                           <strong>Note:</strong> {meal.notes}
                         </Typography>
                       </Box>
@@ -669,8 +810,14 @@ const Mealplan = () => {
       />
 
       {/* Note Dialog */}
-      <Dialog open={noteDialog.open} onClose={() => setNoteDialog({ open: false, mealId: '', currentNote: '' })} maxWidth="sm" fullWidth>
-        <DialogTitle>Add Note</DialogTitle>
+      <Dialog open={noteDialog.open} onClose={() => setNoteDialog({ open: false, mealId: '', currentNote: '' })} maxWidth="sm" fullWidth
+        PaperProps={{
+          sx: {
+            bgcolor: theme.palette.background.paper
+          }
+        }}
+      >
+        <DialogTitle sx={{ color: theme.palette.text.primary }}>Add Note</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -684,16 +831,25 @@ const Mealplan = () => {
             onChange={(e) => setNoteDialog(prev => ({ ...prev, currentNote: e.target.value }))}
             sx={{
               '& .MuiOutlinedInput-root': {
-                backgroundColor: theme.palette.background.paper
+                backgroundColor: theme.palette.background.paper,
+                color: theme.palette.text.primary
+              },
+              '& .MuiFormLabel-root': {
+                color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
               }
             }}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setNoteDialog({ open: false, mealId: '', currentNote: '' })}>
+          <Button onClick={() => setNoteDialog({ open: false, mealId: '', currentNote: '' })} sx={{ color: theme.palette.text.primary }}>
             Cancel
           </Button>
-          <Button onClick={saveNote} variant="contained" sx={{ bgcolor: theme.palette.success.main }}>
+          <Button onClick={saveNote} variant="contained" sx={{ 
+            bgcolor: theme.palette.success.main,
+            '&:hover': {
+              bgcolor: theme.palette.mode === 'dark' ? theme.palette.success.dark : theme.palette.success.light
+            }
+          }}>
             Save
           </Button>
         </DialogActions>
