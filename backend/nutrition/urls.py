@@ -4,6 +4,7 @@ from . import views
 
 router = DefaultRouter()
 router.register("equations", views.EquationViewSet)
+router.register("category-equations", views.CategoryEquationViewSet)
 router.register("calculations", views.CalculationViewSet)
 
 urlpatterns = [

@@ -1,6 +1,10 @@
 from django.contrib import admin
 from .models import *
 
+@admin.register(CategoryEquations)
+class CategoryEquationsAdmin(admin.ModelAdmin):
+    list_display = ("name", "description")
+    search_fields = ("name",)
 @admin.register(Equation)
 class EquationAdmin(admin.ModelAdmin):
     list_display = ("name", "code", "function_path")

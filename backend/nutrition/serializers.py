@@ -7,6 +7,13 @@ class EquationSerializer(serializers.ModelSerializer):
         model = Equation
         fields = ["id", "name", "code", "function_path", "description"]
 
+class CategoryEquationSerializer(serializers.ModelSerializer):
+    equations = EquationSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = CategoryEquations
+        fields = ['id', 'name', 'description', 'equations']
+
 
 class CalculationSerializer(serializers.ModelSerializer):
     result = serializers.JSONField(read_only=True)
@@ -37,30 +44,30 @@ class DrugCategorySerializer(serializers.ModelSerializer):
 
 
 
-class ScreeningToolSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ScreeningTool
-        fields = '__all__'
+# class ScreeningToolSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ScreeningTool
+#         fields = '__all__'
 
-class ScreeningResultSerializer(serializers.ModelSerializer):
-    tool_name = serializers.CharField(source='tool.name', read_only=True)
+# class ScreeningResultSerializer(serializers.ModelSerializer):
+#     tool_name = serializers.CharField(source='tool.name', read_only=True)
     
-    class Meta:
-        model = ScreeningResult
-        fields = '__all__'
-        read_only_fields = ('patient', 'date_administered')
+#     class Meta:
+#         model = ScreeningResult
+#         fields = '__all__'
+#         read_only_fields = ('patient', 'date_administered')
 
-class MNA_SF_DataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MNA_SF_Data
-        fields = '__all__'
+# class MNA_SF_DataSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = MNA_SF_Data
+#         fields = '__all__'
 
-class GNRI_DataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GNRI_Data
-        fields = '__all__'
+# class GNRI_DataSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = GNRI_Data
+#         fields = '__all__'
 
-class NUTRIC_DataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = NUTRIC_Data
-        fields = '__all__'
+# class NUTRIC_DataSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = NUTRIC_Data
+#         fields = '__all__'
