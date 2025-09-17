@@ -24,10 +24,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
     severity: "success",
   });
 
-  const [result, setResult] = useState<any>({
-    result: 0,
-    unit: "kg/m2"
-  });
+  const [result, setResult] = useState<{value: string, unit: string, interpretation?: string}>();
 
   // POST Calculation
   const { mutate, isSuccess } = useMutation({
@@ -85,7 +82,6 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
       PaperProps={{
         sx: {
           borderRadius: 3,
-          backgroundColor: "#ffffff",
           boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
           minHeight: "700px",
         },
@@ -105,13 +101,12 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
           variant="h5"
           sx={{
             fontWeight: 700,
-            color: "#2c3e50",
             fontSize: "24px",
           }}
         >
           Quick Calculators
         </Typography>
-        <IconButton onClick={onClose} sx={{ color: "#7f8c8d" }}>
+        <IconButton onClick={onClose}>
           <LuX size={24} />
         </IconButton>
       </DialogTitle>
@@ -122,7 +117,6 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
           <Typography
             variant="body1"
             sx={{
-              color: "#2c3e50",
               fontWeight: 500,
               mb: 1,
             }}
@@ -135,7 +129,6 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               onChange={(e) => handleInputChange("calculatorType", e.target.value)}
               sx={{
                 borderRadius: 2,
-                backgroundColor: "#ffffff",
                 "& .MuiOutlinedInput-notchedOutline": {
                   borderColor: "#e0e0e0",
                 },
@@ -171,7 +164,6 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
               <Typography
                 variant="body1"
                 sx={{
-                  color: "#2c3e50",
                   fontWeight: 500,
                   minWidth: "180px",
                 }}
@@ -189,7 +181,6 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                     displayEmpty
                     sx={{
                       borderRadius: 2,
-                      backgroundColor: "#ffffff",
                       "& .MuiOutlinedInput-notchedOutline": {
                         borderColor: "#e0e0e0",
                       },
@@ -222,7 +213,6 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                   sx={{
                     flex: 1,
                     "& .MuiOutlinedInput-root": {
-                      backgroundColor: "#ffffff",
                       borderRadius: 2,
                       "& .MuiOutlinedInput-notchedOutline": {
                         borderColor: "#e0e0e0",
@@ -338,12 +328,11 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                   variant="h4"
                   sx={{
                     fontWeight: 700,
-                    color: (theme) => theme.palette.mode === "dark" ? "#ffffff" : "#2c3e50",
                     fontSize: "24px",
                     lineHeight: 1,
                   }}
                 >
-                  {isSuccess ? result.value : "--"}
+                  {isSuccess ? result?.value : "--"}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -352,7 +341,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                     fontSize: "12px",
                   }}
                 >
-                  {isSuccess ? result.unit : "--"}
+                  {isSuccess ? result?.unit : "--"}
                 </Typography>
               </Box>
             </Box>
@@ -381,75 +370,10 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                 mt: 1,
               }}
             >
-              {}
+              {isSuccess ? result?.interpretation : "--"}
             </Typography>
           </Box>
         </Box>
-
-        {/* Legend */}
-        {/* <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            gap: 3,
-            mt: 3,
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Box
-              sx={{
-                width: 12,
-                height: 12,
-                borderRadius: "50%",
-                backgroundColor: "#FFA726",
-              }}
-            />
-            <Typography
-              variant="body2"
-              sx={{
-                color: (theme) => theme.palette.mode === "dark" ? "#ffffff" : "#2c3e50",
-              }}
-            >
-              Under
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Box
-              sx={{
-                width: 12,
-                height: 12,
-                borderRadius: "50%",
-                backgroundColor: "#4CAF50",
-              }}
-            />
-            <Typography
-              variant="body2"
-              sx={{
-                color: (theme) => theme.palette.mode === "dark" ? "#ffffff" : "#2c3e50",
-              }}
-            >
-              Normal
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Box
-              sx={{
-                width: 12,
-                height: 12,
-                borderRadius: "50%",
-                backgroundColor: "#F44336",
-              }}
-            />
-            <Typography
-              variant="body2"
-              sx={{
-                color: (theme) => theme.palette.mode === "dark" ? "#ffffff" : "#2c3e50",
-              }}
-            >
-              Over
-            </Typography>
-          </Box>
-        </Box> */}
       </DialogContent>
 
       <DialogActions sx={{ p: 3, pt: 0, gap: 2 }}>
@@ -457,18 +381,12 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
           onClick={onClose}
           variant="outlined"
           sx={{
-            borderColor: "#e0e0e0",
-            color: "#2c3e50",
             px: 4,
             py: 1.5,
             borderRadius: 2,
             fontWeight: 600,
             textTransform: "none",
             fontSize: "14px",
-            "&:hover": {
-              borderColor: "#02BE6A",
-              backgroundColor: "#f8f9fa",
-            },
           }}
         >
           Close
