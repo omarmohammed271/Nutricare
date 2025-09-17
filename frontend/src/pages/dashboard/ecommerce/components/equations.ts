@@ -8,9 +8,16 @@ export const equationsConfig = [
         "id": 1,
         "code": "bmi",
         "name": "Body Mass Index (BMI)",
+        "system": { "name": "inputs_system", "label": "Inputs System", "type": "select", "options": ["Metric (kg, m)", "Imperial (lb, in)"] },
         "inputs": [
-          { "name": "weight_kg", "label": "Weight (kg)", "type": "number" },
-          { "name": "height_m", "label": "Height (m)", "type": "number" }
+          [
+            { "name": "weight_kg", "label": "Weight (kg)", "type": "number" },
+            { "name": "height_m", "label": "Height (m)", "type": "number" }
+          ],
+          [
+            { "name": "weight_lb", "label": "Weight (lb)", "type": "number" },
+            { "name": "height_in", "label": "Height (in)", "type": "number" }
+          ]
         ]
       },
       {
