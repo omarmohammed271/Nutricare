@@ -172,7 +172,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                 ])}
               </Select>
             </FormControl>
-          </Box>
+          </Box> 
 
           {/* DYNAMIC INPUTS */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
