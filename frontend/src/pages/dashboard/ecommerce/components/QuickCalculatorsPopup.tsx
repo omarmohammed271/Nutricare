@@ -6,8 +6,8 @@ import {
 import { LuX } from "react-icons/lu";
 import { useMemo, useState } from "react";
 import { equationsConfig } from "./equations"; // config with calculators and inputs
-import { useMutation } from "@tanstack/react-query";
-import { addCaclulations } from "@src/api/endpoints";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { addCaclulations, getEquationsCategories } from "@src/api/endpoints";
 import React from "react";
 
 interface QuickCalculatorsPopupProps {
@@ -35,6 +35,12 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
     severity: "success",
   });
 
+  // GET equations' categories
+  const { data: categories } = useQuery({
+    queryFn: getEquationsCategories,
+    queryKey: ['equations-categories']
+  })
+
   // result object from API
   const [result, setResult] = useState<{ value: string; unit: string; interpretation?: string }>();
 
@@ -53,7 +59,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
 
   // flatten all equations into one array for easier lookup
   const allEquations = useMemo(
-    () => equationsConfig.flatMap((cat) => cat.equations),
+    () => equationsConfig,
     []
   );
 
@@ -152,8 +158,16 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                 value={formData.calculatorType}
                 onChange={(e) => handleInputChange("calculatorType", e.target.value)}
               >
-                {equationsConfig.map((category) => [
-                  <ListSubheader key={category.id}>
+                {categories?.map((category) => [
+                  <ListSubheader key={category.id} sx={{ 
+                    p: 0,
+                    px: 2, 
+                    fontWeight: 600, 
+                    color: (theme) => theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
+                    fontSize: "14px",
+                    backgroundColor: (theme) => theme.palette.mode === 'dark' ? "#1a1a1a" : "#f5f5f5",
+                    borderBottom: (theme) => theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e0e0e0"
+                  }}>
                     {category.name}
                   </ListSubheader>,
                   category.equations.map((equation) => (

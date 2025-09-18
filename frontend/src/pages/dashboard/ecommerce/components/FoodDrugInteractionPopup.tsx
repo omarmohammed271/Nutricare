@@ -11,9 +11,10 @@ import {
   Autocomplete,
   useTheme,
   CircularProgress,
-  Alert
+  Alert,
+  InputAdornment
 } from "@mui/material";
-import { LuX, LuChevronDown } from "react-icons/lu";
+import { LuX, LuChevronDown, LuSearch, LuXCircle } from "react-icons/lu";
 import { useState, useMemo, useEffect } from "react";
 import { useDrugCategories, useDrugsByCategory, useDrugDetails, useSearchDrugs } from "@src/hooks/useNutritionApi";
 import { Drug, DrugCategory, DrugDetail } from "@src/services/nutritionApi";
@@ -34,6 +35,8 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
   const theme = useTheme();
   const [selectedDrug, setSelectedDrug] = useState<Drug | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   // Fetch drug categories - only when dialog is open
   const { 
@@ -46,12 +49,12 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
   const drugCategories = Array.isArray(drugCategoriesData) ? drugCategoriesData : [];
 
   // Search drugs across all categories when search query is provided
-  // Only trigger API search if query is longer than 2 characters
+  // Only trigger API search when search button is clicked
   const { 
     data: searchResults, 
     isLoading: searchLoading, 
     error: searchError 
-  } = useSearchDrugs(searchQuery.length > 2 ? searchQuery : "");
+  } = useSearchDrugs(searchQuery);
 
   // Create a flat list of all drugs with category information
   const allDrugsWithCategory = useMemo(() => {
@@ -73,10 +76,9 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
     return drugs;
   }, [drugCategories]);
 
-  // Use search results if searching, otherwise use all drugs with category info
-  // For local search, filter by both drug name and category name
+  // Always show all drugs, but filter them when searching
   const availableDrugs = useMemo(() => {
-    if (searchQuery && searchQuery.length > 2) {
+    if (searchQuery && searchQuery.length > 0) {
       // First try the API search if we have results
       if (searchResults && searchResults.length > 0) {
         console.log('🔍 Using API search results:', searchResults.length);
@@ -173,15 +175,30 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
     setSelectedDrug(drug);
   };
 
-  const handleSearchChange = (event: any, newInputValue: string) => {
+  const handleSearchInputChange = (event: any, newInputValue: string) => {
     console.log('🔍 Search input changed:', newInputValue);
-    setSearchQuery(newInputValue);
+    setSearchInput(newInputValue);
+  };
+
+  const handleSearch = () => {
+    console.log('🔍 Search button clicked with query:', searchInput);
+    setSearchQuery(searchInput);
+    setIsSearching(true);
+  };
+
+  const handleClearSearch = () => {
+    console.log('🧹 Clearing search');
+    setSearchQuery("");
+    setSearchInput("");
+    setIsSearching(false);
   };
 
   const handleClear = () => {
     console.log('🧹 Clearing all selections');
     setSelectedDrug(null);
     setSearchQuery("");
+    setSearchInput("");
+    setIsSearching(false);
   };
 
   // Debug logging for API calls
@@ -199,6 +216,8 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
 
   useEffect(() => {
     console.log('🔍 Search query changed:', searchQuery);
+    console.log('🔍 Search input:', searchInput);
+    console.log('🔍 Is searching:', isSearching);
     console.log('🔍 Available drugs count:', availableDrugs.length);
     console.log('🔍 All drugs for autocomplete:', allDrugs.length);
     console.log('🔍 First few options:', allDrugs.slice(0, 3).map(d => ({ name: d.name, category: d.categoryName })));
@@ -206,7 +225,7 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
     console.log('🔍 Autocomplete open condition:', searchQuery.length > 0 && allDrugs.length > 0);
     console.log('🔍 Search query length:', searchQuery.length);
     console.log('🔍 All drugs length:', allDrugs.length);
-  }, [searchQuery, availableDrugs, allDrugs]);
+  }, [searchQuery, searchInput, isSearching, availableDrugs, allDrugs]);
 
   // Get drug effect and nutritional implication from API data
   const drugEffect = drugDetails?.drug_effect || "Select a drug to view interactions";
@@ -259,24 +278,24 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
             mb: 2
           }}>
             Drug Search
-            {!searchQuery && (
+            {!isSearching && (
               <Typography component="span" sx={{ 
                 fontSize: "12px", 
                 color: theme.palette.mode === 'dark' ? "#888888" : "#666666",
                 ml: 1,
                 fontWeight: 400
               }}>
-                ({allDrugsWithCategory.length} drugs available)
+                ({allDrugsWithCategory.length} drugs available - type to search or select from dropdown)
               </Typography>
             )}
-            {searchQuery && searchQuery.length > 2 && (
+            {isSearching && (
               <Typography component="span" sx={{ 
                 fontSize: "12px", 
                 color: theme.palette.mode === 'dark' ? "#888888" : "#666666",
                 ml: 1,
                 fontWeight: 400
               }}>
-                (Searching by drug name or category...)
+                (Search results)
                 {availableDrugs.length > 0 && (
                   <Typography component="span" sx={{ 
                     fontSize: "11px", 
@@ -303,7 +322,7 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
             </Alert>
           )}
           
-          {searchQuery && searchQuery.length > 2 && searchLoading && (
+          {searchLoading && (
             <Box sx={{ 
               display: "flex", 
               alignItems: "center", 
@@ -324,6 +343,7 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
             </Box>
           )}
           
+          {/* Single Drug Selection and Search Field */}
           <Autocomplete
             options={allDrugs}
             value={selectedDrug}
@@ -337,15 +357,18 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
             }}
             loading={searchLoading || categoriesLoading}
             disabled={searchLoading || categoriesLoading}
-            inputValue={searchQuery}
+            inputValue={searchInput}
             onInputChange={(event, newInputValue, reason) => {
               console.log('🔍 Autocomplete input change:', { newInputValue, reason });
               if (reason === 'input') {
-                handleSearchChange(event, newInputValue);
+                handleSearchInputChange(event, newInputValue);
+                // Only clear search when input is completely empty
+                if (newInputValue.length === 0) {
+                  setSearchQuery("");
+                  setIsSearching(false);
+                }
               }
             }}
-            onOpen={() => console.log('🔍 Autocomplete opened')}
-            onClose={() => console.log('🔍 Autocomplete closed')}
             autoComplete={false}
             freeSolo={false}
             clearOnBlur={false}
@@ -396,22 +419,46 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
             renderInput={(params) => (
               <TextField
                 {...params}
-                placeholder={
-                  searchLoading || categoriesLoading
-                    ? "Loading drugs..." 
-                    : searchQuery && searchQuery.length > 2
-                      ? "Searching by drug name or category..."
-                      : "Search by drug name or category..."
-                }
+                placeholder="Search or select a drug..."
                 variant="outlined"
-                onClick={() => {
-                  console.log('🔍 Input clicked');
-                }}
                 InputProps={{
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {(searchLoading || categoriesLoading) ? <CircularProgress color="inherit" size={20} /> : null}
+                      {(searchLoading || categoriesLoading) ? (
+                        <CircularProgress color="inherit" size={20} />
+                      ) : (
+                        <Box sx={{ display: 'flex', gap: 0.5 }}>
+                          {searchInput.trim() && (
+                            <IconButton
+                              onClick={handleClearSearch}
+                              size="small"
+                              sx={{
+                                color: theme.palette.mode === 'dark' ? "#888888" : "#666666",
+                                "&:hover": {
+                                  color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000"
+                                }
+                              }}
+                            >
+                              <LuXCircle size={16} />
+                            </IconButton>
+                          )}
+                          <IconButton
+                            onClick={() => {
+                              if (searchInput.trim()) {
+                                handleSearch();
+                              }
+                            }}
+                            disabled={!searchInput.trim() || searchLoading || categoriesLoading}
+                            size="small"
+                            sx={{
+                              color: searchInput.trim() ? "#02BE6A" : theme.palette.mode === 'dark' ? "#666666" : "#cccccc"
+                            }}
+                          >
+                            <LuSearch size={16} />
+                          </IconButton>
+                        </Box>
+                      )}
                       {params.InputProps.endAdornment}
                     </>
                   ),
@@ -439,9 +486,6 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
             popupIcon={
               <LuChevronDown 
                 size={20} 
-                onClick={() => {
-                  console.log('🔍 Chevron clicked');
-                }}
                 style={{ cursor: 'pointer' }}
               />
             }
@@ -453,30 +497,6 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
           />
         </Box>
 
-        {/* Clear Button */}
-        <Box sx={{ mb: 4, display: 'flex', gap: 2 }}>
-          <Button
-            onClick={handleClear}
-            variant="outlined"
-            sx={{
-              borderColor: "#02BE6A",
-              color: "#02BE6A",
-              px: 3,
-              py: 1,
-              borderRadius: 2,
-              fontWeight: 600,
-              textTransform: "none",
-              fontSize: "14px",
-              "&:hover": {
-                borderColor: "#029e56",
-                backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
-              }
-            }}
-          >
-            Clear
-          </Button>
-          
-        </Box>
 
         {/* Drug Effect Section */}
         <Box sx={{ mb: 4 }}>
