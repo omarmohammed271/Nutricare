@@ -1,3 +1,15 @@
+/**
+ * Equations Configuration
+ * ------------------------
+ * Author: Saif Eldin Ayman
+ * Version: 2.0.0
+ * Last Updated: 2025-09-17
+ * Description: This file contains the structured configuration
+ * for nutrition- and health-related equations used in the calculators.
+ * Each equation includes its id, code, name, input definitions,
+ * and optional system variations.
+ */
+
 export const equationsConfig = [
   {
     "id": 1,
@@ -15,6 +27,7 @@ export const equationsConfig = [
             { "name": "height_m", "label": "Height (m)", "type": "number" }
           ],
           [
+            { "name": "weight_kg", "label": "Weight (kg)", "type": "number" },
             { "name": "weight_lb", "label": "Weight (lb)", "type": "number" },
             { "name": "height_in", "label": "Height (in)", "type": "number" }
           ]

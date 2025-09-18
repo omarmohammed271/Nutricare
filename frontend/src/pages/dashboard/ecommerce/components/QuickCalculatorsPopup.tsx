@@ -5,7 +5,7 @@ import {
 } from "@mui/material";
 import { LuX } from "react-icons/lu";
 import { useMemo, useState } from "react";
-import { equationsConfig } from "./equations"; // import your config
+import { equationsConfig } from "./equations"; // config with calculators and inputs
 import { useMutation } from "@tanstack/react-query";
 import { addCaclulations } from "@src/api/endpoints";
 import React from "react";
@@ -15,50 +15,56 @@ interface QuickCalculatorsPopupProps {
   onClose: () => void;
 }
 
-interface EquationInputData{
-  name: string, label: string, type: string, options?: [string]
+interface EquationInputData {
+  name: string;
+  label: string;
+  type: string;
+  options?: string[];
 }
 
 const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) => {
+  // store form values dynamically by field name
   const [formData, setFormData] = useState<{ [key: string]: string }>({
-    calculatorType: "bmi", // default
+    calculatorType: "bmi", // default selection
   });
 
+  // toast for feedback
   const [toast, setToast] = useState<{ open: boolean; message: string; severity: "success" | "error" }>({
     open: false,
     message: "",
     severity: "success",
   });
 
-  const [result, setResult] = useState<{value: string, unit: string, interpretation?: string}>();
+  // result object from API
+  const [result, setResult] = useState<{ value: string; unit: string; interpretation?: string }>();
 
-  // POST Calculation
+  // POST calculation mutation
   const { mutate, isSuccess } = useMutation({
     mutationFn: addCaclulations,
     mutationKey: ["new_calculation"],
     onSuccess(data: any) {
       setToast({ open: true, message: "Calculation added successfully!", severity: "success" });
-      console.log(data.data.result);
       setResult(data.data.result);
     },
-    onError(err: any) {
+    onError() {
       setToast({ open: true, message: "Failed to add calculation.", severity: "error" });
     }
   });
 
-  // flatten equations once
+  // flatten all equations into one array for easier lookup
   const allEquations = useMemo(
     () => equationsConfig.flatMap((cat) => cat.equations),
     []
   );
 
+  // for BMI, allow switching between Metric/Imperial sets
   const [bmiInputSet, setBmiInputSet] = useState(0);
 
   const handleBMISystem = (value: string | number) => {
-    console.log(value);
     setBmiInputSet(value as number);
-  }
+  };
 
+  // update formData when user types/selects
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -66,24 +72,26 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
     }));
   };
 
-  // get the currently selected equation config
+  // get the config of the selected calculator
   const selectedEquation: any = allEquations.find(
     (eq) => eq.code === formData.calculatorType
   );
 
+  // build payload and call API
   const handleAddCaculation = () => {
     if (!selectedEquation) return;
   
-    // Build inputs object
     const inputs: { [key: string]: string | number } = {};
     let availableInputs;
-    
-    if ( selectedEquation.code == "bmi" ){
-      availableInputs = selectedEquation.inputs[bmiInputSet]
+
+    // choose correct set for BMI
+    if (selectedEquation.code === "bmi") {
+      availableInputs = selectedEquation.inputs[bmiInputSet];
     } else {
-      availableInputs = selectedEquation.inputs
+      availableInputs = selectedEquation.inputs;
     }
 
+    // gather values from formData
     availableInputs.forEach((input: EquationInputData) => {
       if (formData[input.name]) {
         inputs[input.name] =
@@ -92,214 +100,109 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
     });
   
     const payload = {
-      equation: selectedEquation.id, // use id instead of code
+      equation: selectedEquation.id,
       inputs,
     };
-
-    console.log(payload);
-    
 
     mutate(payload);
   };
 
   return (
     <>
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 3,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-          minHeight: "700px",
-        },
-      }}
-    >
-      <DialogTitle
-        sx={{
-          pb: 2,
-          borderBottom: (theme) => theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #f0f0f0",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
+      <Dialog
+        open={open}
+        onClose={onClose}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+            minHeight: "700px",
+          },
         }}
       >
-        <Typography
-          variant="h5"
+        {/* HEADER */}
+        <DialogTitle
           sx={{
-            fontWeight: 700,
-            fontSize: "24px",
+            pb: 2,
+            borderBottom: (theme) => theme.palette.mode === "dark" ? "1px solid #333333" : "1px solid #f0f0f0",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
           }}
         >
-          Quick Calculators
-        </Typography>
-        <IconButton onClick={onClose}>
-          <LuX size={24} />
-        </IconButton>
-      </DialogTitle>
-
-      <DialogContent sx={{ p: 3, pt: 4 }}>
-        {/* Calculator Type */}
-        <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="body1"
-            sx={{
-              fontWeight: 500,
-              mb: 1,
-            }}
-          >
-            Calculator Type
+          <Typography variant="h5" sx={{ fontWeight: 700, fontSize: "24px" }}>
+            Quick Calculators
           </Typography>
-          <FormControl fullWidth>
-            <Select
-              value={formData.calculatorType}
-              onChange={(e) => handleInputChange("calculatorType", e.target.value)}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  backgroundColor: (theme) => theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
-                  borderRadius: 2,
-                  "& fieldset": {
-                    borderColor: (theme) => theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#02BE6A",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#02BE6A",
-                  },
-                }
-              }}
-            >
-              {equationsConfig.map((category) => [
-                <ListSubheader key={category.id} 
-                sx={{ fontWeight: 600, 
-                  backgroundColor: (theme) => theme.palette.mode === 'dark' ? "#1a1a1a" : "#f5f5f5",
-                  color: (theme) => theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
-                  }}>
-                  {category.name}
-                </ListSubheader>,
-                category.equations.map((equation) => (
-                  <MenuItem key={equation.code} value={equation.code}>
-                    {equation.name}
-                  </MenuItem>
-                )),
-              ])}
-            </Select>
-          </FormControl>
-        </Box>
+          <IconButton onClick={onClose}>
+            <LuX size={24} />
+          </IconButton>
+        </DialogTitle>
 
-        {/* Dynamic Inputs */}
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          {
-            selectedEquation.code == "bmi" ? (
+        <DialogContent sx={{ p: 3, pt: 4 }}>
+          {/* CALCULATOR TYPE SELECT */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="body1" sx={{ fontWeight: 500, mb: 1 }}>
+              Calculator Type
+            </Typography>
+            <FormControl fullWidth>
+              <Select
+                value={formData.calculatorType}
+                onChange={(e) => handleInputChange("calculatorType", e.target.value)}
+              >
+                {equationsConfig.map((category) => [
+                  <ListSubheader key={category.id}>
+                    {category.name}
+                  </ListSubheader>,
+                  category.equations.map((equation) => (
+                    <MenuItem key={equation.code} value={equation.code}>
+                      {equation.name}
+                    </MenuItem>
+                  )),
+                ])}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* DYNAMIC INPUTS */}
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            {selectedEquation?.code === "bmi" ? (
               <Box>
-                <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 3,
-                      marginBottom: 2
-                    }}
-                  >
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        fontWeight: 500,
-                        minWidth: "180px",
-                      }}
+                {/* BMI system toggle */}
+                <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 2 }}>
+                  <Typography variant="body1" sx={{ fontWeight: 500, minWidth: "180px" }}>
+                    Input System
+                  </Typography>
+                  <FormControl sx={{ flex: 1 }}>
+                    <Select
+                      value={bmiInputSet}
+                      onChange={(e) => handleBMISystem(e.target.value)}
                     >
-                      Input System
-                    </Typography>
-    
-                    <FormControl sx={{ width: '100%', marginBottom: 2 }}>
-                      <Select
-                        value={bmiInputSet}
-                        onChange={(e) =>
-                          handleBMISystem(e.target.value)
-                        }
-                        displayEmpty
-                        sx={{
-                          flex: 1,
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: (theme) => theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
-                            borderRadius: 2,
-                            "& fieldset": {
-                              borderColor: (theme) => theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "#02BE6A",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "#02BE6A",
-                            },
-                          }
-                        }}
-                      >
-                        <MenuItem value="" disabled>
-                          Select
+                      {selectedEquation.system.options?.map((opt: string, idx: number) => (
+                        <MenuItem key={idx} value={idx}>
+                          {opt}
                         </MenuItem>
-                        {selectedEquation.system.options?.map((opt: string, idx: number) => (
-                          <MenuItem key={idx} value={idx}>
-                            {opt}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Box>
-              {
-                selectedEquation?.inputs[bmiInputSet].map((input: EquationInputData) => (
-                  <Box
-                    key={input.name}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 3,
-                      marginBottom: 2
-                    }}
-                  >
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        fontWeight: 500,
-                        minWidth: "180px",
-                      }}
-                    >
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Box>
+
+                {/* BMI inputs (metric/imperial based on selection) */}
+                {selectedEquation.inputs[bmiInputSet].map((input: EquationInputData) => (
+                  <Box key={input.name} sx={{ display: "flex", alignItems: "center", gap: 3, mb: 2 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 500, minWidth: "180px" }}>
                       {input.label}
                     </Typography>
-    
+
                     {input.type === "select" ? (
                       <FormControl sx={{ flex: 1 }}>
                         <Select
+                          required
                           value={formData[input.name] || ""}
-                          onChange={(e) =>
-                            handleInputChange(input.name, e.target.value)
-                          }
-                          displayEmpty
-                          sx={{
-                            flex: 1,
-                            "& .MuiOutlinedInput-root": {
-                              backgroundColor: (theme) => theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
-                              borderRadius: 2,
-                              "& fieldset": {
-                                borderColor: (theme) => theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
-                              },
-                              "&:hover fieldset": {
-                                borderColor: "#02BE6A",
-                              },
-                              "&.Mui-focused fieldset": {
-                                borderColor: "#02BE6A",
-                              },
-                            }
-                          }}
+                          onChange={(e) => handleInputChange(input.name, e.target.value)}
                         >
-                          <MenuItem value="" disabled>
-                            Select
-                          </MenuItem>
                           {input.options?.map((opt) => (
                             <MenuItem key={opt} value={opt}>
                               {opt}
@@ -309,151 +212,62 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                       </FormControl>
                     ) : (
                       <TextField
+                        required
                         placeholder="Write Here..."
                         type={input.type}
                         value={formData[input.name] || ""}
-                        onChange={(e) =>
-                          handleInputChange(input.name, e.target.value)
-                        }
-                        sx={{
-                          flex: 1,
-                          "& .MuiOutlinedInput-root": {
-                            backgroundColor: (theme) => theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
-                            borderRadius: 2,
-                            "& fieldset": {
-                              borderColor: (theme) => theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
-                            },
-                            "&:hover fieldset": {
-                              borderColor: "#02BE6A",
-                            },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "#02BE6A",
-                            },
-                          }
-                        }}
+                        onChange={(e) => handleInputChange(input.name, e.target.value)}
+                        sx={{ flex: 1 }}
                       />
                     )}
                   </Box>
-                ))  
-              }     
+                ))}
               </Box>
             ) : (
-              
-            selectedEquation?.inputs.map((input: EquationInputData) => (
-              <Box
-                key={input.name}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 3,
-                }}
-              >
-                <Typography
-                  variant="body1"
-                  sx={{
-                    fontWeight: 500,
-                    minWidth: "180px",
-                  }}
-                >
-                  {input.label}
-                </Typography>
+              // Normal calculators (non-BMI)
+              selectedEquation?.inputs.map((input: EquationInputData) => (
+                <Box key={input.name} sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+                  <Typography variant="body1" sx={{ fontWeight: 500, minWidth: "180px" }}>
+                    {input.label}
+                  </Typography>
 
-                {input.type === "select" ? (
-                  <FormControl sx={{ flex: 1 }}>
-                    <Select
+                  {input.type === "select" ? (
+                    <FormControl sx={{ flex: 1 }}>
+                      <Select
+                        required
+                        value={formData[input.name] || ""}
+                        onChange={(e) => handleInputChange(input.name, e.target.value)}
+                      >
+                        {input.options?.map((opt) => (
+                          <MenuItem key={opt} value={opt}>
+                            {opt}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  ) : (
+                    <TextField
+                      required
+                      placeholder="Write Here..."
+                      type={input.type}
                       value={formData[input.name] || ""}
-                      onChange={(e) =>
-                        handleInputChange(input.name, e.target.value)
-                      }
-                      displayEmpty
-                      sx={{
-                        flex: 1,
-                        "& .MuiOutlinedInput-root": {
-                          backgroundColor: (theme) => theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
-                          borderRadius: 2,
-                          "& fieldset": {
-                            borderColor: (theme) => theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "#02BE6A",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "#02BE6A",
-                          },
-                        }
-                      }}
-                    >
-                      <MenuItem value="" disabled>
-                        Select
-                      </MenuItem>
-                      {input.options?.map((opt) => (
-                        <MenuItem key={opt} value={opt}>
-                          {opt}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                ) : (
-                  <TextField
-                    placeholder="Write Here..."
-                    type={input.type}
-                    value={formData[input.name] || ""}
-                    onChange={(e) =>
-                      handleInputChange(input.name, e.target.value)
-                    }
-                    sx={{
-                      flex: 1,
-                      "& .MuiOutlinedInput-root": {
-                        backgroundColor: (theme) => theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
-                        borderRadius: 2,
-                        "& fieldset": {
-                          borderColor: (theme) => theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "#02BE6A",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#02BE6A",
-                        },
-                      }
-                    }}
-                  />
-                )}
-              </Box>
-            ))
-            )
-          }
-        </Box>
+                      onChange={(e) => handleInputChange(input.name, e.target.value)}
+                      sx={{ flex: 1 }}
+                    />
+                  )}
+                </Box>
+              ))
+            )}
+          </Box>
 
-        {/* Calculate Button */}
-        <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
-          <Button
-            variant="contained"
-            onClick={handleAddCaculation}
-            sx={{
-              backgroundColor: "#02BE6A",
-              color: "white",
-              marginTop: 4,
-              px: 4,
-              py: 1.5,
-              borderRadius: 2,
-              fontWeight: 600,
-              textTransform: "none",
-              fontSize: "16px",
-              "&:hover": { backgroundColor: "#029e56" },
-              "&:disabled": {
-                backgroundColor:
-                (theme) => theme.palette.mode === "dark" ? "#333333" : "#e0e0e0",
-                color: (theme) => theme.palette.mode === "dark" ? "#666666" : "#9e9e9e",
-              },
-            }}
-          >
-            Calculate
-          </Button>
-        </Box>
+          {/* CALCULATE BUTTON */}
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 4, mb: 3 }}>
+            <Button variant="contained" onClick={handleAddCaculation}>
+              Calculate
+            </Button>
+          </Box>
 
-        {/* BMI Result */}
+          {/* BMI Result */}
         <Box
           sx={{
             display: "flex",
@@ -569,39 +383,31 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
             </Typography>
           </Box>
         </Box>
-      </DialogContent>
+        </DialogContent>
 
-      <DialogActions sx={{ p: 3, pt: 0, gap: 2 }}>
-        <Button
-          onClick={onClose}
-          variant="outlined"
-          sx={{
-            px: 4,
-            py: 1.5,
-            borderRadius: 2,
-            fontWeight: 600,
-            textTransform: "none",
-            fontSize: "14px",
-          }}
+        {/* FOOTER BUTTONS */}
+        <DialogActions sx={{ p: 3, pt: 0 }}>
+          <Button onClick={onClose} variant="outlined">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* TOAST */}
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={3000}
+        onClose={() => setToast((prev) => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setToast((prev) => ({ ...prev, open: false }))}
+          severity={toast.severity}
+          sx={{ width: "100%" }}
         >
-          Close
-        </Button>
-
-        
-      </DialogActions>
-    </Dialog>
-
-    {/* Snackbar for toaster */}
-    <Snackbar
-      open={toast.open}
-      autoHideDuration={3000}
-      onClose={() => setToast(prev => ({ ...prev, open: false }))}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
-    >
-      <Alert onClose={() => setToast(prev => ({ ...prev, open: false }))} severity={toast.severity} sx={{ width: '100%' }}>
-        {toast.message}
-      </Alert>
-    </Snackbar>
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
