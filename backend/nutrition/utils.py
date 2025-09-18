@@ -915,3 +915,186 @@ def lactation_energy_needs(calorie_requirement, lactation_period):
         'lactation_addition': addition,
         'unit': 'kcal/d'
     }
+
+def down_syndrome_calorie(age, gender, height_cm):
+    """
+    Down Syndrome Calorie Requirement (Ages 5–12)
+    Age 5-12 years + Male: Height (in cm) × 16.1
+    Age 5-12 years + Female: Height (in cm) × 14.3
+    """
+    if age < 5 or age > 12:
+        return {'error': 'Equation only valid for ages 5-12 years'}
+    
+    if gender.lower() == 'male':
+        result = height_cm * 16.1
+    elif gender.lower() == 'female':
+        result = height_cm * 14.3
+    else:
+        return {'error': 'Invalid gender'}
+    
+    return {
+        'energy_needs': round(result, 2),
+        'height_cm': height_cm,
+        'gender': gender,
+        'age': age,
+        'unit': 'kcal/d'
+    }
+
+def cerebral_palsy_calorie(age, height_cm, physical_activity):
+    """
+    Cerebral Palsy Calorie Requirement (Ages 5–12)
+    Age 5-12 years + Mild to moderate activity: Height (in cm) × 13.9
+    Age 5-12 years + Severe physical restriction: Height (in cm) × 11.1
+    Age 5-12 years + Severe restricted activity: Height (in cm) × 10
+    Age 5-12 years + Athetoid cerebral palsy: Up to 6000 kcal/day
+    """
+    if age < 5 or age > 12:
+        return {'error': 'Equation only valid for ages 5-12 years'}
+    
+    activity_level = physical_activity.lower()
+    
+    if activity_level == 'mild_to_moderate':
+        result = height_cm * 13.9
+        description = "Mild to moderate activity"
+    elif activity_level == 'severe_physical_restriction':
+        result = height_cm * 11.1
+        description = "Severe physical restriction"
+    elif activity_level == 'severe_restricted_activity':
+        result = height_cm * 10
+        description = "Severe restricted activity"
+    elif activity_level == 'athetoid_cerebral_palsy':
+        result = 6000  # Maximum value
+        description = "Athetoid cerebral palsy (up to 6000 kcal/day)"
+    else:
+        return {'error': 'Invalid physical activity level'}
+    
+    return {
+        'energy_needs': round(result, 2),
+        'height_cm': height_cm,
+        'physical_activity': description,
+        'age': age,
+        'unit': 'kcal/d'
+    }
+
+def prader_willi_calorie(height_cm, goal):
+    """
+    Prader-Willi Syndrome Calorie Requirement
+    Weight Maintenance: Height (in cm) × Range (10-11)
+    Weight Loss: Height (in cm) × 8.5
+    """
+    goal_type = goal.lower()
+    
+    if goal_type == 'weight_maintenance':
+        min_result = height_cm * 10
+        max_result = height_cm * 11
+        description = "Weight Maintenance (range 10-11 × height)"
+        return {
+            'energy_needs_min': round(min_result, 2),
+            'energy_needs_max': round(max_result, 2),
+            'height_cm': height_cm,
+            'goal': description,
+            'unit': 'kcal/d'
+        }
+    elif goal_type == 'weight_loss':
+        result = height_cm * 8.5
+        description = "Weight Loss (8.5 × height)"
+        return {
+            'energy_needs': round(result, 2),
+            'height_cm': height_cm,
+            'goal': description,
+            'unit': 'kcal/d'
+        }
+    else:
+        return {'error': 'Invalid goal type'}
+
+
+def prognostic_nutrition_index(albumin, triceps_skin_fold, transferrin, delayed_skin_hypersensitivity):
+    """
+    Prognostic Nutrition Index (PNI)
+    158 - (16.6 x albumin) - (0.78 x triceps skin fold (in mm)) - 
+    (0.2 x transferrin) - (5.8 x delayed skin hypersensitivity)
+    """
+    try:
+        pni = 158 - (16.6 * float(albumin)) - (0.78 * float(triceps_skin_fold)) - (0.2 * float(transferrin)) - (5.8 * float(delayed_skin_hypersensitivity))
+        
+        # Interpretation
+        if pni < 40:
+            interpretation = "Normal"
+            risk_level = "normal"
+        else:
+            interpretation = "Compromised"
+            risk_level = "compromised"
+        
+        return {
+            'pni_score': round(pni, 2),
+            'interpretation': interpretation,
+            'risk_level': risk_level,
+            'parameters': {
+                'albumin': albumin,
+                'triceps_skin_fold_mm': triceps_skin_fold,
+                'transferrin': transferrin,
+                'delayed_skin_hypersensitivity': delayed_skin_hypersensitivity
+            },
+            'cutoff_values': {
+                'normal': '<40',
+                'compromised': '≥40'
+            }
+        }
+    except (ValueError, TypeError) as e:
+        return {'error': f'Invalid input values: {str(e)}'}
+
+def prognostic_inflammatory_nutrition_index(c_reactive_protein, alpha_1_acid_glycoprotein, prealbumin, albumin):
+    """
+    Prognostic Inflammatory and Nutrition Index (PINI)
+    (C-reactive protein × alpha 1-acid-glycoprotein) / (prealbumin × albumin)
+    """
+    try:
+        # Convert to float and handle potential zero division
+        crp = float(c_reactive_protein)
+        a1ag = float(alpha_1_acid_glycoprotein)
+        prealb = float(prealbumin)
+        alb = float(albumin)
+        
+        if prealb == 0 or alb == 0:
+            return {'error': 'Prealbumin and albumin values cannot be zero'}
+        
+        pini = (crp * a1ag) / (prealb * alb)
+        
+        # Interpretation
+        if pini <= 1:
+            interpretation = "No risk"
+            risk_level = "no_risk"
+        elif pini <= 10:
+            interpretation = "Low risk"
+            risk_level = "low_risk"
+        elif pini <= 20:
+            interpretation = "Moderate risk"
+            risk_level = "moderate_risk"
+        elif pini <= 30:
+            interpretation = "Severe risk"
+            risk_level = "severe_risk"
+        else:
+            interpretation = "Very severe risk (above 30)"
+            risk_level = "very_severe_risk"
+        
+        return {
+            'pini_score': round(pini, 2),
+            'interpretation': interpretation,
+            'risk_level': risk_level,
+            'parameters': {
+                'c_reactive_protein': crp,
+                'alpha_1_acid_glycoprotein': a1ag,
+                'prealbumin': prealb,
+                'albumin': alb
+            },
+            'risk_categories': {
+                'no_risk': '≤1',
+                'low_risk': '1–10',
+                'moderate_risk': '11–20',
+                'severe_risk': '21–30',
+                'very_severe_risk': '>30'
+            }
+        }
+    except (ValueError, TypeError) as e:
+        return {'error': f'Invalid input values: {str(e)}'}
+

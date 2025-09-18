@@ -266,6 +266,36 @@ EQUATIONS = [
         "function_path": "nutrition.utils.lactation_energy_needs",
         "description": ""
     },
+    {
+        "name": "Down Syndrome Calorie Requirement (Ages 5–12)",
+        "code": "down_syndrome_calorie",
+        "function_path": "nutrition.utils.down_syndrome_calorie",
+        "description": ""
+    },
+    {
+        "name": "Cerebral Palsy Calorie Requirement (Ages 5–12)",
+        "code": "cerebral_palsy_calorie",
+        "function_path": "nutrition.utils.cerebral_palsy_calorie",
+        "description": ""
+    },
+    {
+        "name": "Prader-willi Syndrome Calorie Requirement (Ages 5–12)",
+        "code": "prader_willi_calorie",
+        "function_path": "nutrition.utils.prader_willi_calorie",
+        "description": ""
+    },
+    {
+        "name": "Prognostic Nutrition Index",
+        "code": "prognostic_nutrition_index",
+        "function_path": "nutrition.utils.prognostic_nutrition_index",
+        "description": ""
+    },
+    {
+        "name": "Prognostic Inflammatory and Nutrition Index",
+        "code": "prognostic_inflammatory_nutrition_index",
+        "function_path": "nutrition.utils.prognostic_inflammatory_nutrition_index",
+        "description": ""
+    },
 ]
 
 class Command(BaseCommand):
