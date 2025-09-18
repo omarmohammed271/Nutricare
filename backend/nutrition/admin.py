@@ -7,7 +7,7 @@ class CategoryEquationsAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 @admin.register(Equation)
 class EquationAdmin(admin.ModelAdmin):
-    list_display = ("name", "code", "function_path")
+    list_display = ("name", "code", "function_path",'id')
     search_fields = ("name", "code")
 
 

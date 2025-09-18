@@ -135,6 +135,7 @@ def percent_weight_change(current_weight_kg: float, usual_weight_kg: float) -> D
     # interpretation guidance not tied to timeframe here
     return {"value": round(val,1), "unit":"%", "interpretation": "See timeframe-specific thresholds"}
 
+
 # ---------- Height estimation ----------
 def demi_span_height(gender:str, demi_span_cm: float) -> Dict:
     if gender.lower().startswith('m'):
@@ -344,3 +345,573 @@ def interpret_nutric_score(score, has_il_6=False):
             return "Low risk"
         else:
             return "High risk - benefit from aggressive nutrition therapy"
+
+
+
+
+
+# Updated Equations list in management/commands/equations.py
+def ibw_spinal_cord_injury(gender: str, height_in_inches: float, classification: str = None):
+    """
+    حساب Ideal Body Weight (IBW) لمرضى Spinal Cord Injury
+
+    Parameters:
+        gender (str): "male" or "female"
+        height_in_inches (float): الطول بالبوصة (inch)
+        classification (str): None, "paraplegia", "tetraplegia" or "quadriplegia"
+
+    Returns:
+        dict: { "ibw_lb": ..., "ibw_kg": ... }
+    """
+    if height_in_inches <= 0:
+        return {"error": "Height must be positive"}
+
+    if gender.lower() == "female":
+        # base 100 lb for 5 ft + 5 lb لكل بوصة زيادة فوق 60 inch
+        if height_in_inches > 60:
+            ibw = 100 + 5 * (height_in_inches - 60)
+        else:
+            ibw = 100
+    elif gender.lower() == "male":
+        # base 106 lb for 5 ft + 6 lb لكل بوصة زيادة فوق 60 inch
+        if height_in_inches > 60:
+            ibw = 106 + 6 * (height_in_inches - 60)
+        else:
+            ibw = 106
+    else:
+        return {"error": "Gender must be 'male' or 'female'"}
+
+    # تعديل حسب classification
+    if classification:
+        classification = classification.lower()
+        if classification == "paraplegia":
+            ibw *= 0.90  # subtract 10–15%, نبدأ بالـ 10% كقيمة default
+        elif classification in ["tetraplegia", "quadriplegia"]:
+            ibw *= 0.85  # subtract 15–20%, نبدأ بالـ 15% كقيمة default
+
+    # تحويل من lb → kg
+    ibw_kg = ibw * 0.453592
+
+    return {
+        "ibw_lb": round(ibw, 2),
+        "ibw_kg": round(ibw_kg, 2)
+    }
+
+
+
+
+def growth_velocity(
+    weight_t1: float = None, weight_t2: float = None,
+    height_t1: float = None, height_t2: float = None,
+    time1_day: int = None, time2_day: int = None,
+    time1_week: int = None, time2_week: int = None,
+    preterm: bool = False, weight_current: float = None, age_months: int = None
+):
+    """
+    حساب Growth Velocity للوزن والطول
+    
+    Parameters:
+        weight_t1, weight_t2 (float): الوزن بالكيلو عند الوقت1 والوقت2
+        height_t1, height_t2 (float): الطول بالسم عند الوقت1 والوقت2
+        time1_day, time2_day (int): الزمن باليوم
+        time1_week, time2_week (int): الزمن بالأسبوع
+        preterm (bool): هل الطفل مبتسر
+        weight_current (float): الوزن الحالي (لتفسير preterm <2kg أو >2kg)
+        age_months (int): عمر الطفل بالشهور (لتحديد رينج التفسير)
+
+    Returns:
+        dict: { "weight_velocity_g_d": ..., "height_velocity_cm_wk": ..., "interpretation": ... }
+    """
+
+    result = {}
+
+    # وزن
+    if weight_t1 is not None and weight_t2 is not None and time1_day is not None and time2_day is not None:
+        delta_weight = (weight_t2 - weight_t1) * 1000  # حول من kg إلى g
+        delta_days = time2_day - time1_day
+        if delta_days > 0:
+            result["weight_velocity_g_d"] = round(delta_weight / delta_days, 2)
+
+    # طول
+    if height_t1 is not None and height_t2 is not None and time1_week is not None and time2_week is not None:
+        delta_height = height_t2 - height_t1
+        delta_weeks = time2_week - time1_week
+        if delta_weeks > 0:
+            result["height_velocity_cm_wk"] = round(delta_height / delta_weeks, 2)
+
+    # التفسير حسب العمر
+    interpretation = None
+    if age_months is not None:
+        if preterm and weight_current is not None:
+            if weight_current < 2:
+                interpretation = {
+                    "weight": "15–20 g/kg/d",
+                    "height": "0.8–1.1 cm/week"
+                }
+            else:
+                interpretation = {
+                    "weight": "20–30 g/d",
+                    "height": "0.8–1.1 cm/week"
+                }
+        elif age_months < 4:
+            interpretation = {"weight": "23–34 g/d", "height": "0.8–0.93 cm/week"}
+        elif 4 <= age_months < 8:
+            interpretation = {"weight": "10–16 g/d", "height": "0.37–0.47 cm/week"}
+        elif 8 <= age_months < 12:
+            interpretation = {"weight": "6–11 g/d", "height": "0.28–0.37 cm/week"}
+        elif 12 <= age_months < 16:
+            interpretation = {"weight": "5–9 g/d", "height": "0.24–0.33 cm/week"}
+        elif 16 <= age_months < 20:
+            interpretation = {"weight": "4–9 g/d", "height": "0.21–0.29 cm/week"}
+        elif 20 <= age_months <= 24:
+            interpretation = {"weight": "4–9 g/d", "height": "0.19–0.26 cm/week"}
+
+    if interpretation:
+        result["interpretation"] = interpretation
+
+    return result
+
+
+
+def harris_benedict(gender, weight_kg, height_cm, age):
+    """
+    Harris-Benedict Equation
+    height_cm in cm, weight_kg in kg, age in years
+    """
+    if gender.lower() == "female":
+        return f"{ 655.1 + (9.6 * weight_kg) + (1.9 * height_cm) - (4.7 * age)} Kcal/d"
+    elif gender.lower() == "male":
+        return F"{66.5 + (13.8 * weight_kg) + (5.0 * height_cm) - (6.8 * age)} Kcal/d"
+    else:
+        raise ValueError("Gender must be 'male' or 'female'.")
+
+
+def mifflin_st_jeor(gender, weight_kg, height_cm, age):
+    """
+    Mifflin-St Jeor Equation
+    height_cm in cm, weight_kg in kg, age in years
+    """
+    if gender.lower() == "male":
+        return f"{(10 * weight_kg) + (6.25 * height_cm) - (5 * age) + 5} Kcal/d"
+    elif gender.lower() == "female":
+        return f"{(10 * weight_kg) + (6.25 * height_cm) - (5 * age) - 161} Kcal/d"
+    else:
+        raise ValueError("Gender must be 'male' or 'female'.")
+
+
+def quick_method(weight_kg, min_factor=None, max_factor=None):
+    """
+    Quick method for kcal needs
+    """
+    if min_factor and max_factor:
+        min_kcal = min_factor * weight_kg
+        max_kcal = max_factor * weight_kg
+        return f'{{"min": {min_kcal}, "max": {max_kcal}}} Kcal/d'
+    elif min_factor:
+        min_kcal = min_factor * weight_kg
+        return f'{{"min": {min_kcal}}} Kcal/d'
+    elif max_factor:
+        max_kcal = max_factor * weight_kg
+        return f'{{"max": {max_kcal}}} Kcal/d'
+    else:
+        return None
+
+
+def macronutrient_distribution(calories, carb_pct, protein_pct, fat_pct):
+    """
+    Macronutrients distribution in grams
+    """
+    carbs = (calories * carb_pct / 100) / 4
+    protein = (calories * protein_pct / 100) / 4
+    fat = (calories * fat_pct / 100) / 9
+    return {"carbs_g": round(carbs, 2), "protein_g": round(protein, 2), "fat_g": round(fat, 2)}
+
+
+def rda_calories(age, weight, gender):
+    """
+    RDA Calorie needs (simplified based on table)
+    """
+    if age <= 0.5:
+        return weight * 108
+    elif 0.5 < age <= 1:
+        return weight * 98
+    elif 1 < age <= 3:
+        return weight * 102
+    elif 4 <= age <= 6:
+        return weight * 90
+    elif 7 <= age <= 10:
+        return weight * 70
+    elif 11 <= age <= 14:
+        return weight * (55 if gender.lower() == "male" else 47)
+    elif 15 <= age <= 18:
+        return weight * (45 if gender.lower() == "male" else 40)
+    else:
+        return None
+
+
+def rda_protein(age, weight, gender):
+    """
+    RDA Protein needs
+    """
+    if age <= 0.5:
+        return weight * 2.2
+    elif 0.5 < age <= 1:
+        return weight * 1.6
+    elif 1 < age <= 3:
+        return weight * 1.2
+    elif 4 <= age <= 6:
+        return weight * 1.1
+    elif 7 <= age <= 10:
+        return weight * 1.0
+    elif 11 <= age <= 14:
+        return weight * 1.0
+    elif 15 <= age <= 18:
+        return weight * (0.9 if gender.lower() == "male" else 0.8)
+    else:
+        return None
+
+STRESS_FACTORS = {
+    'minor_surgery': 1.1,
+    'major_surgery': 1.2,
+    'skeletal_trauma': 1.2,
+    'blunt_trauma': 1.35,
+    'closed_head_injury': 1.4,
+    'mild_infection': 1.2,
+    'moderate_infection': 1.4,
+    'severe_infection': 1.8,
+    'starvation': 0.85,
+    'burns_lt_20': 1.5,
+    'burns_20_40': 1.8,
+    'burns_gt_40': 1.9  # Using 1.9 as midpoint for >40%
+}
+
+# Physical activity factors mapping
+ACTIVITY_FACTORS = {
+    'sedentary': 1.2,
+    'lightly_active': 1.375,
+    'moderately_active': 1.55,
+    'very_active': 1.725,
+    'extra_active': 1.9
+}
+
+def schofield_bmr(age, gender, weight_kg, height_cm, 
+                 physical_activity=None, stress_factor=None):
+    """
+    Schofield BMR calculation based on age and gender
+    """
+    # Default factors if not provided
+    pa_factor = ACTIVITY_FACTORS.get(physical_activity, 1.2) if physical_activity else 1.2
+    stress_factor_val = STRESS_FACTORS.get(stress_factor, 1.0) if stress_factor else 1.0
+    
+    if age <= 3:  # 0-3 years
+        if gender.lower() == 'male':
+            bmr = (0.167 * weight_kg) + (15.174 * height_cm) - 617.6
+        else:  # female
+            bmr = (16.252 * weight_kg) + (10.23 * height_cm) - 413.5
+            
+    elif age <= 10:  # 3-10 years
+        if gender.lower() == 'male':
+            bmr = (19.59 * weight_kg) + (1.303 * height_cm) + 414.9
+        else:  # female
+            bmr = (16.969 * weight_kg) + (1.618 * height_cm) + 371.2
+            
+    elif age <= 13:  # 10-13 years
+        if gender.lower() == 'male':
+            bmr = (16.25 * weight_kg) + (1.372 * height_cm) + 515.5
+        else:  # female
+            bmr = (8.365 * weight_kg) + (4.65 * height_cm) + 200
+            
+    elif age <= 18:  # 14-18 years
+        if gender.lower() == 'male':
+            bmr = (16.25 * weight_kg) + (1.372 * height_cm) + 515.5
+        else:  # female
+            bmr = (8.365 * weight_kg) + (4.65 * height_cm) + 200
+            
+    else:  # >18 years
+        if gender.lower() == 'male':
+            bmr = (15.057 * weight_kg) - (1.004 * height_cm) + 705.8
+        else:  # female
+            bmr = (13.623 * weight_kg) + (2.83 * height_cm) + 98.2
+    
+    # Apply activity and stress factors
+    total_calories = bmr * pa_factor * stress_factor_val
+    
+    return {
+        'bmr': round(bmr, 2),
+        'total_calories': round(total_calories, 2),
+        'physical_activity_factor': pa_factor,
+        'stress_factor': stress_factor_val,
+        'unit': 'kcal/d'
+    }
+
+def catchup_growth(age, gender, weight_kg, height_cm):
+    """
+    Catch-up Growth calculation
+    This is a simplified version - in practice, you'd need growth chart data
+    """
+    # For demonstration - in real implementation, you'd query growth chart data
+    # This returns kcal/kg/day based on age and gender
+    
+    if age < 2:  # 0-24 months
+        # Simplified calculation - would normally use WHO growth charts
+        if gender.lower() == 'male':
+            kcal_per_kg = 100 if age < 1 else 90
+        else:
+            kcal_per_kg = 95 if age < 1 else 85
+    else:  # 2-20 years
+        # Simplified calculation - would normally use CDC BMI charts
+        if gender.lower() == 'male':
+            kcal_per_kg = 80 if age < 10 else 70
+        else:
+            kcal_per_kg = 75 if age < 10 else 65
+    
+    return {
+        'kcal_per_kg': kcal_per_kg,
+        'estimated_needs': round(kcal_per_kg * weight_kg, 2),
+        'unit': 'kcal/kg/day'
+    }
+
+
+def gestation_adjusted_age(gestational_age_weeks, chronological_age_weeks):
+    """
+    Calculate Gestation-Adjusted Age (Correction Age)
+    Step 1: 40 weeks - gestational age at birth (in weeks) = age in week
+    Step 2: chronological age (age Now) in weeks - previous result = actual age
+    """
+    step1 = 40 - gestational_age_weeks
+    actual_age_weeks = chronological_age_weeks - step1
+    
+    # Convert weeks to months for better readability
+    actual_age_months = round(actual_age_weeks / 4.345, 1)  # 4.345 weeks per month
+    
+    return {
+        'gestation_adjusted_age_weeks': round(actual_age_weeks, 1),
+        'gestation_adjusted_age_months': actual_age_months,
+        'unit': 'months'
+    }
+
+def preterm_estimated_requirement(weight_kg):
+    """
+    Preterm Estimated Requirement calculation
+    Returns ranges for calories, carbohydrates, protein, and fat
+    """
+    calorie_range = {
+        'min': round(105 * weight_kg, 2),
+        'max': round(130 * weight_kg, 2),
+        'unit': 'kcal/d'
+    }
+    
+    carb_range = {
+        'min': round(10 * weight_kg, 2),
+        'max': round(14 * weight_kg, 2),
+        'unit': 'g/d'
+    }
+    
+    protein_range = {
+        'min': round(3.5 * weight_kg, 2),
+        'max': round(4.5 * weight_kg, 2),
+        'unit': 'g/d'
+    }
+    
+    fat_range = {
+        'min': round(5 * weight_kg, 2),
+        'max': round(7 * weight_kg, 2),
+        'unit': 'g/d'
+    }
+    
+    return {
+        'calories': calorie_range,
+        'carbohydrates': carb_range,
+        'protein': protein_range,
+        'fat': fat_range,
+        'weight_kg': weight_kg
+    }
+
+def ireton_jones_ventilator(age, gender, weight_kg, trauma, burn):
+    """
+    Ireton-Jones (Ventilator-Dependent) equation
+    1784 - (11 x Age) + (5 x Weight) + (244 x Gender) + (239 x Trauma) - (804 x Burn)
+    Gender: male=1, female=0
+    Trauma: present=1, absent=0
+    Burn: present=1, absent=0
+    """
+    gender_factor = 1 if gender.lower() == 'male' else 0
+    trauma_factor = 1 if trauma.lower() == 'present' else 0
+    burn_factor = 1 if burn.lower() == 'present' else 0
+    
+    result = 1784 - (11 * age) + (5 * weight_kg) + (244 * gender_factor) + (239 * trauma_factor) - (804 * burn_factor)
+    
+    return {
+        'energy_expenditure': round(result, 2),
+        'gender_factor': gender_factor,
+        'trauma_factor': trauma_factor,
+        'burn_factor': burn_factor,
+        'unit': 'kcal/d'
+    }
+
+def ireton_jones_spontaneous(age, weight_kg, height_cm):
+    """
+    Ireton-Jones (Spontaneously Breathing) equation
+    629 - (11 x Age) + (25 x Weight) - (609 x Obesity)
+    Obesity: BMI > 30 = 1, BMI <= 30 = 0
+    """
+    # Calculate BMI first
+    height_m = height_cm / 100
+    bmi = weight_kg / (height_m ** 2)
+    obesity_factor = 1 if bmi > 30 else 0
+    
+    result = 629 - (11 * age) + (25 * weight_kg) - (609 * obesity_factor)
+    
+    return {
+        'energy_expenditure': round(result, 2),
+        'bmi': round(bmi, 2),
+        'obesity_factor': obesity_factor,
+        'unit': 'kcal/d'
+    }
+
+def curreri_burn(age, gender, weight_kg, tbsa_percentage):
+    """
+    Curreri Burn Equation for burn patients
+    """
+    if age < 1:  # <1 year
+        rda = rda_calories(age=age, gender=gender, weight=weight_kg)
+        if rda is None:
+            return {'error': 'RDA not defined for this age group'}
+        result = rda + (15 * tbsa_percentage)
+        
+    elif age <= 3:  # 1-3 years
+        rda = rda_calories(age=age, gender=gender, weight=weight_kg)
+        result = rda + (25 * tbsa_percentage)
+        
+    elif age <= 13:  # 4-13 years
+        rda = rda_calories(age=age, gender=gender, weight=weight_kg)
+        result = rda + (40 * tbsa_percentage)
+        
+    elif age == 14:  # 14 years
+        if gender.lower() == 'male':
+            result = (weight_kg * 55) + (40 * tbsa_percentage)
+        else:  # female
+            result = (weight_kg * 47) + (40 * tbsa_percentage)
+            
+    elif age == 15:  # 15 years
+        if gender.lower() == 'male':
+            result = (weight_kg * 45) + (40 * tbsa_percentage)
+        else:  # female
+            result = (weight_kg * 40) + (40 * tbsa_percentage)
+            
+    elif age <= 59:  # 16-59 years
+        result = (weight_kg * 25) + (40 * tbsa_percentage)
+        
+    else:  # >60 years
+        result = (weight_kg * 20) + (65 * tbsa_percentage)
+    
+    return {
+        'energy_needs': round(result, 2),
+        'tbsa_percentage': tbsa_percentage,
+        'weight_kg': weight_kg,
+        'unit': 'kcal/d'
+    }
+
+def pregnancy_energy_needs(age, prepregnancy_weight_kg, height_cm, 
+                          trimester, physical_activity, gestation_week=None):
+    """
+    Energy Needs in Pregnancy by Age & BMI group
+    Only for 19 years and more
+    """
+    if age < 19:
+        return {'error': 'Equation only valid for age 19 and above'}
+    
+    # Calculate prepregnancy BMI
+    height_m = height_cm / 100
+    prepregnancy_bmi = prepregnancy_weight_kg / (height_m ** 2)
+    
+    # Determine energy deposition based on prepregnancy BMI
+    if prepregnancy_bmi < 18.5:  # underweight
+        energy_deposition = 300
+    elif prepregnancy_bmi < 25:  # normal weight
+        energy_deposition = 200
+    elif prepregnancy_bmi < 30:  # overweight
+        energy_deposition = 150
+    else:  # obese
+        energy_deposition = -50
+    
+    if trimester.lower() == 'first':
+        if physical_activity.lower() == 'inactive':
+            result = 584.90 - (7.01 * age) + (5.72 * height_cm) + (11.71 * prepregnancy_weight_kg)
+        elif physical_activity.lower() == 'low_active':
+            result = 575.77 - (7.01 * age) + (6.60 * height_cm) + (12.14 * prepregnancy_weight_kg)
+        elif physical_activity.lower() == 'active':
+            result = 710.25 - (7.01 * age) + (6.54 * height_cm) + (12.34 * prepregnancy_weight_kg)
+        elif physical_activity.lower() == 'very_active':
+            result = 511.83 - (7.01 * age) + (9.07 * height_cm) + (12.56 * prepregnancy_weight_kg)
+        else:
+            return {'error': 'Invalid physical activity level'}
+            
+    else:  # second or third trimester
+        if gestation_week is None:
+            return {'error': 'Gestation week required for second/third trimester'}
+            
+        if physical_activity.lower() == 'inactive':
+            result = 1131.20 - (2.04 * age) + (0.34 * height_cm) + (12.15 * prepregnancy_weight_kg) + (9.16 * gestation_week)
+        elif physical_activity.lower() == 'low_active':
+            result = 693.35 - (2.04 * age) + (5.73 * height_cm) + (10.20 * prepregnancy_weight_kg) + (9.16 * gestation_week)
+        elif physical_activity.lower() == 'active':
+            result = -223.84 - (2.04 * age) + (13.23 * height_cm) + (8.15 * prepregnancy_weight_kg) + (9.16 * gestation_week)
+        elif physical_activity.lower() == 'very_active':
+            result = -779.72 - (2.04 * age) + (18.45 * height_cm) + (8.73 * prepregnancy_weight_kg) + (9.16 * gestation_week)
+        else:
+            return {'error': 'Invalid physical activity level'}
+        
+        # Add energy deposition for second/third trimester
+        result += energy_deposition
+    
+    return {
+        'energy_needs': round(result, 2),
+        'prepregnancy_bmi': round(prepregnancy_bmi, 2),
+        'energy_deposition': energy_deposition,
+        'unit': 'kcal/d'
+    }
+
+def pregnancy_simple_addition(calorie_requirement, trimester):
+    """
+    Simple pregnancy calorie addition
+    Calorie Requirement + (Second trimester= +340, Third trimester= +452)
+    """
+    if trimester.lower() == 'first':
+        addition = 0
+    elif trimester.lower() == 'second':
+        addition = 340
+    elif trimester.lower() == 'third':
+        addition = 452
+    else:
+        return {'error': 'Invalid trimester'}
+    
+    result = calorie_requirement + addition
+    
+    return {
+        'energy_needs': round(result, 2),
+        'base_calories': calorie_requirement,
+        'trimester_addition': addition,
+        'unit': 'kcal/d'
+    }
+
+def lactation_energy_needs(calorie_requirement, lactation_period):
+    """
+    Energy needs in lactation
+    Calorie Requirement + (First 6 months= +330, Second 6 months= +400)
+    """
+    if lactation_period.lower() == 'first_6_months':
+        addition = 330
+    elif lactation_period.lower() == 'second_6_months':
+        addition = 400
+    else:
+        return {'error': 'Invalid lactation period'}
+    
+    result = calorie_requirement + addition
+    
+    return {
+        'energy_needs': round(result, 2),
+        'base_calories': calorie_requirement,
+        'lactation_addition': addition,
+        'unit': 'kcal/d'
+    }

@@ -63,6 +63,12 @@ EQUATIONS = [
         "description": "Percentage weight loss from usual weight."
     },
     {
+        "name": "Ideal Body Weight (IBW) For Spinal Cord Injury",
+        "code": "ibw_sci",
+        "function_path": "nutrition.utils.ibw_spinal_cord_injury",
+        "description": "Mueller, C. M. (Ed.). (2024). The essential pocket guide for clinical nutrition (4th ed., p. 9). Academy of Nutrition and Dietetics."
+    },
+    {
         "name": "Demi-span Height Estimate",
         "code": "demi_span_height",
         "function_path": "nutrition.utils.demi_span_height",
@@ -157,6 +163,108 @@ EQUATIONS = [
         "code": "total_lymphocyte_count",
         "function_path": "nutrition.utils.total_lymphocyte_count",
         "description": "Immune function indicator based on WBC and lymphocyte %."
+    },
+    {
+        "name": "Growth Velocity",
+        "code": "growth_velocity",
+        "function_path": "nutrition.utils.growth_velocity",
+        "description": "Mueller, C. M. (Ed.). (2024). The essential pocket guide for clinical nutrition (4th ed., p. 62). Academy of Nutrition and Dietetics."
+    },
+    {
+        "name": "Harris–Benedict (HBE)",
+        "code": "HBE",
+        "function_path": "nutrition.utils.harris_benedict",
+        "description": ""
+    },
+    {
+        "name": "Mifflin-St Jeor",
+        "code": "BMR",
+        "function_path": "nutrition.utils.mifflin_st_jeor",
+        "description": ""
+    },
+    {
+        "name": "Quick Method for Macronutrients & Fluid",
+        "code": "Quick Method for Macronutrients & Fluid",
+        "function_path": "nutrition.utils.quick_method",
+        "description": ""
+    },
+    {
+        "name": "Macronutrients Distribution",
+        "code": "Macronutrients Distribution",
+        "function_path": "nutrition.utils.macronutrient_distribution",
+        "description": ""
+    },
+    {
+        "name": "Recommended Dietary Allowance for Calories",
+        "code": "RDA Calorie needs",
+        "function_path": "nutrition.utils.rda_calories",
+        "description": ""
+    },
+    {
+        "name": "Recommended Dietary Allowance for Protein",
+        "code": "RDA Protein needs",
+        "function_path": "nutrition.utils.rda_protein",
+        "description": ""
+    },
+    {
+        "name": "Schofield ",
+        "code": "schofield_bmr",
+        "function_path": "nutrition.utils.schofield_bmr",
+        "description": ""
+    },
+    {
+        "name": "Catch-up Growth",
+        "code": "catchup_growth",
+        "function_path": "nutrition.utils.catchup_growth",
+        "description": ""
+    },
+    {
+        "name": "Gestation-Adjusted Age (Correction Age)",
+        "code": "gestation_adjusted_age",
+        "function_path": "nutrition.utils.gestation_adjusted_age",
+        "description": ""
+    },
+    {
+        "name": "Preterm Estimated Requirment ",
+        "code": "preterm_estimated_requirement",
+        "function_path": "nutrition.utils.preterm_estimated_requirement",
+        "description": ""
+    },
+    {
+        "name": " Ireton-Jones (Ventilator-Dependent)",
+        "code": "ireton_jones_ventilator",
+        "function_path": "nutrition.utils.ireton_jones_ventilator",
+        "description": ""
+    },
+    {
+        "name": "Ireton-Jones (Spontaneously Breathing)",
+        "code": "ireton_jones_spontaneous",
+        "function_path": "nutrition.utils.ireton_jones_spontaneous",
+        "description": ""
+    },
+    {
+        "name": "Curreri",
+        "code": "curreri_burn",
+        "function_path": "nutrition.utils.curreri_burn",
+        "description": ""
+    },
+    {
+        "name": "Energy Needs in Pregnancy by Age & BMI group",
+        "code": "pregnancy_energy_needs",
+        "function_path": "nutrition.utils.pregnancy_energy_needs",
+        "description": ""
+    },
+    {
+        "name": "Energy Needs in Pregnancy",
+        "code": "pregnancy_simple_addition",
+        "function_path": "nutrition.utils.pregnancy_simple_addition",
+        "description": ""
+    },
+    {
+        "name": "Energy needs in lactation",
+        "code": "lactation_energy_needs",
+        "function_path": "nutrition.utils.lactation_energy_needs",
+        "description": ""
     },
 ]
 
