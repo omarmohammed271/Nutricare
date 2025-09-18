@@ -27,7 +27,6 @@ export const equationsConfig = [
             { "name": "height_m", "label": "Height (m)", "type": "number" }
           ],
           [
-            { "name": "weight_kg", "label": "Weight (kg)", "type": "number" },
             { "name": "weight_lb", "label": "Weight (lb)", "type": "number" },
             { "name": "height_in", "label": "Height (in)", "type": "number" }
           ]
