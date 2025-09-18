@@ -153,7 +153,15 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
                 onChange={(e) => handleInputChange("calculatorType", e.target.value)}
               >
                 {equationsConfig.map((category) => [
-                  <ListSubheader key={category.id}>
+                  <ListSubheader key={category.id} sx={{ 
+                    p: 0,
+                    px: 2, 
+                    fontWeight: 600, 
+                    color: (theme) => theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
+                    fontSize: "14px",
+                    backgroundColor: (theme) => theme.palette.mode === 'dark' ? "#1a1a1a" : "#f5f5f5",
+                    borderBottom: (theme) => theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e0e0e0"
+                  }}>
                     {category.name}
                   </ListSubheader>,
                   category.equations.map((equation) => (
