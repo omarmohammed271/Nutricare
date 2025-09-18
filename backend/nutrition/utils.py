@@ -4,7 +4,7 @@ import math
 
 # ---------- Weight & Body ----------
 
-def bmi(weight_kg: float, height_m: Optional[float]=None, weight_lb: Optional[float]=None, height_in: Optional[float]=None) -> Dict:
+def bmi(weight_kg: Optional[float]=None, height_m: Optional[float]=None, weight_lb: Optional[float]=None, height_in: Optional[float]=None) -> Dict:
     """
     BMI:
     - metric: weight_kg / height_m**2
