@@ -25,7 +25,7 @@ interface EquationInputData {
 const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) => {
   // store form values dynamically by field name
   const [formData, setFormData] = useState<{ [key: string]: string }>({
-    calculatorType: "bmi", // default selection
+    calculatorType: "down_syndrome_calorie", // default selection
   });
 
   // toast for feedback
@@ -109,6 +109,8 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
       equation: selectedEquation.id,
       inputs,
     };
+    console.log(payload);
+    
 
     mutate(payload);
   };
