@@ -117,14 +117,14 @@ const MENU_ITEMS: MenuItemTypes[] = [
     label: "My Files",
     isTitle: false,
     icon: LuFolderClosed,
-    url: "/files",
+    url: "/myfiles",
   },
   {
     key: "reports",
     label: "Reports",
     isTitle: false,
     icon: LuBarChart3,
-    url: "/reports",
+    url: "/reports/overview",
   },
   {
     key: "about-us",
