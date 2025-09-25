@@ -178,7 +178,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
           if (val && typeof val === "object" && "min" in val && "max" in val && "unit" in val) {
             return (
               <Typography component="span" key={key} textAlign="center">
-                <strong>{formatKey(key)}:</strong> {val.min} - {val.max} {val.unit}
+                <strong>{formatKey(key)}:</strong> {val.min as any} - {val.max} {val.unit}
               </Typography>
             );
           }
