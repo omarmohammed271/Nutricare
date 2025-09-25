@@ -49,6 +49,8 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
     mutationFn: addCaclulations,
     mutationKey: ["new_calculation"],
     onSuccess(data: any) {
+      console.log(data.data.result);
+      
       setToast({ open: true, message: "Calculation added successfully!", severity: "success" });
       setResult(data.data.result);
     },
@@ -110,8 +112,93 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
       inputs,
     };
 
+    console.log(payload);
+    
+
     mutate(payload);
   };
+
+  // For formatting responses
+  const formatKey = (key: string) => {
+    const words = key
+      .replace(/_/g, " ")
+      .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+      .split(" ");
+    return words.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  };
+  
+  const renderResult = (data: any): JSX.Element => {
+    if (data === null || data === undefined)
+      return <Typography textAlign="center">--</Typography>;
+  
+    // Primitive values
+    if (typeof data !== "object") {
+      return <Typography textAlign="center">{data}</Typography>;
+    }
+  
+    // Special case: object with value + unit (+ optional interpretation)
+    if (
+      "value" in data &&
+      "unit" in data &&
+      Object.keys(data).every((k) => ["value", "unit", "interpretation"].includes(k))
+    ) {
+      return (
+        <Box display="flex" flexDirection="column" alignItems="center" gap={0.5}>
+          <Typography variant="h4" sx={{ fontWeight: 700, textAlign: "center" }}>
+            {data.value}
+          </Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary", textAlign: "center" }}>
+            {data.unit}
+          </Typography>
+          {data.interpretation && (
+            <Typography variant="body2" sx={{ fontWeight: 700, color: "text.secondary", textAlign: "center" }}>
+              {data.interpretation}
+            </Typography>
+          )}
+        </Box>
+      );
+    }
+  
+    // Arrays
+    if (Array.isArray(data)) {
+      return (
+        <Box display="flex" flexDirection="column" gap={1} alignItems="center">
+          {data.map((item, idx) => (
+            <Box key={idx}>{renderResult(item)}</Box>
+          ))}
+        </Box>
+      );
+    }
+  
+    // Objects
+    return (
+      <Box display="flex" flexDirection="column" gap={1} alignItems="center">
+        {Object.entries(data).map(([key, val]) => {
+          // Object with min/max/unit → range
+          if (val && typeof val === "object" && "min" in val && "max" in val && "unit" in val) {
+            return (
+              <Typography component="span" key={key} textAlign="center">
+                <strong>{formatKey(key)}:</strong> {val.min} - {val.max} {val.unit}
+              </Typography>
+            );
+          }
+          // Otherwise, recurse
+          return (
+            <Box key={key} pl={1} textAlign="center">
+              <Typography component="span" sx={{ fontWeight: 600 }}>
+                {formatKey(key)}:
+              </Typography>{" "}
+              {renderResult(val)}
+            </Box>
+          );
+        })}
+      </Box>
+    );
+  };
+  
+  
+  
+
 
   return (
     <>
@@ -309,92 +396,31 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
             {selectedEquation?.name}
           </Typography>
 
-          {/* Circular Gauge */}
           <Box
             sx={{
+              minWidth: 120,
+              minHeight: 120,
+              padding: 1,
+              borderRadius: 5,
+              border: "5px solid",
+              borderColor: (theme) => theme.palette.primary.main,
               display: "flex",
-              flexDirection: "column",
               alignItems: "center",
+              justifyContent: "center",
               position: "relative",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                width: "80%",
+                height: "80%",
+                borderRadius: "50%",
+                zIndex: 1,
+              },
             }}
           >
-            <Box
-              sx={{
-                width: 120,
-                height: 120,
-                borderRadius: "50%",
-                background: (theme) => theme.palette.primary.main,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                position: "relative",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  width: "80%",
-                  height: "80%",
-                  borderRadius: "50%",
-                  backgroundColor:
-                  (theme) => theme.palette.mode === "dark" ? "#000000" : "#ffffff",
-                  zIndex: 1,
-                },
-              }}
-            >
-              <Box
-                sx={{
-                  textAlign: "center",
-                  zIndex: 2,
-                  position: "relative",
-                }}
-              >
-                <Typography
-                  variant="h4"
-                  sx={{
-                    fontWeight: 700,
-                    fontSize: "24px",
-                    lineHeight: 1,
-                  }}
-                >
-                  {isSuccess ? result?.value : "--"}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: (theme) => theme.palette.mode === "dark" ? "#cccccc" : "#000000FF",
-                    fontSize: "12px",
-                  }}
-                >
-                  {isSuccess ? result?.unit : "--"}
-                </Typography>
-              </Box>
+            <Box sx={{ textAlign: "center", zIndex: 2, position: "relative" }}>
+              {isSuccess ? renderResult(result) : "--"}
             </Box>
-
-            {/* Pointer */}
-            <Box
-              sx={{
-                position: "absolute",
-                bottom: "20px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: 0,
-                height: 0,
-                borderLeft: "6px solid transparent",
-                borderRight: "6px solid transparent",
-                zIndex: 3,
-              }}
-            />
-
-            {/* Category */}
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 600,
-                fontSize: "16px",
-                mt: 1,
-              }}
-            >
-              {isSuccess ? result?.interpretation : ""}
-            </Typography>
           </Box>
         </Box>
         </DialogContent>
