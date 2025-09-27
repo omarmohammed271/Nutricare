@@ -4,6 +4,7 @@ import { StorageService } from "@src/services";
 // API base URL
 const API_BASE_URL = "http://87.237.225.191:8000/api";
 
+
 // Create axios instance with base configuration
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -15,7 +16,7 @@ const axiosInstance: AxiosInstance = axios.create({
   withCredentials: true, // Important for httpOnly cookies
 });
 
-// Request interceptor to add auth token from memory
+// Request interceptor to add auth token
 axiosInstance.interceptors.request.use(
   (config) => {
     // Get token from secure in-memory storage
@@ -30,6 +31,7 @@ axiosInstance.interceptors.request.use(
     } else {
       console.log('⚠️ No token available for request:', config.url);
     }
+
     return config;
   },
   (error) => {
@@ -67,6 +69,14 @@ axiosInstance.interceptors.response.use(
         // For non-critical endpoints, just log the error but don't logout
         console.warn('⚠️ API call failed with 401 (non-critical):', url);
       }
+    }
+    
+    // Handle 403 errors (Forbidden)
+    if (status === 403) {
+      const errorData = error.response?.data as any;
+      const errorMessage = errorData?.detail || errorData?.message || '';
+      console.error('🚫 Forbidden access:', errorMessage);
+      console.log('💡 This might be due to insufficient permissions or invalid authentication');
     }
     
     // Handle network errors
