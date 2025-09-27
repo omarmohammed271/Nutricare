@@ -21,12 +21,12 @@
 }
 
 .login #content {
-    padding: 20px 20px 0;
+    padding: 20px;
 }
 
 .login #container {
-    /* background: var(--body-bg); */
-    /* border: 1px solid var(--hairline-color); */
+    background: var(--body-bg);
+    border: 1px solid var(--hairline-color);
     border-radius: 4px;
     overflow: hidden;
     width: 28em;

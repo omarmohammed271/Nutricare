@@ -5,57 +5,50 @@
 /* VARIABLE DEFINITIONS */
 html[data-theme="light"],
 :root {
-    --primary: #ff6905;
-    --primary-dark: #732f03;
-    --secondary: #3b3b3b;
-    --secondary-dark: #171717;
-    --secondary-hover: #2d2d2d;
-    --accent: #ff6905;
-    --accent-dark: #5a2400;
+    --primary: #79aec8;
+    --secondary: #417690;
+    --accent: #f5dd5d;
     --primary-fg: #fff;
 
-    --body-fg: #eeeeee;
-    --body-bg: #181818;
-    --body-quiet-color: #e0e0e0;
-    --body-loud-color: #ffffff;
+    --body-fg: #333;
+    --body-bg: #fff;
+    --body-quiet-color: #666;
+    --body-medium-color: #444;
+    --body-loud-color: #000;
 
-    --card-bg: black;
-    --card-bg-secondary: #471d00;
-    /* --card-border: var(--accent-dark); */
-
-    --header-color: rgb(247, 108, 58);
+    --header-color: #ffc;
     --header-branding-color: var(--accent);
     --header-bg: var(--secondary);
     --header-link-color: var(--primary-fg);
 
     --breadcrumbs-fg: #c4dce8;
-    --breadcrumbs-link-fg: #e0e0e0;
-    --breadcrumbs-bg: var(--primary);
+    --breadcrumbs-link-fg: var(--body-bg);
+    --breadcrumbs-bg: #264b5d;
 
-    
-    --link-fg: var(--primary);
-    --link-hover-color: var(--primary);
-    --link-selected-fg: #c6906f;
+    --link-fg: #417893;
+    --link-hover-color: #036;
+    --link-selected-fg: var(--secondary);
 
-    --hairline-color: #272727;
-    --border-color: #353535;
+    --hairline-color: #e8e8e8;
+    --border-color: #ccc;
 
-    --error-fg: #e35f5f;
-    --message-success-bg: #006b1b;
-    --message-warning-bg: #583305;
-    --message-error-bg: #570808;
+    --error-fg: #ba2121;
 
-    --darkened-bg: #131313;
-    --selected-bg: #121212;
-    --selected-row: #231009;
+    --message-success-bg: #dfd;
+    --message-warning-bg: #ffc;
+    --message-error-bg: #ffefef;
+
+    --darkened-bg: #f8f8f8; /* A bit darker than --body-bg */
+    --selected-bg: #e4e4e4; /* E.g. selected table cells */
+    --selected-row: #ffc;
 
     --button-fg: #fff;
     --button-bg: var(--secondary);
-    --button-hover-bg: var(--secondary-hover);
-    --default-button-bg: var(--primary);
-    --default-button-hover-bg: var(--header-color);
-    --close-button-bg: #333333;
-    --close-button-hover-bg: #4e4e4e;
+    --button-hover-bg: #205067;
+    --default-button-bg: #205067;
+    --default-button-hover-bg: var(--secondary);
+    --close-button-bg: #747474;
+    --close-button-hover-bg: #333;
     --delete-button-bg: #ba2121;
     --delete-button-hover-bg: #a41515;
 
@@ -64,6 +57,12 @@ html[data-theme="light"],
     --object-tools-hover-bg: var(--close-button-hover-bg);
 
     --font-family-primary:
+        "Segoe UI",
+        system-ui,
+        Roboto,
+        "Helvetica Neue",
+        Arial,
+        sans-serif,
         "Apple Color Emoji",
         "Segoe UI Emoji",
         "Segoe UI Symbol",
@@ -86,7 +85,8 @@ html[data-theme="light"],
         "Segoe UI Emoji",
         "Segoe UI Symbol",
         "Noto Color Emoji";
-    
+
+    color-scheme: light;
 }
 
 html, body {
@@ -96,7 +96,7 @@ html, body {
 body {
     margin: 0;
     padding: 0;
-    font-size: 1.5rem;
+    font-size: 0.875rem;
     font-family: var(--font-family-primary);
     color: var(--body-fg);
     background: var(--body-bg);
@@ -104,20 +104,19 @@ body {
 
 /* LINKS */
 
-a{
-    text-decoration: none;
-    transition: all 0.1s;
-}
-
 a:link, a:visited {
-    color: var(--body-fg);
-    transition: all 0.15s;
+    color: var(--link-fg);
+    text-decoration: none;
+    transition: color 0.15s, background 0.15s;
 }
 
 a:focus, a:hover {
     color: var(--link-hover-color);
 }
 
+a:focus {
+    text-decoration: underline;
+}
 
 a img {
     border: none;
@@ -129,7 +128,7 @@ a.section:link, a.section:visited {
 }
 
 a.section:focus, a.section:hover {
-    color: var(--link-selected-fg);
+    text-decoration: underline;
 }
 
 /* GLOBAL DEFAULTS */
@@ -150,12 +149,11 @@ h1,h2,h3,h4,h5 {
 h1 {
     margin: 0 0 20px;
     font-weight: 300;
-    font-size: 2rem;
-    color: var(--body-quiet-color);
+    font-size: 1.25rem;
 }
 
 h2 {
-    font-size: 1.5rem;
+    font-size: 1rem;
     margin: 1em 0 .5em 0;
 }
 
@@ -165,9 +163,9 @@ h2.subhead {
 }
 
 h3 {
-    font-size: 1rem;
+    font-size: 0.875rem;
     margin: .8em 0 .3em 0;
-    color: var(--body-quiet-color);
+    color: var(--body-medium-color);
     font-weight: bold;
 }
 
@@ -175,6 +173,7 @@ h4 {
     font-size: 0.75rem;
     margin: 1em 0 .8em 0;
     padding-bottom: 3px;
+    color: var(--body-medium-color);
 }
 
 h5 {
@@ -219,6 +218,10 @@ fieldset {
     padding: 0;
     border: none;
     border-top: 1px solid var(--hairline-color);
+}
+
+details summary {
+    cursor: pointer;
 }
 
 blockquote {
@@ -273,14 +276,7 @@ hr {
 }
 
 div.help ul {
-    margin-bottom: 0;
-}
-
-main{
-    background: var(--card-bg);
-    margin: 10px;
-    /* margin-left: 0px; */
-    border-radius: 10px;
+     margin-bottom: 0;
 }
 
 .help-tooltip {
@@ -324,7 +320,7 @@ td, th {
 }
 
 th {
-    font-weight: 600;
+    font-weight: 500;
     text-align: left;
 }
 
@@ -333,7 +329,7 @@ tfoot td {
     color: var(--body-quiet-color);
     padding: 5px 10px;
     font-size: 0.6875rem;
-    background: var(--card-bg);
+    background: var(--body-bg);
     border: none;
     border-top: 1px solid var(--hairline-color);
     border-bottom: 1px solid var(--hairline-color);
@@ -345,7 +341,7 @@ tfoot td {
 }
 
 thead th.required {
-    color: var(--body-loud-color);
+    font-weight: bold;
 }
 
 tr.alt {
@@ -353,7 +349,7 @@ tr.alt {
 }
 
 tr:nth-child(odd), .row-form-errors {
-    background: var(--card-bg);
+    background: var(--body-bg);
 }
 
 tr:nth-child(even),
@@ -493,21 +489,29 @@ textarea {
     vertical-align: top;
 }
 
-input[type=text], input[type=password], input[type=email], input[type=url],
-input[type=number], input[type=tel], textarea, select, .vTextField {
+/*
+Minifiers remove the default (text) "type" attribute from "input" HTML tags.
+Add input:not([type]) to make the CSS stylesheet work the same.
+*/
+input:not([type]), input[type=text], input[type=password], input[type=email],
+input[type=url], input[type=number], input[type=tel], textarea, select,
+.vTextField {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     padding: 5px 6px;
     margin-top: 0;
     color: var(--body-fg);
-    background-color: var(--card-bg);
+    background-color: var(--body-bg);
 }
 
-input[type=text]:focus, input[type=password]:focus, input[type=email]:focus,
-input[type=url]:focus, input[type=number]:focus, input[type=tel]:focus,
-textarea:focus, select:focus, .vTextField:focus {
+/*
+Minifiers remove the default (text) "type" attribute from "input" HTML tags.
+Add input:not([type]) to make the CSS stylesheet work the same.
+*/
+input:not([type]):focus, input[type=text]:focus, input[type=password]:focus,
+input[type=email]:focus, input[type=url]:focus, input[type=number]:focus,
+input[type=tel]:focus, textarea:focus, select:focus, .vTextField:focus {
     border-color: var(--body-quiet-color);
-    background-color: var(--close-button-hover-bg);
 }
 
 select {
@@ -570,7 +574,7 @@ input[type=button][disabled].default {
 .module {
     border: none;
     margin-bottom: 30px;
-    background: var(--card-bg);
+    background: var(--body-bg);
 }
 
 .module p, .module ul, .module h3, .module h4, .module dl, .module pre {
@@ -590,34 +594,19 @@ input[type=button][disabled].default {
     margin-top: .6em;
 }
 
-.module h2{
+.module h2, .module caption, .inline-group h2 {
     margin: 0;
     padding: 8px;
     font-weight: 400;
-    font-size: 0.9rem;
+    font-size: 0.8125rem;
     text-align: left;
-    /* border: 1px solid var(--accent-dark); */
-    background: var(--darkened-bg);
-    border-radius: 8px;
-    /* background: var(--accent-dark); */
-    color: var(--header-link-color);
-}
-
-.module caption, .inline-group h2 {
-    margin: 0;
-    padding: 8px;
-    font-weight: 400;
-    font-size: 0.9rem;
-    text-align: left;
-    border: 1px solid var(--card-bg-secondary);
-    border-radius: 10px;
-    background: linear-gradient(to bottom right, black, var(--card-bg-secondary));
+    background: var(--header-bg);
     color: var(--header-link-color);
 }
 
 .module caption,
 .inline-group h2 {
-    font-size: 1.215rem;
+    font-size: 0.75rem;
     letter-spacing: 0.5px;
     text-transform: uppercase;
 }
@@ -630,9 +619,7 @@ input[type=button][disabled].default {
 
 ul.messagelist {
     padding: 0;
-    /* margin: 0; */
-    border-radius: 10px;
-    margin: 10px;
+    margin: 0;
 }
 
 ul.messagelist li {
@@ -643,20 +630,17 @@ ul.messagelist li {
     margin: 0 0 10px 0;
     background: var(--message-success-bg) url(../img/icon-yes.svg) 40px 12px no-repeat;
     background-size: 16px auto;
-    border-radius: 5px;
     color: var(--body-fg);
     word-break: break-word;
 }
 
 ul.messagelist li.warning {
     background: var(--message-warning-bg) url(../img/icon-alert.svg) 40px 14px no-repeat;
-    border-radius: 5px;
     background-size: 14px auto;
 }
 
 ul.messagelist li.error {
     background: var(--message-error-bg) url(../img/icon-no.svg) 40px 12px no-repeat;
-    border-radius: 5px;
     background-size: 16px auto;
 }
 
@@ -669,7 +653,7 @@ ul.messagelist li.error {
     color: var(--error-fg);
     border: 1px solid var(--error-fg);
     border-radius: 4px;
-    background-color: var(--card-bg);
+    background-color: var(--body-bg);
     background-position: 5px 12px;
     overflow-wrap: break-word;
 }
@@ -678,7 +662,7 @@ ul.errorlist {
     margin: 0 0 4px;
     padding: 0;
     color: var(--error-fg);
-    background: var(--card-bg);
+    background: var(--body-bg);
 }
 
 ul.errorlist li {
@@ -694,6 +678,7 @@ ul.errorlist li:first-child {
 
 ul.errorlist li a {
     color: inherit;
+    text-decoration: underline;
 }
 
 td ul.errorlist {
@@ -729,11 +714,9 @@ td ul.errorlist + input, td ul.errorlist + select, td ul.errorlist + textarea {
 /* BREADCRUMBS */
 
 div.breadcrumbs {
-    margin-inline: 10px;
-    border-radius: 10px;
-    border: 1px solid var(--card-border);
-    background: var(--card-bg);
+    background: var(--breadcrumbs-bg);
     padding: 10px 40px;
+    border: none;
     color: var(--breadcrumbs-fg);
     text-align: left;
 }
@@ -851,7 +834,7 @@ a.deletelink:focus, a.deletelink:hover {
 #change-history .paginator {
     color: var(--body-quiet-color);
     border-bottom: 1px solid var(--hairline-color);
-    background: var(--card-bg);
+    background: var(--body-bg);
     overflow: hidden;
 }
 
@@ -882,7 +865,7 @@ a.deletelink:focus, a.deletelink:hover {
     top: -999px;
     margin: 5px;
     padding: 5px;
-    background: var(--card-bg);
+    background: var(--body-bg);
     z-index: 1;
 }
 
@@ -893,9 +876,6 @@ a.deletelink:focus, a.deletelink:hover {
 
 #content {
     padding: 20px 40px;
-    background-color: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
 }
 
 .dashboard #content {
@@ -905,8 +885,6 @@ a.deletelink:focus, a.deletelink:hover {
 #content-main {
     float: left;
     width: 100%;
-    /* background: var(--card-bg); */
-    /* border: 1px solid var(--card-order); */
 }
 
 #content-related {
@@ -914,13 +892,12 @@ a.deletelink:focus, a.deletelink:hover {
     width: 260px;
     position: relative;
     margin-right: -300px;
-    /* background: var(--card-bg); */
-
 }
 
-#footer {
-    clear: both;
-    padding: 10px;
+@media (forced-colors: active) {
+  #content-related {
+      border: 1px solid;
+  }
 }
 
 /* COLUMN TYPES */
@@ -941,7 +918,6 @@ a.deletelink:focus, a.deletelink:hover {
 
 .colSM #content-main {
     float: right;
-    background: var(--card-bg);
 }
 
 .popup .colM {
@@ -956,29 +932,24 @@ a.deletelink:focus, a.deletelink:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 10px;
-    background: transparent;
+    padding: 10px 40px;
+    background: var(--header-bg);
     color: var(--header-color);
-}
-
-#header a{
-    color: var(--header-link-color);
-    /* border: none; */
 }
 
 #header a:link, #header a:visited, #logout-form button {
     color: var(--header-link-color);
-    text-decoration: none;
-    border:none;
 }
 
-#header .links{
-    /* background: var(--card-bg-secondary); */
-    padding: 7px 10px;
-    margin: 0px;
-    border-radius: 5px;
+#header a:focus , #header a:hover {
+    text-decoration: underline;
 }
 
+@media (forced-colors: active) {
+  #header {
+      border-bottom: 1px solid;
+  }
+}
 
 #branding {
     display: flex;
@@ -1055,8 +1026,7 @@ a.deletelink:focus, a.deletelink:hover {
 }
 
 #content-related .module {
-    /* background: var(--card-bg); */
-    
+    background: none;
 }
 
 #content-related h3 {
@@ -1151,6 +1121,7 @@ a.deletelink:focus, a.deletelink:hover {
     margin: 0;
     border-top: 1px solid var(--hairline-color);
     width: 100%;
+    box-sizing: border-box;
 }
 
 .paginator a:link, .paginator a:visited {
@@ -1205,16 +1176,5 @@ a.deletelink:focus, a.deletelink:hover {
     white-space: nowrap;
     border: 0;
     color: var(--body-fg);
-    background-color: var(--card-bg);
-}
-
-.content{
-    /* background: transparent; */
-}
-span p{
-    background: var(--card-bg);
-}
-
-input[type="file"]::-webkit-file-upload-button{
-    background-color: var(--secondary);
+    background-color: var(--body-bg);
 }

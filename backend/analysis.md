@@ -31,3 +31,8 @@ Above knee: 10.1%
 Above kness: 20.2% 
 If they chose (Prepregnancy weight) Show an Input field MANDOTARY called: Prepregnancy weight (Fill manually)."
 
+
+
+Education Excell powerBI SQL Python (Pandas - NUmpy - Matplotlib -Plottly - Seaborn) EDA (Done)
+Projects (Done)
+Marketting

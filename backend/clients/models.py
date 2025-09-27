@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 # Create your models here.
 PHYSICAL_ACTIVITY_CHOICES = [
@@ -49,7 +51,8 @@ STRESS_FACTOR_VALUES = {
 }
 
 class Client(models.Model):
-    name = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='clients')
+    name = models.CharField(max_length=100,unique=True)
     gender = models.CharField(max_length=10,choices=[('male','Male'),('female','Female')])
     age = models.IntegerField(blank=True,null=True)
     date_of_birth = models.DateField()
@@ -83,3 +86,34 @@ class Client(models.Model):
             ("tpn", "TPN")
         ]
     )
+    def __str__(self):
+        return self.name
+
+class LabResult(models.Model):
+    
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="lab_results")
+    test_name = models.CharField(max_length=100)
+    result = models.CharField(max_length=50)
+    reference_range = models.CharField(max_length=50)
+    interpretation = models.TextField(blank=True, null=True)
+    file = models.FileField(upload_to='lab_reports/', blank=True, null=True)
+    date = models.DateField()
+    def __str__(self):
+        return f"{self.test_name} - {self.client.name}"
+
+
+class Medication(models.Model):
+    
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="medications")
+    name = models.CharField(max_length=100)
+    dosage = models.CharField(max_length=100)
+    notes = models.TextField(blank=True, null=True)    
+
+    def __str__(self):
+        return f"{self.name} - {self.client.name}"
+
+# class MealPlan(models.Model):
+#     
+#     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="meal_plans")
+#     description = models.TextField()
+#     total_calories = models.FloatField(null=True, blank=True)
