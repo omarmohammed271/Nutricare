@@ -228,8 +228,17 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
   }, [searchQuery, searchInput, isSearching, availableDrugs, allDrugs]);
 
   // Get drug effect and nutritional implication from API data
-  const drugEffect = drugDetails?.drug_effect || "Select a drug to view interactions";
-  const nutritionalImplication = drugDetails?.nutritional_implications || "Select a drug to view nutritional implications";
+  const drugEffect = drugDetails?.drug_effect && drugDetails.drug_effect.trim() !== "" 
+    ? drugDetails.drug_effect 
+    : selectedDrug 
+      ? "No drug effect information available for this medication." 
+      : "Select a drug to view interactions";
+      
+  const nutritionalImplication = drugDetails?.nutritional_implications && drugDetails.nutritional_implications.trim() !== "" 
+    ? drugDetails.nutritional_implications 
+    : selectedDrug 
+      ? "No nutritional implications information available for this medication." 
+      : "Select a drug to view nutritional implications";
 
   return (
     <Dialog
@@ -548,9 +557,13 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
           
           <Box sx={{
             p: 3,
-            backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
+            backgroundColor: drugEffect.includes("No drug effect information") 
+              ? theme.palette.mode === 'dark' ? "#2d1b00" : "#fff3cd"
+              : theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
             borderRadius: 2,
-            border: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef",
+            border: drugEffect.includes("No drug effect information")
+              ? theme.palette.mode === 'dark' ? "1px solid #ff9800" : "1px solid #ffc107"
+              : theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef",
             minHeight: "60px",
             display: "flex",
             alignItems: "center",
@@ -560,9 +573,12 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
               <CircularProgress size={24} />
             ) : (
               <Typography variant="body1" sx={{ 
-                color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
+                color: drugEffect.includes("No drug effect information")
+                  ? theme.palette.mode === 'dark' ? "#ff9800" : "#856404"
+                  : theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                 fontSize: "14px",
-                lineHeight: 1.5
+                lineHeight: 1.5,
+                fontStyle: drugEffect.includes("No drug effect information") ? "italic" : "normal"
               }}>
                 {drugEffect}
               </Typography>
@@ -593,9 +609,13 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
           
           <Box sx={{
             p: 3,
-            backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
+            backgroundColor: nutritionalImplication.includes("No nutritional implications information") 
+              ? theme.palette.mode === 'dark' ? "#2d1b00" : "#fff3cd"
+              : theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
             borderRadius: 2,
-            border: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef",
+            border: nutritionalImplication.includes("No nutritional implications information")
+              ? theme.palette.mode === 'dark' ? "1px solid #ff9800" : "1px solid #ffc107"
+              : theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef",
             minHeight: "60px",
             display: "flex",
             alignItems: "center",
@@ -605,9 +625,12 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
               <CircularProgress size={24} />
             ) : (
               <Typography variant="body1" sx={{ 
-                color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
+                color: nutritionalImplication.includes("No nutritional implications information")
+                  ? theme.palette.mode === 'dark' ? "#ff9800" : "#856404"
+                  : theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                 fontSize: "14px",
-                lineHeight: 1.5
+                lineHeight: 1.5,
+                fontStyle: nutritionalImplication.includes("No nutritional implications information") ? "italic" : "normal"
               }}>
                 {nutritionalImplication}
               </Typography>

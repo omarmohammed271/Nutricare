@@ -17,17 +17,20 @@ import {
   IconButton,
   Switch,
   Grid,
-  useTheme
+  useTheme,
+  Alert,
+  AlertTitle
 } from "@mui/material";
-import { LuX, LuChevronDown } from "react-icons/lu";
-import { useState } from "react";
+import { LuX, LuChevronDown, LuAlertCircle } from "react-icons/lu";
+import { useState, useEffect } from "react";
 
 interface NutritionRiskScreeningPopupProps {
   open: boolean;
   onClose: () => void;
+  drugData?: any; // Optional drug data prop
 }
 
-const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPopupProps) => {
+const NutritionRiskScreeningPopup = ({ open, onClose, drugData }: NutritionRiskScreeningPopupProps) => {
   const theme = useTheme();
   const [formData, setFormData] = useState({
     screeningTools: "Screening Tools",
@@ -38,6 +41,22 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
     neuropsychological: "",
     bmi: ""
   });
+  const [hasData, setHasData] = useState(true);
+  const [dataMessage, setDataMessage] = useState("");
+
+  // Check if drug data is available
+  useEffect(() => {
+    if (drugData !== undefined) {
+      if (!drugData || drugData === null || drugData === "" || 
+          (typeof drugData === 'object' && Object.keys(drugData).length === 0)) {
+        setHasData(false);
+        setDataMessage("No available data to show for this drug. Please select a different drug or contact your administrator.");
+      } else {
+        setHasData(true);
+        setDataMessage("");
+      }
+    }
+  }, [drugData]);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({
@@ -88,9 +107,36 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
       </DialogTitle>
 
       <DialogContent sx={{ p: 3, overflow: "visible", flex: 1 }}>
+        {/* No Data Alert */}
+        {!hasData && (
+          <Alert 
+            severity="warning" 
+            icon={<LuAlertCircle size={20} />}
+            sx={{ 
+              mb: 3,
+              backgroundColor: theme.palette.mode === 'dark' ? "#2d1b00" : "#fff3cd",
+              borderColor: theme.palette.mode === 'dark' ? "#ff9800" : "#ffc107",
+              "& .MuiAlert-icon": {
+                color: theme.palette.mode === 'dark' ? "#ff9800" : "#856404"
+              },
+              "& .MuiAlert-message": {
+                color: theme.palette.mode === 'dark' ? "#ffffff" : "#856404"
+              }
+            }}
+          >
+            <AlertTitle sx={{ 
+              color: theme.palette.mode === 'dark' ? "#ffffff" : "#856404",
+              fontWeight: 600
+            }}>
+              No Data Available
+            </AlertTitle>
+            {dataMessage}
+          </Alert>
+        )}
+
         {/* Screening Tools Dropdown */}
         <Box sx={{ mb: 4 }}>
-          <FormControl fullWidth>
+          <FormControl fullWidth disabled={!hasData}>
             <InputLabel sx={{ 
               color: theme.palette.mode === 'dark' ? "#cccccc" : "#000000",
             }}>
@@ -159,7 +205,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
 
         {/* Decrease in food intake */}
         <Box sx={{ mb: 4 }}>
-          <FormControl component="fieldset">
+          <FormControl component="fieldset" disabled={!hasData}>
             <FormLabel component="legend" sx={{ 
               fontWeight: 600, 
               color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
@@ -233,7 +279,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
 
         {/* Weight loss during the last 3 months */}
         <Box sx={{ mb: 4 }}>
-          <FormControl component="fieldset">
+          <FormControl component="fieldset" disabled={!hasData}>
             <FormLabel component="legend" sx={{ 
               fontWeight: 600, 
               color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
@@ -329,7 +375,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
 
         {/* Mobility */}
         <Box sx={{ mb: 4 }}>
-          <FormControl component="fieldset">
+          <FormControl component="fieldset" disabled={!hasData}>
             <FormLabel component="legend" sx={{ 
               fontWeight: 600, 
               color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
@@ -403,7 +449,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
 
         {/* Psychological stress or acute disease */}
         <Box sx={{ mb: 4 }}>
-          <FormControl component="fieldset">
+          <FormControl component="fieldset" disabled={!hasData}>
             <FormLabel component="legend" sx={{ 
               fontWeight: 600, 
               color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
@@ -419,6 +465,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
               <Switch
                 checked={formData.psychologicalStress}
                 onChange={(e) => handleInputChange("psychologicalStress", e.target.checked)}
+                disabled={!hasData}
                 sx={{
                   "& .MuiSwitch-switchBase.Mui-checked": {
                     color: "#02BE6A",
@@ -437,7 +484,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
 
         {/* Neuropsychological problems */}
         <Box sx={{ mb: 4 }}>
-          <FormControl component="fieldset">
+          <FormControl component="fieldset" disabled={!hasData}>
             <FormLabel component="legend" sx={{ 
               fontWeight: 600, 
               color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
@@ -511,7 +558,7 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
 
         {/* Body Mass Index (BMI) */}
         <Box sx={{ mb: 4 }}>
-          <FormControl component="fieldset">
+          <FormControl component="fieldset" disabled={!hasData}>
             <FormLabel component="legend" sx={{ 
               fontWeight: 600, 
               color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
@@ -630,8 +677,9 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
         
         <Button
           variant="contained"
+          disabled={!hasData}
           sx={{
-            backgroundColor: "#02BE6A",
+            backgroundColor: hasData ? "#02BE6A" : "#cccccc",
             color: "white",
             px: 4,
             py: 1.5,
@@ -640,11 +688,11 @@ const NutritionRiskScreeningPopup = ({ open, onClose }: NutritionRiskScreeningPo
             textTransform: "none",
             fontSize: "14px",
             "&:hover": {
-              backgroundColor: "#029e56",
+              backgroundColor: hasData ? "#029e56" : "#cccccc",
             }
           }}
         >
-          Evaluation
+          {hasData ? "Evaluation" : "No Data Available"}
         </Button>
       </DialogActions>
     </Dialog>
