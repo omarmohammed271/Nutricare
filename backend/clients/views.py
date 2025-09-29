@@ -1,15 +1,29 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 from .models import Client
 from .serializers import ClientSerializer
+
 
 @extend_schema(
     request=ClientSerializer,          # يوضّح شكل الـ Request Body
     responses=ClientSerializer,        # يوضّح شكل الـ Response
     description="Create new client with all tabs (assessment, biochemical, medication, meal plan)."
 )
+
+@api_view(['GET'])
+def get_client_choices(request):
+    choices = {
+        'ward_type': dict(Client._meta.get_field('ward_type').choices),
+        'physical_activity': dict(Client._meta.get_field('physical_activity').choices),
+        'stress_factor': dict(Client._meta.get_field('stress_factor').choices),
+        'feeding_type': dict(Client._meta.get_field('feeding_type').choices),
+        'gender': dict(Client._meta.get_field('gender').choices),
+    }
+    return Response(choices)
 class ClientListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ClientSerializer
     authentication_classes = [TokenAuthentication]
