@@ -97,21 +97,29 @@ export class StorageService {
       if (savedUser) {
         const parsedUser = JSON.parse(savedUser as string);
         
-        // Restore token from cookie if it exists and is not expired
-        if (parsedUser.token && parsedUser.tokenExpiry) {
-          const now = Date.now();
-          if (now < parsedUser.tokenExpiry) {
-            // Token is still valid, restore it to memory
-            this.accessToken = parsedUser.token;
-            this.tokenExpiry = parsedUser.tokenExpiry;
-            return { ...parsedUser, token: parsedUser.token };
-          } else {
-            // Token expired, clear it
-            console.log('Stored token has expired');
-            this.clearSession();
-            return null;
-          }
+        // Restore token from cookie if it exists - NO EXPIRY CHECK
+        if (parsedUser.token) {
+          // Always restore token - no expiry validation
+          this.accessToken = parsedUser.token;
+          this.tokenExpiry = parsedUser.tokenExpiry;
+          return { ...parsedUser, token: parsedUser.token };
         }
+        
+        // Original expiry logic - DISABLED
+        // if (parsedUser.token && parsedUser.tokenExpiry) {
+        //   const now = Date.now();
+        //   if (now < parsedUser.tokenExpiry) {
+        //     // Token is still valid, restore it to memory
+        //     this.accessToken = parsedUser.token;
+        //     this.tokenExpiry = parsedUser.tokenExpiry;
+        //     return { ...parsedUser, token: parsedUser.token };
+        //   } else {
+        //     // Token expired, clear it
+        //     console.log('Stored token has expired');
+        //     this.clearSession();
+        //     return null;
+        //   }
+        // }
         
         // No token or expired token
         return { ...parsedUser, token: undefined };
@@ -137,22 +145,27 @@ export class StorageService {
 
   /**
    * Check if token is valid and not expired
+   * DISABLED: Tokens no longer expire automatically
    */
   static isTokenValid(): boolean {
-    if (!this.accessToken || !this.tokenExpiry) {
-      return false;
-    }
+    // Always return true if token exists - no automatic expiry
+    return !!this.accessToken;
     
-    const now = Date.now();
-    const isValid = now < this.tokenExpiry;
-    
-    if (!isValid) {
-      // Token expired, clear it
-      this.accessToken = null;
-      this.tokenExpiry = null;
-    }
-    
-    return isValid;
+    // Original expiry logic - DISABLED
+    // if (!this.accessToken || !this.tokenExpiry) {
+    //   return false;
+    // }
+    // 
+    // const now = Date.now();
+    // const isValid = now < this.tokenExpiry;
+    // 
+    // if (!isValid) {
+    //   // Token expired, clear it
+    //   this.accessToken = null;
+    //   this.tokenExpiry = null;
+    // }
+    // 
+    // return isValid;
   }
 
   /**

@@ -9,9 +9,8 @@ export const defaultAssessmentData: AssessmentData = {
   weightTypeSelection: '',
   physicalActivity: '',
   stressFactor: '',
-  ward: '',
-  diagnosis: '',
-  typeOfFeeding: ''
+  wardType: '',
+  feedingType: ''
 };
 
 export const defaultCalculations: CalculationResults = {
@@ -53,22 +52,24 @@ export const physicalActivityOptions = [
   { value: 'light', label: 'Light Activity' },
   { value: 'moderate', label: 'Moderate Activity' },
   { value: 'active', label: 'Active' },
-  { value: 'very-active', label: 'Very Active' }
+  { value: 'very_active', label: 'Very Active' }
 ];
 
 export const stressFactorOptions = [
   { value: 'none', label: 'None' },
-  { value: 'mild', label: 'Mild Stress' },
-  { value: 'moderate', label: 'Moderate Stress' },
-  { value: 'severe', label: 'Severe Stress' }
+  { value: 'minor_surgery', label: 'Minor Surgery' },
+  { value: 'major_surgery', label: 'Major Surgery' },
+  { value: 'trauma', label: 'Trauma' },
+  { value: 'sepsis', label: 'Sepsis' },
+  { value: 'burns', label: 'Burns' }
 ];
 
 export const wardOptions = [
-  { value: 'general', label: 'General Ward' },
+  { value: 'outpatient', label: 'Out-patient' },
   { value: 'icu', label: 'ICU' },
-  { value: 'cardiac', label: 'Cardiac Unit' },
-  { value: 'oncology', label: 'Oncology' },
-  { value: 'pediatric', label: 'Pediatric' }
+  { value: 'medical', label: 'Medical Ward' },
+  { value: 'cardiac', label: 'Cardiac Ward' },
+  { value: 'others', label: 'Others' }
 ];
 
 export const diagnosisOptions = [
@@ -81,7 +82,6 @@ export const diagnosisOptions = [
 
 export const typeOfFeedingOptions = [
   { value: 'oral', label: 'Oral' },
-  { value: 'external-parenteral', label: 'External and Parenteral' },
-  { value: 'tpn', label: 'TPN' },
-  { value: 'npo', label: 'NPO' }
+  { value: 'enteral_parenteral', label: 'Enteral & Parenteral' },
+  { value: 'tpn', label: 'TPN' }
 ];

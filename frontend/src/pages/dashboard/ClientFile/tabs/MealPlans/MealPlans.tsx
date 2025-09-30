@@ -4,9 +4,19 @@ import {
   Grid,
   Button,
   Tab,
-  useTheme
+  useTheme,
+  TextField,
+  Card,
+  CardContent,
+  Typography,
+  Collapse,
+  IconButton,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
 } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
+import { ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon } from '@mui/icons-material';
 
 // Import types and components from meal plan
 import { 
@@ -30,12 +40,15 @@ import { useNutritionCalculation, useMealPlanData } from './hooks';
 import { NoteDialogState, FoodDropdownDialogState, MealPlan } from './types';
 import { themeColors, mockMealPlans } from './constants';
 import { removeFromBasket, addToBasket } from './utils';
+import { useClientFile } from '../../context/ClientFileContext';
 
 const MealPlans: React.FC = () => {
   const theme = useTheme();
+  const { formData: contextData, updateMealPlan } = useClientFile();
   const [tabValue, setTabValue] = useState('1');
   const [basketItems, setBasketItems] = useState<SelectedFood[]>([]);
   const [mealPlans, setMealPlans] = useState<MealPlan[]>(mockMealPlans);
+  const [notes, setNotes] = useState('');
   const [foodDropdownDialog, setFoodDropdownDialog] = useState<FoodDropdownDialogState>({
     open: false,
     mealId: ''
@@ -45,6 +58,26 @@ const MealPlans: React.FC = () => {
     planId: '',
     currentNote: ''
   });
+
+  // Collapse states for making sections collapsible
+  const [notesExpanded, setNotesExpanded] = useState(false);
+  const [templatesExpanded, setTemplatesExpanded] = useState(false);
+  const [creationFormExpanded, setCreationFormExpanded] = useState(false);
+  const [foodListingExpanded, setFoodListingExpanded] = useState(false);
+  const [graphExpanded, setGraphExpanded] = useState(false);
+  const [adimeNoteExpanded, setAdimeNoteExpanded] = useState(false);
+
+  // Load data from context on mount
+  useEffect(() => {
+    if (contextData.mealPlan.notes) {
+      setNotes(contextData.mealPlan.notes);
+    }
+  }, [contextData.mealPlan.notes]);
+
+  // Update context when notes change
+  useEffect(() => {
+    updateMealPlan({ notes });
+  }, [notes, updateMealPlan]);
 
   // Custom hooks
   const { nutritionSummary, updateNutrition } = useNutritionCalculation();
@@ -107,8 +140,33 @@ const MealPlans: React.FC = () => {
     setMealPlans(prev => prev.filter(plan => plan.id !== planId));
   };
 
+  // Toggle all sections
+  const toggleAllSections = () => {
+    const allCollapsed = !notesExpanded && !templatesExpanded && !creationFormExpanded && 
+                        !foodListingExpanded && !graphExpanded && !adimeNoteExpanded;
+    
+    setNotesExpanded(allCollapsed);
+    setTemplatesExpanded(allCollapsed);
+    setCreationFormExpanded(allCollapsed);
+    setFoodListingExpanded(allCollapsed);
+    setGraphExpanded(allCollapsed);
+    setAdimeNoteExpanded(allCollapsed);
+  };
+
   // Filter active plans for CurrentActivePlan component
   const activePlans = mealPlans.filter(plan => plan.status === 'Active');
+
+  // Load data from context on mount
+  useEffect(() => {
+    if (contextData.mealPlan.notes) {
+      setNotes(contextData.mealPlan.notes);
+    }
+  }, [contextData.mealPlan.notes]);
+
+  // Update context when notes change
+  useEffect(() => {
+    updateMealPlan({ notes });
+  }, [notes, updateMealPlan]);
 
   // Update nutrition when basket changes
   useEffect(() => {
@@ -156,53 +214,213 @@ const MealPlans: React.FC = () => {
                   <Tab label="Templates" value="2" />
                 </TabList>
                 
-                <Button
-                  variant="contained"
-                  onClick={handleCreatePlan}
-                  sx={{
-                    bgcolor: themeColors.primary,
-                    '&:hover': { bgcolor: themeColors.primaryHover },
-                    borderRadius: 1,
-                    px: 3,
-                    py: 1,
-                    fontWeight: 600,
-                    textTransform: 'none'
-                  }}
-                >
-                  Create Plan
-                </Button>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Button
+                    variant="outlined"
+                    onClick={toggleAllSections}
+                    startIcon={notesExpanded || templatesExpanded || creationFormExpanded || 
+                             foodListingExpanded || graphExpanded || adimeNoteExpanded ? 
+                             <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    sx={{
+                      borderColor: themeColors.primary,
+                      color: themeColors.primary,
+                      '&:hover': { 
+                        borderColor: themeColors.primaryHover,
+                        backgroundColor: themeColors.primary + '10'
+                      },
+                      borderRadius: 1,
+                      px: 2,
+                      py: 1,
+                      fontWeight: 600,
+                      textTransform: 'none'
+                    }}
+                  >
+                    {notesExpanded || templatesExpanded || creationFormExpanded || 
+                     foodListingExpanded || graphExpanded || adimeNoteExpanded ? 
+                     'Collapse All' : 'Expand All'}
+                  </Button>
+                  
+                  <Button
+                    variant="contained"
+                    onClick={handleCreatePlan}
+                    sx={{
+                      bgcolor: themeColors.primary,
+                      '&:hover': { bgcolor: themeColors.primaryHover },
+                      borderRadius: 1,
+                      px: 3,
+                      py: 1,
+                      fontWeight: 600,
+                      textTransform: 'none'
+                    }}
+                  >
+                    Create Plan
+                  </Button>
+                </Box>
               </Box>
 
               <TabPanel value="1" sx={{ p: 0, mt: 3 }}>
-                {/* Current Active Plan */}
-               
+                {/* Meal Plan Notes - Collapsible */}
+                <Accordion 
+                  expanded={notesExpanded} 
+                  onChange={() => setNotesExpanded(!notesExpanded)}
+                  sx={{ 
+                    mb: 2,
+                    borderRadius: 2,
+                    boxShadow: 2,
+                    bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2',
+                    '&:before': { display: 'none' }
+                  }}
+                >
+                  <AccordionSummary 
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ 
+                      minHeight: 60,
+                      '& .MuiAccordionSummary-content': { 
+                        alignItems: 'center' 
+                      }
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ 
+                      fontWeight: 600,
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                    }}>
+                      Meal Plan Notes
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ pt: 0 }}>
+                    <TextField
+                      multiline
+                      rows={4}
+                      fullWidth
+                      placeholder="Enter meal plan notes, dietary restrictions, or special instructions..."
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                          borderRadius: 2,
+                        }
+                      }}
+                    />
+                  </AccordionDetails>
+                </Accordion>
 
-               
+                {/* Templates Table - Collapsible */}
+                <Accordion 
+                  expanded={templatesExpanded} 
+                  onChange={() => setTemplatesExpanded(!templatesExpanded)}
+                  sx={{ 
+                    mb: 2,
+                    borderRadius: 2,
+                    boxShadow: 2,
+                    bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2',
+                    '&:before': { display: 'none' }
+                  }}
+                >
+                  <AccordionSummary 
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ 
+                      minHeight: 60,
+                      '& .MuiAccordionSummary-content': { 
+                        alignItems: 'center' 
+                      }
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ 
+                      fontWeight: 600,
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                    }}>
+                      Meal Plan Templates
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ pt: 0 }}>
+                    <TemplatesTable 
+                      templates={templates}
+                      onEdit={handleEditTemplate}
+                      onDownload={handleDownloadTemplate}
+                      onView={handleViewTemplate}
+                    />
+                  </AccordionDetails>
+                </Accordion>
 
-                <TemplatesTable 
-                  templates={templates}
-                  onEdit={handleEditTemplate}
-                  onDownload={handleDownloadTemplate}
-                  onView={handleViewTemplate}
-                />
-
-                <MealPlanCreationForm 
-                  calorieNeed={calorieNeed}
-                  foodExcluded={foodExcluded}
-                  mealTypes={mealTypes}
-                  onCalorieNeedChange={setCalorieNeed}
-                  onFoodExcludedChange={setFoodExcluded}
-                  onMealTypeCountChange={handleMealTypeCountChange}
-                />
+                {/* Meal Plan Creation Form - Collapsible */}
+                <Accordion 
+                  expanded={creationFormExpanded} 
+                  onChange={() => setCreationFormExpanded(!creationFormExpanded)}
+                  sx={{ 
+                    mb: 2,
+                    borderRadius: 2,
+                    boxShadow: 2,
+                    bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2',
+                    '&:before': { display: 'none' }
+                  }}
+                >
+                  <AccordionSummary 
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ 
+                      minHeight: 60,
+                      '& .MuiAccordionSummary-content': { 
+                        alignItems: 'center' 
+                      }
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ 
+                      fontWeight: 600,
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                    }}>
+                      Create New Plan
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ pt: 0 }}>
+                    <MealPlanCreationForm 
+                      calorieNeed={calorieNeed}
+                      foodExcluded={foodExcluded}
+                      mealTypes={mealTypes}
+                      onCalorieNeedChange={setCalorieNeed}
+                      onFoodExcludedChange={setFoodExcluded}
+                      onMealTypeCountChange={handleMealTypeCountChange}
+                    />
+                  </AccordionDetails>
+                </Accordion>
               </TabPanel>
 
               <TabPanel value="2" sx={{ p: 0, mt: 3 }}>
-                <TemplatesTable 
-                  templates={templates}
-                  onEdit={handleEditTemplate}
-                  onDownload={handleDownloadTemplate}
-                  onView={handleViewTemplate}
-                />
+                <Accordion 
+                  expanded={templatesExpanded} 
+                  onChange={() => setTemplatesExpanded(!templatesExpanded)}
+                  sx={{ 
+                    mb: 2,
+                    borderRadius: 2,
+                    boxShadow: 2,
+                    bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2',
+                    '&:before': { display: 'none' }
+                  }}
+                >
+                  <AccordionSummary 
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ 
+                      minHeight: 60,
+                      '& .MuiAccordionSummary-content': { 
+                        alignItems: 'center' 
+                      }
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ 
+                      fontWeight: 600,
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                    }}>
+                      Meal Plan Templates
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ pt: 0 }}>
+                    <TemplatesTable 
+                      templates={templates}
+                      onEdit={handleEditTemplate}
+                      onDownload={handleDownloadTemplate}
+                      onView={handleViewTemplate}
+                    />
+                  </AccordionDetails>
+                </Accordion>
               </TabPanel>
             </TabContext>
           </Box>
@@ -210,18 +428,111 @@ const MealPlans: React.FC = () => {
 
         {/* Right Column - Food Management and ADIME Note */}
         <Grid item xs={12} lg={4}>
-          <FoodListingCard 
-            onFoodSelect={handleFoodSelect}
-            basketItems={basketItems}
-            onRemoveFromBasket={handleRemoveFromBasket}
-          />
+          {/* Food Listing - Collapsible */}
+          <Accordion 
+            expanded={foodListingExpanded} 
+            onChange={() => setFoodListingExpanded(!foodListingExpanded)}
+            sx={{ 
+              mb: 2,
+              borderRadius: 2,
+              boxShadow: 2,
+              bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2',
+              '&:before': { display: 'none' }
+            }}
+          >
+            <AccordionSummary 
+              expandIcon={<ExpandMoreIcon />}
+              sx={{ 
+                minHeight: 60,
+                '& .MuiAccordionSummary-content': { 
+                  alignItems: 'center' 
+                }
+              }}
+            >
+              <Typography variant="h6" sx={{ 
+                fontWeight: 600,
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+              }}>
+                Food Basket
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ pt: 0 }}>
+              <FoodListingCard 
+                onFoodSelect={handleFoodSelect}
+                basketItems={basketItems}
+                onRemoveFromBasket={handleRemoveFromBasket}
+              />
+            </AccordionDetails>
+          </Accordion>
           
-          <GraphCard 
-            nutritionSummary={nutritionSummary}
-            targetCalories={2200}
-          />
+          {/* Nutrition Graph - Collapsible */}
+          <Accordion 
+            expanded={graphExpanded} 
+            onChange={() => setGraphExpanded(!graphExpanded)}
+            sx={{ 
+              mb: 2,
+              borderRadius: 2,
+              boxShadow: 2,
+              bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2',
+              '&:before': { display: 'none' }
+            }}
+          >
+            <AccordionSummary 
+              expandIcon={<ExpandMoreIcon />}
+              sx={{ 
+                minHeight: 60,
+                '& .MuiAccordionSummary-content': { 
+                  alignItems: 'center' 
+                }
+              }}
+            >
+              <Typography variant="h6" sx={{ 
+                fontWeight: 600,
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+              }}>
+                Nutrition Summary
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ pt: 0 }}>
+              <GraphCard 
+                nutritionSummary={nutritionSummary}
+                targetCalories={2200}
+              />
+            </AccordionDetails>
+          </Accordion>
           
-          <AdimeNotePanel />
+          {/* ADIME Note - Collapsible */}
+          <Accordion 
+            expanded={adimeNoteExpanded} 
+            onChange={() => setAdimeNoteExpanded(!adimeNoteExpanded)}
+            sx={{ 
+              mb: 2,
+              borderRadius: 2,
+              boxShadow: 2,
+              bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2',
+              '&:before': { display: 'none' }
+            }}
+          >
+            <AccordionSummary 
+              expandIcon={<ExpandMoreIcon />}
+              sx={{ 
+                minHeight: 60,
+                '& .MuiAccordionSummary-content': { 
+                  alignItems: 'center' 
+                }
+              }}
+            >
+              <Typography variant="h6" sx={{ 
+                fontWeight: 600,
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+              }}>
+                ADIME Note
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ pt: 0 }}>
+              <AdimeNotePanel />
+            </AccordionDetails>
+          </Accordion>
         </Grid>
       </Grid>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -7,69 +7,129 @@ import {
   Grid,
   useTheme
 } from '@mui/material';
-import { BiochemicalTest, AddTestDialogState, BiochemicalSummary } from './types';
-import { sampleBiochemicalTests } from './constants';
+import { LabResult } from '../../types/clientFileTypes';
+import { AddTestDialogState, BiochemicalSummary } from './types';
 import { TestResultsTable, AddTestDialog } from './components';
+import { useClientFile } from '../../context/ClientFileContext';
 
 const BiochemicalData = () => {
   const theme = useTheme();
-  const [tests, setTests] = useState<BiochemicalTest[]>(sampleBiochemicalTests);
+  const { formData: contextData, updateBiochemical } = useClientFile();
+  const [tests, setTests] = useState<LabResult[]>([]);
   const [addTestDialog, setAddTestDialog] = useState<AddTestDialogState>({
     open: false,
-    testName: '',
+    test_name: '',
     result: '',
-    referenceRange: '',
-    unit: '',
-    date: new Date().toISOString().split('T')[0],
-    notes: ''
+    reference_range: '',
+    interpretation: '',
+    file: null,
+    date: new Date().toISOString().split('T')[0]
   });
 
-  // Calculate summary statistics
+  // Load data from context on mount
+  useEffect(() => {
+    if (contextData.biochemical.labResults.length > 0) {
+      setTests(contextData.biochemical.labResults);
+    }
+  }, [contextData.biochemical.labResults]);
+
+  // Generate dynamic ADIME Note content based on form data
+  const generateAdimeNote = () => {
+    const assessment = contextData.assessment;
+    const biochemical = contextData.biochemical;
+    const medication = contextData.medication;
+    
+    // Calculate age from date of birth
+    const birthDate = new Date(assessment.dateOfBirth);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    
+    // Generate assessment text based on available data
+    let assessmentText = "The client presents with ";
+    if (assessment.physicalActivity) {
+      assessmentText += `a ${assessment.physicalActivity} activity level`;
+    }
+    if (assessment.stressFactor) {
+      assessmentText += ` and ${assessment.stressFactor} as a stress factor`;
+    }
+    if (assessment.feedingType) {
+      assessmentText += `. Current feeding type is ${assessment.feedingType}`;
+    }
+    if (biochemical.labResults.length > 0) {
+      assessmentText += `. Recent lab results show ${biochemical.labResults.length} test(s) recorded`;
+    }
+    if (medication.medications.length > 0) {
+      assessmentText += `. Currently managing ${medication.medications.length} medication(s)`;
+    }
+    assessmentText += ", requiring ongoing dietary monitoring and assessment.";
+
+    return {
+      assessment: assessmentText,
+      clientHistory: {
+        name: assessment.name || "Not provided",
+        ageGender: `${age}-Year-Old ${assessment.gender === 'male' ? 'Male' : 'Female'}`,
+        wardType: assessment.wardType || "Not specified",
+        physicalActivity: assessment.physicalActivity || "Not specified",
+        stressFactor: assessment.stressFactor || "Not specified",
+        feedingType: assessment.feedingType || "Not specified",
+        labResults: biochemical.labResults.length > 0 ? `${biochemical.labResults.length} lab result(s)` : "No lab results",
+        medications: medication.medications.length > 0 ? `${medication.medications.length} medication(s)` : "No medications"
+      }
+    };
+  };
+
+  const adimeData = generateAdimeNote();
+
+  // Calculate summary statistics - simplified since we don't have status field
   const summary: BiochemicalSummary = {
-    highValues: tests.filter(test => test.status === 'High').length,
-    normalValues: tests.filter(test => test.status === 'Normal').length,
-    lowValues: tests.filter(test => test.status === 'Low').length,
-    criticalValues: tests.filter(test => test.status === 'Critical').length
+    highValues: 0,
+    normalValues: tests.length,
+    lowValues: 0,
+    criticalValues: 0
   };
 
   const handleAddTest = () => {
     setAddTestDialog({
       open: true,
-      testName: '',
+      test_name: '',
       result: '',
-      referenceRange: '',
-      unit: '',
-      date: new Date().toISOString().split('T')[0],
-      notes: ''
+      reference_range: '',
+      interpretation: '',
+      file: null,
+      date: new Date().toISOString().split('T')[0]
     });
   };
 
-  const handleDialogChange = (field: keyof AddTestDialogState, value: string) => {
+  const handleDialogChange = (field: keyof AddTestDialogState, value: string | File | null) => {
     setAddTestDialog(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSaveTest = () => {
-    if (addTestDialog.testName && addTestDialog.result) {
-      const newTest: BiochemicalTest = {
-        id: Date.now().toString(),
-        testName: addTestDialog.testName,
+    if (addTestDialog.test_name && addTestDialog.result) {
+      const newTest: LabResult = {
+        id: Date.now(), // Generate unique ID
+        test_name: addTestDialog.test_name,
         result: addTestDialog.result,
-        referenceRange: addTestDialog.referenceRange,
-        unit: addTestDialog.unit,
-        status: 'Normal', // Default status, should be calculated based on reference range
-        date: addTestDialog.date,
-        notes: addTestDialog.notes
+        reference_range: addTestDialog.reference_range,
+        interpretation: addTestDialog.interpretation,
+        file: addTestDialog.file || '',
+        date: addTestDialog.date
       };
       
-      setTests(prev => [...prev, newTest]);
+      const updatedTests = [...tests, newTest];
+      setTests(updatedTests);
+      
+      // Update context with lab results
+      updateBiochemical({ labResults: updatedTests });
+      
       setAddTestDialog({
         open: false,
-        testName: '',
+        test_name: '',
         result: '',
-        referenceRange: '',
-        unit: '',
-        date: '',
-        notes: ''
+        reference_range: '',
+        interpretation: '',
+        file: null,
+        date: new Date().toISOString().split('T')[0]
       });
     }
   };
@@ -78,8 +138,10 @@ const BiochemicalData = () => {
     setAddTestDialog(prev => ({ ...prev, open: false }));
   };
 
-  const handleDeleteTest = (id: string) => {
-    setTests(prev => prev.filter(test => test.id !== id));
+  const handleDeleteTest = (id: number) => {
+    const updatedTests = tests.filter(test => test.id !== id);
+    setTests(updatedTests);
+    updateBiochemical({ labResults: updatedTests });
   };
 
   return (
@@ -96,6 +158,7 @@ const BiochemicalData = () => {
               <TestResultsTable 
                 tests={tests}
                 onDeleteTest={handleDeleteTest}
+                onAddTest={handleAddTest}
               />
             </CardContent>
           </Card>
@@ -130,10 +193,7 @@ const BiochemicalData = () => {
                 mb: 3, 
                 lineHeight: 1.5 
               }}>
-                The Client Presents With A History Of Type 2 Diabetes And Hypertension, 
-                Currently Managed With Medication. Recent Labs Indicate Elevated Fasting 
-                Glucose (130 Mg/DL) And Borderline Cholesterol Levels, Requiring Ongoing 
-                Dietary Monitoring.
+                {adimeData.assessment}
               </Typography>
 
               <Typography variant="body2" sx={{ 
@@ -141,7 +201,7 @@ const BiochemicalData = () => {
                 mb: 2,
                 color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
               }}>
-                Clint History:
+                Client History:
               </Typography>
               
               <Box sx={{ '& > div': { mb: 1 } }}>
@@ -156,7 +216,7 @@ const BiochemicalData = () => {
                     color: theme.palette.mode === 'dark' ? '#cccccc' : '#666', 
                     ml: 1 
                   }}>
-                    Ayesha Malik
+                    {adimeData.clientHistory.name}
                   </Typography>
                 </Box>
                 
@@ -171,7 +231,7 @@ const BiochemicalData = () => {
                     color: theme.palette.mode === 'dark' ? '#cccccc' : '#666', 
                     ml: 1 
                   }}>
-                    32-Year-Old Female
+                    {adimeData.clientHistory.ageGender}
                   </Typography>
                 </Box>
                 
@@ -180,13 +240,13 @@ const BiochemicalData = () => {
                     fontWeight: 600,
                     color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
                   }}>
-                    Primary Diagnosis: 
+                    Ward Type: 
                   </Typography>
                   <Typography component="span" variant="body2" sx={{ 
                     color: theme.palette.mode === 'dark' ? '#cccccc' : '#666', 
                     ml: 1 
                   }}>
-                    Type 2 Diabetes Mellitus
+                    {adimeData.clientHistory.wardType}
                   </Typography>
                 </Box>
                 
@@ -195,13 +255,13 @@ const BiochemicalData = () => {
                     fontWeight: 600,
                     color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
                   }}>
-                    Nutrition-Related Complaints/Symptoms: 
+                    Physical Activity: 
                   </Typography>
                   <Typography component="span" variant="body2" sx={{ 
                     color: theme.palette.mode === 'dark' ? '#cccccc' : '#666', 
                     ml: 1 
                   }}>
-                    Frequent Fatigue, Sugar Cravings, Occasional Bloating
+                    {adimeData.clientHistory.physicalActivity}
                   </Typography>
                 </Box>
                 
@@ -210,13 +270,13 @@ const BiochemicalData = () => {
                     fontWeight: 600,
                     color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
                   }}>
-                    Current Diet Pattern: 
+                    Stress Factor: 
                   </Typography>
                   <Typography component="span" variant="body2" sx={{ 
                     color: theme.palette.mode === 'dark' ? '#cccccc' : '#666', 
                     ml: 1 
                   }}>
-                    Following A High-Carbohydrate, Low-Fiber Diet With Fair Appetite
+                    {adimeData.clientHistory.stressFactor}
                   </Typography>
                 </Box>
                 
@@ -225,13 +285,13 @@ const BiochemicalData = () => {
                     fontWeight: 600,
                     color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
                   }}>
-                    Known Allergies: 
+                    Feeding Type: 
                   </Typography>
                   <Typography component="span" variant="body2" sx={{ 
                     color: theme.palette.mode === 'dark' ? '#cccccc' : '#666', 
                     ml: 1 
                   }}>
-                    Allergic To Shellfish
+                    {adimeData.clientHistory.feedingType}
                   </Typography>
                 </Box>
                 
@@ -240,13 +300,28 @@ const BiochemicalData = () => {
                     fontWeight: 600,
                     color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
                   }}>
-                    NRS Score: 
+                    Lab Results: 
                   </Typography>
                   <Typography component="span" variant="body2" sx={{ 
                     color: theme.palette.mode === 'dark' ? '#cccccc' : '#666', 
                     ml: 1 
                   }}>
-                    NRS-2002 Score: 3 (At Risk Of Malnutrition)
+                    {adimeData.clientHistory.labResults}
+                  </Typography>
+                </Box>
+                
+                <Box>
+                  <Typography component="span" variant="body2" sx={{ 
+                    fontWeight: 600,
+                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                  }}>
+                    Current Medications: 
+                  </Typography>
+                  <Typography component="span" variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? '#cccccc' : '#666', 
+                    ml: 1 
+                  }}>
+                    {adimeData.clientHistory.medications}
                   </Typography>
                 </Box>
               </Box>
