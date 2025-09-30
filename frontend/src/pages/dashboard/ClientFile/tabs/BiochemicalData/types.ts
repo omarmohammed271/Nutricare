@@ -1,22 +1,12 @@
-export interface BiochemicalTest {
-  id: string;
-  testName: string;
-  result: string;
-  referenceRange: string;
-  unit: string;
-  status: 'Normal' | 'High' | 'Low' | 'Critical';
-  date: string;
-  notes?: string;
-}
-
+// Internal form state for dialog
 export interface AddTestDialogState {
   open: boolean;
-  testName: string;
+  test_name: string;
   result: string;
-  referenceRange: string;
-  unit: string;
+  reference_range: string;
+  interpretation: string;
+  file: File | null;
   date: string;
-  notes: string;
 }
 
 export interface BiochemicalSummary {

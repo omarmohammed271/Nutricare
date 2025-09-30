@@ -8,3 +8,4 @@ export { default as useToggle } from "./useToggle";
 export { default as useViewPort } from "./useViewPort";
 export { default as useTask } from "./useTask";
 export { useLanguage } from "./useLanguage";
+export { useClientChoices } from "./useClientChoices";

@@ -7,9 +7,8 @@ export interface AssessmentData {
   weightTypeSelection: string;
   physicalActivity: string;
   stressFactor: string;
-  ward: string;
-  diagnosis: string;
-  typeOfFeeding: string;
+  wardType: string;
+  feedingType: string;
 }
 
 export interface CalculationResults {
