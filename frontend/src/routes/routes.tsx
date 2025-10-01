@@ -128,8 +128,9 @@ const adminRoutes: RoutesProps[] = [
   { path: "/clients/onboarding", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientOnboarding"))} /> },
   { path: "/test-clients", element: <div style={{ padding: '50px', fontSize: '24px', color: 'green' }}>CLIENT ONBOARDING TEST ROUTE IS WORKING!</div> },
   { path: "/library", element: <LoadComponent component={lazy(() => import("@src/pages/Library"))} /> },
-  { path: "error-404-alt", element: <LoadComponent component={lazy(() => import("@src/pages/error/Error404Alt"))} /> },
-  
+  { path: "/reports/:tab", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/reports"))} /> },
+  { path: "/reports", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/reports"))} /> },
+  { path: "/myfiles", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/myfiles/MyFiles"))} /> },
   { path: "/pages/starter", element: <LoadComponent component={lazy(() => import("@src/pages/other/Starter"))} /> },
   { path: "/pages/profile", element: <LoadComponent component={lazy(() => import("@src/pages/other/Profile/"))} /> },
   { path: "/pages/timeline", element: <LoadComponent component={lazy(() => import("@src/pages/other/Timeline"))} /> },

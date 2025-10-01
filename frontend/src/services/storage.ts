@@ -38,20 +38,43 @@ export class StorageService {
         tokenExpiry: this.tokenExpiry, // Include token expiry
       };
       
-      setCookie(this.AUTH_SESSION_KEY, JSON.stringify(userDataForCookie), {
+      const cookieOptions = {
         maxAge: rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60, // 30 days or 1 day
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: false, // Set to false for HTTP production server
+        sameSite: 'lax' as const, // More permissive for cross-origin requests
         httpOnly: false, // We need to read this from client-side
-      });
+        domain: process.env.NODE_ENV === 'production' ? '.87.237.225.191' : undefined, // Set domain for production
+        path: '/', // Ensure cookie is available for all paths
+      };
+      
+      console.log('🍪 Saving session cookie with options:', cookieOptions);
+      console.log('🍪 Environment:', process.env.NODE_ENV);
+      console.log('🍪 Current domain:', window.location.hostname);
+      
+      try {
+        setCookie(this.AUTH_SESSION_KEY, JSON.stringify(userDataForCookie), cookieOptions);
+        console.log('🍪 Session cookie saved successfully');
+      } catch (error) {
+        console.warn('🍪 Failed to save cookie with domain, trying without domain:', error);
+        // Fallback: try without domain
+        setCookie(this.AUTH_SESSION_KEY, JSON.stringify(userDataForCookie), {
+          maxAge: rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60,
+          secure: false,
+          sameSite: 'lax' as const,
+          httpOnly: false,
+          path: '/',
+        });
+      }
       
       // For refresh tokens, use httpOnly cookies (if available)
       if (user.refresh_token) {
         setCookie(this.REFRESH_TOKEN_KEY, user.refresh_token, {
           maxAge: rememberMe ? 30 * 24 * 60 * 60 : 7 * 24 * 60 * 60, // 30 days or 7 days
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
+          secure: false, // Set to false for HTTP production server
+          sameSite: 'lax', // More permissive for cross-origin requests
           httpOnly: true, // Critical: prevents XSS access
+          domain: process.env.NODE_ENV === 'production' ? '.87.237.225.191' : undefined, // Set domain for production
+          path: '/', // Ensure cookie is available for all paths
         });
       }
       
@@ -67,25 +90,36 @@ export class StorageService {
   static loadSession(): User | null {
     try {
       const savedUser = getCookie(this.AUTH_SESSION_KEY);
+      console.log('🍪 Loading session from cookie:', savedUser ? 'Found' : 'Not found');
+      console.log('🍪 Environment:', process.env.NODE_ENV);
+      console.log('🍪 Current domain:', window.location.hostname);
       
       if (savedUser) {
         const parsedUser = JSON.parse(savedUser as string);
         
-        // Restore token from cookie if it exists and is not expired
-        if (parsedUser.token && parsedUser.tokenExpiry) {
-          const now = Date.now();
-          if (now < parsedUser.tokenExpiry) {
-            // Token is still valid, restore it to memory
-            this.accessToken = parsedUser.token;
-            this.tokenExpiry = parsedUser.tokenExpiry;
-            return { ...parsedUser, token: parsedUser.token };
-          } else {
-            // Token expired, clear it
-            console.log('Stored token has expired');
-            this.clearSession();
-            return null;
-          }
+        // Restore token from cookie if it exists - NO EXPIRY CHECK
+        if (parsedUser.token) {
+          // Always restore token - no expiry validation
+          this.accessToken = parsedUser.token;
+          this.tokenExpiry = parsedUser.tokenExpiry;
+          return { ...parsedUser, token: parsedUser.token };
         }
+        
+        // Original expiry logic - DISABLED
+        // if (parsedUser.token && parsedUser.tokenExpiry) {
+        //   const now = Date.now();
+        //   if (now < parsedUser.tokenExpiry) {
+        //     // Token is still valid, restore it to memory
+        //     this.accessToken = parsedUser.token;
+        //     this.tokenExpiry = parsedUser.tokenExpiry;
+        //     return { ...parsedUser, token: parsedUser.token };
+        //   } else {
+        //     // Token expired, clear it
+        //     console.log('Stored token has expired');
+        //     this.clearSession();
+        //     return null;
+        //   }
+        // }
         
         // No token or expired token
         return { ...parsedUser, token: undefined };
@@ -111,22 +145,27 @@ export class StorageService {
 
   /**
    * Check if token is valid and not expired
+   * DISABLED: Tokens no longer expire automatically
    */
   static isTokenValid(): boolean {
-    if (!this.accessToken || !this.tokenExpiry) {
-      return false;
-    }
+    // Always return true if token exists - no automatic expiry
+    return !!this.accessToken;
     
-    const now = Date.now();
-    const isValid = now < this.tokenExpiry;
-    
-    if (!isValid) {
-      // Token expired, clear it
-      this.accessToken = null;
-      this.tokenExpiry = null;
-    }
-    
-    return isValid;
+    // Original expiry logic - DISABLED
+    // if (!this.accessToken || !this.tokenExpiry) {
+    //   return false;
+    // }
+    // 
+    // const now = Date.now();
+    // const isValid = now < this.tokenExpiry;
+    // 
+    // if (!isValid) {
+    //   // Token expired, clear it
+    //   this.accessToken = null;
+    //   this.tokenExpiry = null;
+    // }
+    // 
+    // return isValid;
   }
 
   /**
@@ -146,9 +185,15 @@ export class StorageService {
       this.accessToken = null;
       this.tokenExpiry = null;
       
-      // Clear cookies
-      deleteCookie(this.AUTH_SESSION_KEY);
-      deleteCookie(this.REFRESH_TOKEN_KEY);
+      // Clear cookies with proper domain configuration
+      deleteCookie(this.AUTH_SESSION_KEY, {
+        domain: process.env.NODE_ENV === 'production' ? '.87.237.225.191' : undefined,
+        path: '/',
+      });
+      deleteCookie(this.REFRESH_TOKEN_KEY, {
+        domain: process.env.NODE_ENV === 'production' ? '.87.237.225.191' : undefined,
+        path: '/',
+      });
       
       // Clear any legacy localStorage data
       localStorage.removeItem('auth_token');

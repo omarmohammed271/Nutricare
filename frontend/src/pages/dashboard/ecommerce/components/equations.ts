@@ -285,7 +285,7 @@ export const equationsConfig = [
   },
   {
     "id": 27,
-    "code": "ibw_spinal_cord_injury",
+    "code": "ibw_sci",
     "name": "Ideal Body Weight (Spinal Cord Injury)",
     "inputs": [
       { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },

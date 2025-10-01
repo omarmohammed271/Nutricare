@@ -1,35 +1,32 @@
-import { BiochemicalTest } from './types';
+import { LabResult } from '../../types/clientFileTypes';
 
-export const sampleBiochemicalTests: BiochemicalTest[] = [
+export const sampleLabResults: LabResult[] = [
   {
-    id: '1',
-    testName: 'Eg. Hg',
+    id: 1,
+    test_name: 'Hemoglobin',
     result: '17.1',
-    referenceRange: '12-16',
-    unit: 'g/dL',
-    status: 'High',
-    date: '2025-02-28',
-    notes: 'Iron deficiency or chronic disease'
+    reference_range: '12-16 g/dL',
+    interpretation: 'Iron deficiency or chronic disease',
+    file: '',
+    date: '2025-02-28'
   },
   {
-    id: '2',
-    testName: 'Eg. Hg',
+    id: 2,
+    test_name: 'Hemoglobin',
     result: '14.7',
-    referenceRange: '12-16',
-    unit: 'g/dL',
-    status: 'Normal',
-    date: '2025-02-28',
-    notes: 'Ideal no deficiency found'
+    reference_range: '12-16 g/dL',
+    interpretation: 'Ideal no deficiency found',
+    file: '',
+    date: '2025-02-28'
   },
   {
-    id: '3',
-    testName: 'Eg. Hg',
+    id: 3,
+    test_name: 'Hemoglobin',
     result: '10.2',
-    referenceRange: '12-16',
-    unit: 'g/dL',
-    status: 'Low',
-    date: '2025-02-28',
-    notes: 'Iron deficiency or chronic disease'
+    reference_range: '12-16 g/dL',
+    interpretation: 'Iron deficiency or chronic disease',
+    file: '',
+    date: '2025-02-28'
   }
 ];
 

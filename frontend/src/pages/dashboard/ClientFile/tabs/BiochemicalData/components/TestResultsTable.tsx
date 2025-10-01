@@ -9,85 +9,44 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Chip,
   IconButton,
   Button,
   useTheme
 } from '@mui/material';
 import {
   Edit as EditIcon,
-  Delete as DeleteIcon,
-  CloudUpload as CloudUploadIcon
+  Delete as DeleteIcon
 } from '@mui/icons-material';
-import { BiochemicalTest } from '../types';
+import { LabResult } from '../../../types/clientFileTypes';
 
 interface TestResultsTableProps {
-  tests: BiochemicalTest[];
-  onDeleteTest: (id: string) => void;
+  tests: LabResult[];
+  onDeleteTest: (id: number) => void;
+  onAddTest?: () => void;
 }
 
-const TestResultsTable: React.FC<TestResultsTableProps> = ({ tests, onDeleteTest }) => {
+const TestResultsTable: React.FC<TestResultsTableProps> = ({ tests, onDeleteTest, onAddTest }) => {
   const theme = useTheme();
-  
-  const getStatusColor = (status: BiochemicalTest['status']) => {
-    switch (status) {
-      case 'Normal':
-        return '#02BE6A';
-      case 'High':
-        return '#ff9800';
-      case 'Low':
-        return '#2196f3';
-      case 'Critical':
-        return '#f44336';
-      default:
-        return '#666';
-    }
-  };
 
   return (
     <Box sx={{}}>
-      {/* Upload Test Section */}
-      <Box 
-        sx={{ 
-          border: '2px dashed #02BE6A', 
-          borderRadius: 2, 
-          p: 3, 
-          mb: 3, 
-          textAlign: 'center',
-          bgcolor: theme.palette.mode === 'dark' ? '#02BE6A20' : '#f8fff8',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignContent:'center'
-        }}
-      >
-        <Box>
-        <CloudUploadIcon sx={{ 
-          fontSize: 32, 
-          color: '#02BE6A', 
-          mb: 1  
-        }} />
-        <Typography sx={{ 
-          fontWeight: 600, 
-          mb: 1,
+      {/* Header with Add Test Button */}
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        mb: 3 
+      }}>
+        <Typography variant="h6" sx={{ 
+          fontWeight: 700,
           color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
         }}>
-          Upload Test
+          Laboratory Results
         </Typography>
-        </Box>
-        <Box sx={{
-          display:'flex',
-          flexDirection:'column',
-          alignContent:'center',
-          alignItems:'center',
-          justifyContent:'center'
-        }}>
         <Button
           variant="contained"
+          onClick={onAddTest}
           sx={{
-            display:'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
             bgcolor: '#02BE6A',
             '&:hover': { 
               bgcolor: theme.palette.mode === 'dark' ? '#01A85A' : '#01A85A' 
@@ -95,9 +54,8 @@ const TestResultsTable: React.FC<TestResultsTableProps> = ({ tests, onDeleteTest
             borderRadius: 2,
           }}
         >
-          Choose File
+          Add Test
         </Button>
-        </Box>
       </Box>
 
       {/* Test Results Table */}
@@ -124,13 +82,7 @@ const TestResultsTable: React.FC<TestResultsTableProps> = ({ tests, onDeleteTest
                 fontWeight: 700, 
                 color: theme.palette.mode === 'dark' ? '#ffffff' : '#FFFFFF' 
               }}>
-                Date
-              </TableCell>
-              <TableCell sx={{ 
-                fontWeight: 700, 
-                color: theme.palette.mode === 'dark' ? '#ffffff' : '#FFFFFF' 
-              }}>
-                Results
+                Result
               </TableCell>
               <TableCell sx={{ 
                 fontWeight: 700, 
@@ -142,7 +94,19 @@ const TestResultsTable: React.FC<TestResultsTableProps> = ({ tests, onDeleteTest
                 fontWeight: 700, 
                 color: theme.palette.mode === 'dark' ? '#ffffff' : '#FFFFFF' 
               }}>
-                Clinical Interpretation
+                Interpretation
+              </TableCell>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#FFFFFF' 
+              }}>
+                Date
+              </TableCell>
+              <TableCell sx={{ 
+                fontWeight: 700, 
+                color: theme.palette.mode === 'dark' ? '#ffffff' : '#FFFFFF' 
+              }}>
+                File
               </TableCell>
               <TableCell sx={{ 
                 fontWeight: 700, 
@@ -153,93 +117,107 @@ const TestResultsTable: React.FC<TestResultsTableProps> = ({ tests, onDeleteTest
             </TableRow>
           </TableHead>
           <TableBody>
-            {tests.map((test) => (
-              <TableRow 
-                key={test.id} 
-                sx={{ 
-                  '&:hover': { 
-                    bgcolor: theme.palette.mode === 'dark' ? '#2a2a2a' : '#F9F4F2' 
-                  },
-                  bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
-                }}
-              >
-                <TableCell>
-                  <Typography variant="body2" sx={{ 
-                    fontWeight: 600,
-                    color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+            {tests.length === 0 ? (
+              <TableRow sx={{ 
+                bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
+              }}>
+                <TableCell colSpan={7} sx={{ textAlign: 'center', py: 6 }}>
+                  <Typography variant="body1" sx={{ 
+                    color: theme.palette.mode === 'dark' ? '#cccccc' : '#666',
+                    fontStyle: 'italic',
+                    mb: 2
                   }}>
-                    {test.testName}
+                    No laboratory tests added yet.
                   </Typography>
-                </TableCell>
-                <TableCell>
                   <Typography variant="body2" sx={{ 
-                    color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                    color: theme.palette.mode === 'dark' ? '#999999' : '#888',
+                    fontSize: '0.9rem'
                   }}>
-                    {new Date(test.date).toLocaleDateString()}
+                    Click "Add Test" button above to add your first lab result.
                   </Typography>
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="body2" sx={{ 
-                      fontWeight: 600, 
-                      color: getStatusColor(test.status) 
-                    }}>
-                      {test.result} {test.unit}
-                    </Typography>
-                    <Chip
-                      label={test.status === 'High' ? '↑' : test.status === 'Low' ? '↓' : '✓'}
-                      size="small"
-                      sx={{
-                        bgcolor: `${getStatusColor(test.status)}20`,
-                        color: getStatusColor(test.status),
-                        fontWeight: 600,
-                        minWidth: 24,
-                        height: 20
-                      }}
-                    />
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" sx={{ 
-                    color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
-                  }}>
-                    {test.referenceRange} {test.unit}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" sx={{ 
-                    color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
-                  }}>
-                    {test.status === 'High' ? 'Iron deficiency or chronic disease' : 
-                     test.status === 'Normal' ? 'Ideal no deficiency found' :
-                     'Iron deficiency or chronic disease'}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <IconButton
-                      size="small"
-                      sx={{ 
-                        color: theme.palette.mode === 'dark' ? '#02BE6A' : '#02BE6A' 
-                      }}
-                      title="Edit"
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      sx={{ 
-                        color: theme.palette.mode === 'dark' ? '#f44336' : '#f44336' 
-                      }}
-                      onClick={() => onDeleteTest(test.id)}
-                      title="Delete"
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              tests.map((test) => (
+                <TableRow 
+                  key={test.id} 
+                  sx={{ 
+                    '&:hover': { 
+                      bgcolor: theme.palette.mode === 'dark' ? '#2a2a2a' : '#F9F4F2' 
+                    },
+                    bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
+                  }}
+                >
+                  <TableCell>
+                    <Typography variant="body2" sx={{ 
+                      fontWeight: 600,
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                    }}>
+                      {test.test_name}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ 
+                      fontWeight: 600,
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                    }}>
+                      {test.result}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                    }}>
+                      {test.reference_range}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                    }}>
+                      {test.interpretation}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                    }}>
+                      {new Date(test.date).toLocaleDateString()}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
+                    }}>
+                      {test.file ? (typeof test.file === 'string' ? test.file : test.file.name) : 'No file'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <IconButton
+                        size="small"
+                        sx={{ 
+                          color: theme.palette.mode === 'dark' ? '#02BE6A' : '#02BE6A' 
+                        }}
+                        title="Edit"
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        sx={{ 
+                          color: theme.palette.mode === 'dark' ? '#f44336' : '#f44336' 
+                        }}
+                        onClick={() => onDeleteTest(test.id)}
+                        title="Delete"
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>
