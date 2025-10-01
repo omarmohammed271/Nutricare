@@ -1,3 +1,4 @@
+from django_filters import rest_framework as filters
 from rest_framework import viewsets,status,generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -5,12 +6,13 @@ from rest_framework.authentication import TokenAuthentication
 from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import IsAuthenticated
 from .models import *
+from .filters import DrugCategoryFilter
 
 from .serializers import *
 
 @extend_schema(
-    request=DrugCategorySerializer,          # يوضّح شكل الـ Request Body
-    responses=DrugCategorySerializer,        # يوضّح شكل الـ Response
+    request=DrugCategorySerializer,          
+    responses=DrugCategorySerializer,        
     description="For Drug Category and Drugs"
 )
 
@@ -40,6 +42,10 @@ class DrugCategoryListAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = DrugCategory.objects.prefetch_related('drugs').all()
     serializer_class = DrugCategorySerializer
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_class = DrugCategoryFilter
+    
+
 
 
 

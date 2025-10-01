@@ -9,10 +9,15 @@ from .serializers import ClientSerializer
 
 
 @extend_schema(
-    request=ClientSerializer,          # يوضّح شكل الـ Request Body
-    responses=ClientSerializer,        # يوضّح شكل الـ Response
+    request=ClientSerializer,         
+    responses=ClientSerializer,    
     description="Create new client with all tabs (assessment, biochemical, medication, meal plan)."
 )
+# @extend_schema(
+#     request=ClientSerializer,         
+#     responses=ClientSerializer,    
+#     description="Create new client with all tabs (assessment, biochemical, medication, meal plan)."
+# )
 
 @api_view(['GET'])
 def get_client_choices(request):
@@ -36,3 +41,13 @@ class ClientListCreateAPIView(generics.ListCreateAPIView):
     # 🔹 عند طلب POST → ينشئ عميل جديد مع التابات
     def perform_create(self, serializer):
         serializer.save()   # الـ user يضاف داخل serializer.create
+
+class ClientRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ClientSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id' 
+
+    def get_queryset(self):
+        return Client.objects.filter(user=self.request.user)     
+   
