@@ -15,7 +15,7 @@ import {
   InputAdornment
 } from "@mui/material";
 import { LuX, LuChevronDown, LuSearch, LuXCircle } from "react-icons/lu";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useDrugCategories, useDrugsByCategory, useDrugDetails, useSearchDrugs } from "@src/hooks/useNutritionApi";
 import { Drug, DrugCategory, DrugDetail } from "@src/services/nutritionApi";
 
@@ -37,6 +37,8 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
   const [searchQuery, setSearchQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [autoSearchEnabled, setAutoSearchEnabled] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch drug categories - only when dialog is open
   const { 
@@ -73,64 +75,68 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
       }
     });
     
+    console.log('📊 ALL DRUGS WITH CATEGORY DATA:', drugs);
     return drugs;
   }, [drugCategories]);
 
   // Always show all drugs, but filter them when searching
-  const availableDrugs = useMemo(() => {
-    if (searchQuery && searchQuery.length > 0) {
-      // First try the API search if we have results
-      if (searchResults && searchResults.length > 0) {
-        console.log('🔍 Using API search results:', searchResults.length);
-        return searchResults.map((drug: Drug) => ({
-          ...drug,
-          categoryName: 'Search Result',
-          categoryId: 0,
-          groupBy: 'Search Results'
-        })) as DrugWithCategory[];
-      } else {
-        // Fallback to local search if API search returns no results or is still loading
-        console.log('🔍 Using local search, query:', searchQuery);
-        console.log('🔍 Available categories:', drugCategories.map(cat => cat.name));
-        
-        const filteredDrugs = allDrugsWithCategory.filter(drug => {
-          const searchTerm = searchQuery.toLowerCase().trim();
-          const drugNameMatch = drug.name.toLowerCase().includes(searchTerm);
-          const categoryNameMatch = drug.categoryName.toLowerCase().includes(searchTerm);
-          
-          // Also check for partial matches with common words
-          const categoryWords = drug.categoryName.toLowerCase().split(/[\s:]+/);
-          const searchWords = searchTerm.split(/[\s:]+/);
-          const partialCategoryMatch = searchWords.some(searchWord => 
-            searchWord.length > 2 && categoryWords.some(catWord => 
-              catWord.includes(searchWord) || searchWord.includes(catWord)
-            )
-          );
-          
-          const isMatch = drugNameMatch || categoryNameMatch || partialCategoryMatch;
-          
-          if (isMatch) {
-            console.log('🔍 Match found:', {
-              drug: drug.name,
-              category: drug.categoryName,
-              drugMatch: drugNameMatch,
-              categoryMatch: categoryNameMatch,
-              partialMatch: partialCategoryMatch,
-              searchTerm: searchTerm
+const availableDrugs = useMemo(() => {
+  console.log('🔍 SEARCH PROCESS STARTED');
+  console.log('🔍 Search Query:', searchQuery);
+  console.log('🔍 All Drug Categories:', drugCategories);
+
+  if (searchQuery && searchQuery.length > 0) {
+    const searchTerm = searchQuery.toLowerCase().trim();
+    console.log('🔍 Using local search, query:', searchTerm);
+    console.log('🔍 Available categories:', drugCategories.map(cat => cat.name));
+
+    const results: DrugWithCategory[] = [];
+
+    // STEP 1: Add all drugs from matching categories
+    drugCategories.forEach(category => {
+      const categoryMatches = category.name.toLowerCase().includes(searchTerm);
+      if (categoryMatches && category.drugs) {
+        console.log(`🔍 📂 Category match: "${category.name}" with ${category.drugs.length} drugs`);
+        category.drugs.forEach(drug => {
+          if (!results.some(d => d.id === drug.id)) {
+            results.push({
+              ...drug,
+              categoryName: category.name,
+              categoryId: category.id,
+              groupBy: category.name
             });
+            console.log(`🔍   💊 Added from category: "${drug.name}"`);
           }
-          
-          return isMatch;
         });
-        
-        console.log('🔍 Local search results:', filteredDrugs.length);
-        console.log('🔍 Filtered drugs:', filteredDrugs.map(d => ({ name: d.name, category: d.categoryName })));
-        return filteredDrugs;
       }
-    }
-    console.log('🔍 Using all drugs, no search query');
-    return allDrugsWithCategory;
-  }, [searchQuery, searchResults, allDrugsWithCategory]);
+    });
+
+    // STEP 2: Add drugs that match by name (even if category didn't match)
+    drugCategories.forEach(category => {
+      if (category.drugs) {
+        category.drugs.forEach(drug => {
+          const drugMatches = drug.name.toLowerCase().includes(searchTerm);
+          if (drugMatches && !results.some(d => d.id === drug.id)) {
+            results.push({
+              ...drug,
+              categoryName: category.name,
+              categoryId: category.id,
+              groupBy: category.name
+            });
+            console.log(`🔍 💊 Added by name: "${drug.name}" (Category: "${category.name}")`);
+          }
+        });
+      }
+    });
+
+    console.log('🔍 ✅ FINAL RESULTS:', results.length, 'drugs found');
+    return results;
+  }
+
+  // No search query - show all drugs
+  console.log('🔍 No search query, showing all', allDrugsWithCategory.length, 'drugs');
+  return allDrugsWithCategory;
+}, [searchQuery, allDrugsWithCategory, drugCategories]);
 
   // Fetch drug details when a drug is selected - only when drug is selected and valid
   const { 
@@ -141,12 +147,13 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
 
   // Prepare drugs for autocomplete options with grouped display
   const allDrugs = useMemo(() => {
-    console.log('🔍 Available drugs for mapping:', availableDrugs.length);
-    console.log('🔍 Available drugs sample:', availableDrugs.slice(0, 2));
+    console.log('🔍 PREPARING DRUGS FOR AUTOCOMPLETE');
+    console.log('   Available drugs count:', availableDrugs.length);
+    console.log('   Available drugs sample:', availableDrugs.slice(0, 3));
     
     // Use the drugs directly without adding extra properties
     const drugs = availableDrugs.map((drug: DrugWithCategory) => {
-      return {
+      const mappedDrug = {
         ...drug,
         // Ensure we have the required properties
         name: drug.name || 'Unknown Drug',
@@ -154,11 +161,13 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
         categoryName: drug.categoryName || 'Other',
         groupBy: drug.categoryName || 'Other'
       } as DrugWithCategory;
+      
+      return mappedDrug;
     });
     
-    console.log('🔍 Prepared drugs for autocomplete:', drugs.length);
-    console.log('🔍 Sample drug:', drugs[0]);
-    console.log('🔍 All drugs structure check:', {
+    console.log('🔍 PREPARED DRUGS FOR AUTOCOMPLETE:', drugs.length);
+    console.log('   Sample drug:', drugs[0]);
+    console.log('   All drugs structure check:', {
       isArray: Array.isArray(drugs),
       length: drugs.length,
       hasName: drugs.length > 0 ? 'name' in drugs[0] : false,
@@ -171,65 +180,119 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
   }, [availableDrugs]);
 
   const handleDrugSelect = (drug: Drug | null) => {
-    console.log('🔍 Drug selected:', drug);
+    console.log('🔍 DRUG SELECTED:', drug);
     setSelectedDrug(drug);
   };
 
   const handleSearchInputChange = (event: any, newInputValue: string) => {
-    console.log('🔍 Search input changed:', newInputValue);
+    console.log('🔍 SEARCH INPUT CHANGED:', newInputValue);
     setSearchInput(newInputValue);
+    
+    // Clear any existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
+    // Set a new timeout to enable auto-search after 2 seconds of typing
+    if (newInputValue.trim().length > 0) {
+      console.log('🔍 Setting auto-search timeout for 2 seconds');
+      searchTimeoutRef.current = setTimeout(() => {
+        console.log('🔍 AUTO-SEARCH TRIGGERED after 2 seconds');
+        setAutoSearchEnabled(true);
+        setSearchQuery(newInputValue);
+        setIsSearching(true);
+      }, 2000);
+    } else {
+      // If input is cleared, disable auto-search
+      console.log('🔍 Search input cleared, disabling auto-search');
+      setAutoSearchEnabled(false);
+      setIsSearching(false);
+    }
   };
 
   const handleSearch = () => {
-    console.log('🔍 Search button clicked with query:', searchInput);
+    console.log('🔍 MANUAL SEARCH BUTTON CLICKED with query:', searchInput);
     setSearchQuery(searchInput);
     setIsSearching(true);
+    setAutoSearchEnabled(true); // Enable auto-search when manually triggered
   };
 
   const handleClearSearch = () => {
-    console.log('🧹 Clearing search');
+    console.log('🧹 CLEAR SEARCH BUTTON CLICKED');
     setSearchQuery("");
     setSearchInput("");
     setIsSearching(false);
+    setAutoSearchEnabled(false);
+    
+    // Clear any pending timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
   };
 
   const handleClear = () => {
-    console.log('🧹 Clearing all selections');
+    console.log('🧹 CLEAR ALL BUTTON CLICKED');
     setSelectedDrug(null);
     setSearchQuery("");
     setSearchInput("");
     setIsSearching(false);
+    setAutoSearchEnabled(false);
+    
+    // Clear any pending timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
   };
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    console.log('🧹 CLEANUP EFFECT - Component mounted or about to unmount');
+    return () => {
+      console.log('🧹 CLEANUP EFFECT - Clearing timeout on unmount');
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Debug logging for API calls
   useEffect(() => {
+    console.log('🔍 DIALOG OPEN EFFECT - Dialog open status changed:', open);
     if (open) {
       console.log('🔍 FoodDrugInteractionPopup opened - fetching categories');
     }
   }, [open]);
 
   useEffect(() => {
+    console.log('💊 DRUG SELECTION EFFECT - Selected drug changed:', selectedDrug);
     if (selectedDrug) {
       console.log('💊 Drug selected, fetching details for drug:', selectedDrug.id);
     }
   }, [selectedDrug]);
 
   useEffect(() => {
-    console.log('🔍 Search query changed:', searchQuery);
-    console.log('🔍 Search input:', searchInput);
-    console.log('🔍 Is searching:', isSearching);
-    console.log('🔍 Available drugs count:', availableDrugs.length);
-    console.log('🔍 All drugs for autocomplete:', allDrugs.length);
-    console.log('🔍 First few options:', allDrugs.slice(0, 3).map(d => ({ name: d.name, category: d.categoryName })));
-    console.log('🔍 Should show dropdown:', searchQuery.length > 0 && allDrugs.length > 0);
-    console.log('🔍 Autocomplete open condition:', searchQuery.length > 0 && allDrugs.length > 0);
-    console.log('🔍 Search query length:', searchQuery.length);
-    console.log('🔍 All drugs length:', allDrugs.length);
+    console.log('🔍 SEARCH STATE EFFECT - Search state changed');
+    console.log('   Search query:', searchQuery);
+    console.log('   Search input:', searchInput);
+    console.log('   Is searching:', isSearching);
+    console.log('   Available drugs count:', availableDrugs.length);
+    console.log('   All drugs for autocomplete:', allDrugs.length);
+    console.log('   First few options:', allDrugs.slice(0, 3).map(d => ({ name: d.name, category: d.categoryName })));
+    console.log('   Dropdown open condition:', searchInput.length > 0 && allDrugs.length > 0);
+    console.log('   Search query length:', searchQuery.length);
+    console.log('   All drugs length:', allDrugs.length);
   }, [searchQuery, searchInput, isSearching, availableDrugs, allDrugs]);
 
   // Get drug effect and nutritional implication from API data
   const drugEffect = drugDetails?.drug_effect || "Select a drug to view interactions";
   const nutritionalImplication = drugDetails?.nutritional_implications || "Select a drug to view nutritional implications";
+  
+  console.log('💊 DRUG DETAILS FOR DISPLAY:', {
+    selectedDrug: selectedDrug,
+    drugDetails: drugDetails,
+    drugEffect: drugEffect,
+    nutritionalImplication: nutritionalImplication
+  });
 
   return (
     <Dialog
@@ -348,37 +411,76 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
             options={allDrugs}
             value={selectedDrug}
             onChange={(event, newValue) => {
-              console.log('🔍 Autocomplete onChange:', newValue);
+              console.log('🔍 AUTOCOMPLETE - Drug selected:', newValue);
               handleDrugSelect(newValue);
+              // Close dropdown after selection
+              setSearchInput(newValue ? newValue.name : "");
             }}
             getOptionLabel={(option) => {
-              console.log('🔍 getOptionLabel called with:', option);
+              console.log('🔍 AUTOCOMPLETE - Getting option label for:', option);
               return option.name || 'Unknown';
             }}
             loading={searchLoading || categoriesLoading}
             disabled={searchLoading || categoriesLoading}
             inputValue={searchInput}
             onInputChange={(event, newInputValue, reason) => {
-              console.log('🔍 Autocomplete input change:', { newInputValue, reason });
+              console.log('🔍 AUTOCOMPLETE - Input changed:', { newInputValue, reason });
               if (reason === 'input') {
-                handleSearchInputChange(event, newInputValue);
-                // Only clear search when input is completely empty
-                if (newInputValue.length === 0) {
+                console.log('🔍 AUTOCOMPLETE - User typing, setting 2.5 second delay before search');
+                setSearchInput(newInputValue);
+                
+                // Clear any existing timeout
+                if (searchTimeoutRef.current) {
+                  clearTimeout(searchTimeoutRef.current);
+                }
+                
+                // Set a new timeout to trigger search after 2.5 seconds of inactivity
+                if (newInputValue.trim().length > 0) {
+                  searchTimeoutRef.current = setTimeout(() => {
+                    console.log('🔍 AUTOCOMPLETE - 2.5 seconds of inactivity, triggering search');
+                    setSearchQuery(newInputValue);
+                    setIsSearching(true);
+                  }, 500);
+                } else {
+                  // If input is cleared, reset search immediately
+                  console.log('🔍 AUTOCOMPLETE - Input cleared, resetting search immediately');
                   setSearchQuery("");
                   setIsSearching(false);
                 }
+              } else if (reason === 'clear') {
+                console.log('🔍 AUTOCOMPLETE - Input cleared via clear button');
+                setSearchInput("");
+                setSearchQuery("");
+                setIsSearching(false);
+                
+                // Clear any existing timeout
+                if (searchTimeoutRef.current) {
+                  clearTimeout(searchTimeoutRef.current);
+                }
               }
+            }}
+            // Keep dropdown open while typing, but close it when something is selected
+            open={!selectedDrug && searchInput.length > 0 && allDrugs.length > 0}
+            onOpen={() => {
+              console.log('🔍 AUTOCOMPLETE - Dropdown opened');
+            }}
+            onClose={(event, reason) => {
+              console.log('🔍 AUTOCOMPLETE - Dropdown closed:', reason);
+              // Log reason for closing (blur, escape, select-option, etc.)
             }}
             autoComplete={false}
             freeSolo={false}
             clearOnBlur={false}
             filterOptions={(options, { inputValue }) => {
-              console.log('🔍 filterOptions called with:', { optionsLength: options.length, inputValue });
+              console.log('🔍 AUTOCOMPLETE - Filtering options for:', { optionsLength: options.length, inputValue });
               // Return all options since we're already filtering in availableDrugs
               return options;
             }}
             noOptionsText="No drugs found"
-            groupBy={(option) => (option as DrugWithCategory).groupBy || 'Other'}
+            groupBy={(option) => {
+              // Group by category name
+              return (option as DrugWithCategory).categoryName || 'Other';
+            }}
             renderGroup={(params) => (
               <li key={params.key}>
                 <Box sx={{ 
@@ -401,13 +503,17 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
               </li>
             )}
             renderOption={(props, option) => (
-              <Box component="li" {...props} sx={{ 
-                pl: 4, 
-                py: 1,
-                "&:hover": {
-                  backgroundColor: theme.palette.mode === 'dark' ? "#1a1a1a" : "#f5f5f5"
-                }
-              }}>
+              <Box 
+                component="li" 
+                {...props} 
+                sx={{ 
+                  pl: 4, 
+                  py: 1,
+                  "&:hover": {
+                    backgroundColor: theme.palette.mode === 'dark' ? "#1a1a1a" : "#f5f5f5"
+                  }
+                }}
+              >
                 <Typography variant="body2" sx={{ 
                   color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
                   fontSize: "14px"
@@ -443,20 +549,6 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
                               <LuXCircle size={16} />
                             </IconButton>
                           )}
-                          <IconButton
-                            onClick={() => {
-                              if (searchInput.trim()) {
-                                handleSearch();
-                              }
-                            }}
-                            disabled={!searchInput.trim() || searchLoading || categoriesLoading}
-                            size="small"
-                            sx={{
-                              color: searchInput.trim() ? "#02BE6A" : theme.palette.mode === 'dark' ? "#666666" : "#cccccc"
-                            }}
-                          >
-                            <LuSearch size={16} />
-                          </IconButton>
                         </Box>
                       )}
                       {params.InputProps.endAdornment}
