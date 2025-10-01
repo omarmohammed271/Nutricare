@@ -4,8 +4,9 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
-from .models import Client
-from .serializers import ClientSerializer
+from .models import Client,Appointment
+from .serializers import ClientSerializer,AppointmentSerializer
+
 
 
 @extend_schema(
@@ -13,11 +14,7 @@ from .serializers import ClientSerializer
     responses=ClientSerializer,    
     description="Create new client with all tabs (assessment, biochemical, medication, meal plan)."
 )
-# @extend_schema(
-#     request=ClientSerializer,         
-#     responses=ClientSerializer,    
-#     description="Create new client with all tabs (assessment, biochemical, medication, meal plan)."
-# )
+
 
 @api_view(['GET'])
 def get_client_choices(request):
@@ -27,6 +24,13 @@ def get_client_choices(request):
         'stress_factor': dict(Client._meta.get_field('stress_factor').choices),
         'feeding_type': dict(Client._meta.get_field('feeding_type').choices),
         'gender': dict(Client._meta.get_field('gender').choices),
+    }
+    return Response(choices)
+@api_view(['GET'])
+def get_appointment_choices(request):
+    choices = {
+        'appointment_type': dict(Appointment._meta.get_field('appointment_type').choices),
+        'status': dict(Appointment._meta.get_field('status').choices),
     }
     return Response(choices)
 class ClientListCreateAPIView(generics.ListCreateAPIView):
@@ -50,4 +54,22 @@ class ClientRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Client.objects.filter(user=self.request.user)     
-   
+
+    
+class AppointmentListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = AppointmentSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Appointment.objects.filter(user=self.request.user)
+
+class AppointmentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AppointmentSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id' 
+
+    def get_queryset(self):
+        return Appointment.objects.filter(user=self.request.user)
+    

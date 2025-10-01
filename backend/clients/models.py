@@ -86,6 +86,7 @@ class Client(models.Model):
             ("tpn", "TPN")
         ]
     )
+    is_finished = models.BooleanField(default=False)
     def __str__(self):
         return self.name
 
@@ -117,3 +118,30 @@ class Medication(models.Model):
 #     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="meal_plans")
 #     description = models.TextField()
 #     total_calories = models.FloatField(null=True, blank=True)
+
+
+
+class Appointment(models.Model):
+    
+    patient_name = models.ForeignKey(Client, on_delete=models.CASCADE,blank=True, null=True)
+    doctor_name = models.ForeignKey(User, on_delete=models.CASCADE,related_name='appointments')
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+
+    APPOINTMENT_TYPE_CHOICES = [
+        ('initial', 'initial'),
+        ('follow_up', 'follow_up'),
+    ]
+    appointment_type = models.CharField(max_length=20, choices=APPOINTMENT_TYPE_CHOICES)
+
+    STATUS_CHOICES = [
+        ('next', 'next'),
+        ('completed', 'completed'),
+        ('cancelled', 'cancelled'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='next')
+
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.patient_name} - {self.doctor_name} ({self.start_time})"

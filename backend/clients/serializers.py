@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Client, LabResult, Medication
+from .models import Client, LabResult, Medication,Appointment
 
 
 # class MealPlanSerializer(serializers.ModelSerializer):
@@ -86,6 +86,30 @@ class ClientSerializer(serializers.ModelSerializer):
 
         return instance
 
+class ClientNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Client
+        fields = ['id', 'name'] 
+
+class AppointmentSerializer(serializers.ModelSerializer):
+    patient_name = ClientNameSerializer(read_only=True)  # إظهار الاسم
+    patient_name_id = serializers.PrimaryKeyRelatedField(
+        queryset=Client.objects.all(), source='patient_name', write_only=True
+    )
+
+    class Meta:
+        model = Appointment
+        fields = [
+            'id',
+            'patient_name',    
+            'patient_name_id', 
+            'doctor_name',
+            'start_time',
+            'end_time',
+            'appointment_type',
+            'status',
+            'notes',
+        ]
 
 
 
