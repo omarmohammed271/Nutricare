@@ -18,6 +18,7 @@ import { LuX, LuChevronDown, LuSearch, LuXCircle } from "react-icons/lu";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useDrugCategories, useDrugsByCategory, useDrugDetails, useSearchDrugs } from "@src/hooks/useNutritionApi";
 import { Drug, DrugCategory, DrugDetail } from "@src/services/nutritionApi";
+import { C } from "@fullcalendar/core/internal-common";
 
 // Extended drug interface with category information
 interface DrugWithCategory extends Drug {
@@ -39,7 +40,7 @@ const FoodDrugInteractionPopup = ({ open, onClose }: FoodDrugInteractionPopupPro
   const [isSearching, setIsSearching] = useState(false);
   const [autoSearchEnabled, setAutoSearchEnabled] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
+  const [isOpen , SetOpen] = useState(false);
   // Fetch drug categories - only when dialog is open
   const { 
     data: drugCategoriesData, 
@@ -413,6 +414,7 @@ const availableDrugs = useMemo(() => {
             onChange={(event, newValue) => {
               console.log('🔍 AUTOCOMPLETE - Drug selected:', newValue);
               handleDrugSelect(newValue);
+              SetOpen(!isOpen);
               // Close dropdown after selection
               setSearchInput(newValue ? newValue.name : "");
             }}
@@ -460,7 +462,7 @@ const availableDrugs = useMemo(() => {
               }
             }}
             // Keep dropdown open while typing, but close it when something is selected
-            open={!selectedDrug && searchInput.length > 0 && allDrugs.length > 0}
+            open={(!selectedDrug && searchInput.length > 0 && allDrugs.length > 0) || isOpen}
             onOpen={() => {
               console.log('🔍 AUTOCOMPLETE - Dropdown opened');
             }}
@@ -525,6 +527,7 @@ const availableDrugs = useMemo(() => {
             renderInput={(params) => (
               <TextField
                 {...params}
+                onClick={() => SetOpen(isOpen => !isOpen)}
                 placeholder="Search or select a drug..."
                 variant="outlined"
                 InputProps={{
