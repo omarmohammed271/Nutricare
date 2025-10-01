@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import { getClientChoices } from '@src/api/endpoints';
 
+export interface ChoiceOption {
+  value: string;
+  label: string;
+}
+
 /**
  * Custom hook to fetch client choices from the API
  * 
@@ -58,10 +63,11 @@ export const useClientChoices = (): UseClientChoicesReturn => {
       
       // Debug: Log the structure of each field
       console.log('🔍 Debugging API response structure:');
-      Object.keys(data).forEach(key => {
-        console.log(`${key}:`, data[key], 'isArray:', Array.isArray(data[key]));
-        if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
-          console.log(`${key} options:`, Object.entries(data[key]).map(([value, label]) => `${value} -> ${label}`));
+      (Object.keys(data) as Array<keyof ClientChoices>).forEach(key => {
+        const value = data[key];
+        console.log(`${key}:`, value, 'isArray:', Array.isArray(value));
+        if (typeof value === 'object' && !Array.isArray(value)) {
+          console.log(`${key} options:`, Object.entries(value).map(([val, label]) => `${val} -> ${label}`));
         }
       });
       
@@ -106,4 +112,4 @@ export const useClientChoices = (): UseClientChoicesReturn => {
   };
 };
 
-export type { ChoiceOption, ClientChoices };
+export type { ClientChoices };

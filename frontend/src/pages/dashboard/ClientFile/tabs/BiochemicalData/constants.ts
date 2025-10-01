@@ -1,4 +1,4 @@
-import { LabResult } from './types';
+import { LabResult } from '../../types/clientFileTypes';
 
 export const sampleLabResults: LabResult[] = [
   {
