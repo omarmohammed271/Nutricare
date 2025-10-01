@@ -64,25 +64,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initializeAuth();
   }, []);
 
-  // Session timeout warning effect
+  // Session timeout warning effect - DISABLED
+  // Users will stay logged in until manual logout
   useEffect(() => {
     if (!user?.token) return;
 
-    const checkSessionExpiry = () => {
-      if (StorageService.isSessionNearExpiry()) {
-        // Optionally show a warning to the user
-        console.warn('Session expires soon');
-      }
-      
-      if (!StorageService.isTokenValid()) {
-        // Token expired, log out user
-        removeSession();
-      }
-    };
+    // Disabled automatic session timeout
+    // const checkSessionExpiry = () => {
+    //   if (StorageService.isSessionNearExpiry()) {
+    //     // Optionally show a warning to the user
+    //     console.warn('Session expires soon');
+    //   }
+    //   
+    //   if (!StorageService.isTokenValid()) {
+    //     // Token expired, log out user
+    //     removeSession();
+    //   }
+    // };
 
-    // Check every minute
-    const interval = setInterval(checkSessionExpiry, 60000);
-    return () => clearInterval(interval);
+    // Check every minute - DISABLED
+    // const interval = setInterval(checkSessionExpiry, 60000);
+    // return () => clearInterval(interval);
   }, [user?.token]);
 
   const saveSession = (user: User, rememberMe: boolean = false) => {

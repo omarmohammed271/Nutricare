@@ -76,4 +76,13 @@ class ConnectedAccount(models.Model):
     stream_key = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.account_name} ({self.platform.name})"        
+        return f"{self.account_name} ({self.platform.name})"       
+
+
+
+
+
+
+
+
+

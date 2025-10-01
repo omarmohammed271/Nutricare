@@ -2,10 +2,17 @@ from rest_framework import viewsets,status,generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
+from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import IsAuthenticated
 from .models import *
 
 from .serializers import *
+
+@extend_schema(
+    request=DrugCategorySerializer,          # يوضّح شكل الـ Request Body
+    responses=DrugCategorySerializer,        # يوضّح شكل الـ Response
+    description="For Drug Category and Drugs"
+)
 
 class CategoryEquationViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]

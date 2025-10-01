@@ -42,3 +42,63 @@ export const getEquationsCategories = async () => {
 export const addEquationsCategories = async (data: any) => {
     return httpClient.post("/nutritions/category-equations/", data);
 }
+
+// Client Choices API
+// The API returns objects with {key: label} structure, not arrays of {value, label}
+interface ClientChoices {
+  ward_type: Record<string, string>;
+  physical_activity: Record<string, string>;
+  stress_factor: Record<string, string>;
+  feeding_type: Record<string, string>;
+  gender: Record<string, string>;
+}
+
+export const getClientChoices = async (): Promise<ClientChoices> => {
+    console.log('🌐 Making API call to /clients/choices/');
+    return httpClient.get<ClientChoices>("/clients/choices/").then(res => {
+        console.log('📊 API response received:', res.data);
+        return res.data;
+    });
+}
+
+// Client API
+interface LabResult {
+  id: number;
+  test_name: string;
+  result: string;
+  reference_range: string;
+  interpretation: string;
+  file: string | null;
+  date: string;
+}
+
+interface Medication {
+  id: number;
+  name: string;
+  dosage: string;
+  notes: string;
+}
+
+interface Client {
+  id: number;
+  name: string;
+  gender: string;
+  age: number;
+  date_of_birth: string;
+  weight: number;
+  height: number;
+  physical_activity: string;
+  ward_type: string;
+  stress_factor: string;
+  feeding_type: string;
+  lab_results: LabResult[];
+  medications: Medication[];
+}
+
+export const getClients = async (): Promise<Client[]> => {
+    console.log('🌐 Making API call to /clients/');
+    return httpClient.get<Client[]>("/clients/").then(res => {
+        console.log('📊 Clients API response received:', res.data);
+        return res.data;
+    });
+}

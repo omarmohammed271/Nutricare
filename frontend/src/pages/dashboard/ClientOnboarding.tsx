@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   Box, 
   Typography, 
@@ -31,96 +32,47 @@ import {
 } from "@mui/material";
 import { LuEye, LuX, LuUserPlus, LuList, LuSquare, LuSearch, LuPlus, LuCalendar, LuTrash2, LuFilter } from "react-icons/lu";
 import PageMetaData from "@src/components/PageMetaData";
+import { getClients } from "@src/api/endpoints";
+
+interface LabResult {
+  id: number;
+  test_name: string;
+  result: string;
+  reference_range: string;
+  interpretation: string;
+  file: string | null;
+  date: string;
+}
+
+interface Medication {
+  id: number;
+  name: string;
+  dosage: string;
+  notes: string;
+}
 
 interface Client {
   id: number;
   name: string;
-  profession: string;
-  profilePic: string;
-  email?: string;
-  phone?: string;
-  status?: string;
-  age?: number;
-  gender?: string;
-  ward?: string;
-  lastAppointment?: string;
-  nextFollowUp?: string;
+  gender: string;
+  age: number;
+  date_of_birth: string;
+  weight: number;
+  height: number;
+  physical_activity: string;
+  ward_type: string;
+  stress_factor: string;
+  feeding_type: string;
+  lab_results: LabResult[];
+  medications: Medication[];
 }
 
 const ClientOnboarding = () => {
   const theme = useTheme();
-  const [clients, setClients] = useState<Client[]>([
-    {
-      id: 1,
-      name: "Steve Martin",
-      profession: "Professor",
-      profilePic: "/src/assets/images/landing/Group 1171275335.svg",
-      email: "steve.martin@email.com",
-      phone: "+1 (555) 123-4567",
-      status: "Active",
-      age: 23,
-      gender: "Male",
-      ward: "Sample ward",
-      lastAppointment: "28 Feb 2025",
-      nextFollowUp: "28 Feb 2025"
-    },
-    {
-      id: 2,
-      name: "Nathan Dough",
-      profession: "Professor",
-      profilePic: "/src/assets/images/landing/Group 1171275335.svg",
-      email: "nathan.dough@email.com",
-      phone: "+1 (555) 234-5678",
-      status: "Active",
-      age: 23,
-      gender: "Male",
-      ward: "Sample ward",
-      lastAppointment: "28 Feb 2025",
-      nextFollowUp: "28 Feb 2025"
-    },
-    {
-      id: 3,
-      name: "Angelica Bjork",
-      profession: "Professor",
-      profilePic: "/src/assets/images/landing/Group 1171275335.svg",
-      email: "angelica.bjork@email.com",
-      phone: "+1 (555) 345-6789",
-      status: "Pending",
-      age: 23,
-      gender: "Male",
-      ward: "Sample ward",
-      lastAppointment: "28 Feb 2025",
-      nextFollowUp: "28 Feb 2025"
-    },
-    {
-      id: 4,
-      name: "Asad Ullah",
-      profession: "Professor",
-      profilePic: "/src/assets/images/landing/Group 1171275335.svg",
-      email: "asad.ullah@email.com",
-      phone: "+1 (555) 456-7890",
-      status: "Active",
-      age: 23,
-      gender: "Male",
-      ward: "Sample ward",
-      lastAppointment: "28 Feb 2025",
-      nextFollowUp: "28 Feb 2025"
-    },
-    {
-      id: 5,
-      name: "Mandy Wright",
-      profession: "Professor",
-      profilePic: "/src/assets/images/landing/Group 1171275335.svg",
-      email: "mandy.wright@email.com",
-      phone: "+1 (555) 567-8901",
-      status: "Active",
-      age: 23,
-      gender: "Male",
-      ward: "Sample ward",
-      lastAppointment: "28 Feb 2025",
-      nextFollowUp: "28 Feb 2025"
-    }
-  ]);
+  const navigate = useNavigate();
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
   const [searchTerm, setSearchTerm] = useState('');
@@ -138,16 +90,45 @@ const ClientOnboarding = () => {
     status: "Pending"
   });
 
+  // Fetch clients from API
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        console.log('🔄 Fetching clients from API...');
+        const clientsData = await getClients();
+        console.log('✅ Clients fetched successfully:', clientsData);
+        setClients(clientsData);
+      } catch (err) {
+        console.error('❌ Failed to fetch clients:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch clients');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClients();
+  }, []);
+
   const handleAddClient = () => {
     if (newClient.name && newClient.profession && newClient.email) {
+      // Note: This creates a minimal client object for display purposes
+      // In a real app, you would call an API to create the client
       const client: Client = {
         id: clients.length + 1,
         name: newClient.name,
-        profession: newClient.profession,
-        profilePic: "/src/assets/images/landing/Group 1171275335.svg",
-        email: newClient.email,
-        phone: newClient.phone,
-        status: newClient.status
+        gender: "unknown",
+        age: 0,
+        date_of_birth: new Date().toISOString().split('T')[0],
+        weight: 0,
+        height: 0,
+        physical_activity: "sedentary",
+        ward_type: "outpatient",
+        stress_factor: "none",
+        feeding_type: "oral",
+        lab_results: [],
+        medications: []
       };
       setClients([...clients, client]);
       setNewClient({ name: "", profession: "", email: "", phone: "", status: "Pending" });
@@ -158,6 +139,10 @@ const ClientOnboarding = () => {
   const handleViewClient = (client: Client) => {
     setSelectedClient(client);
     setShowViewDialog(true);
+  };
+
+  const handleAddNewClient = () => {
+    navigate('/client-file');
   };
 
   return (
@@ -176,7 +161,7 @@ const ClientOnboarding = () => {
           <Button
             variant="contained"
             startIcon={<LuUserPlus size={16} />}
-            onClick={() => setShowAddForm(true)}
+            onClick={handleAddNewClient}
             sx={{
               backgroundColor: "#02BE6A",
               color: "white",
@@ -384,8 +369,26 @@ const ClientOnboarding = () => {
           </Box>
         </Box>
 
+        {/* Loading and Error States */}
+        {loading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+            <Typography variant="h6" sx={{ color: theme.palette.mode === 'dark' ? '#ffffff' : '#2c3e50' }}>
+              Loading clients...
+            </Typography>
+          </Box>
+        )}
+
+        {error && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+            <Typography variant="h6" sx={{ color: '#f44336' }}>
+              Error: {error}
+            </Typography>
+          </Box>
+        )}
+
         {/* Content based on view mode */}
-        {viewMode === 'table' ? (
+        {!loading && !error && (
+          viewMode === 'table' ? (
           <TableContainer component={Paper} sx={{ 
             borderRadius: 3, 
             boxShadow: theme.palette.mode === 'dark' 
@@ -399,15 +402,15 @@ const ClientOnboarding = () => {
                   <TableCell sx={{ color: "white", fontWeight: 600 }}>Client Name</TableCell>
                   <TableCell sx={{ color: "white", fontWeight: 600 }}>Age</TableCell>
                   <TableCell sx={{ color: "white", fontWeight: 600 }}>
-                    Ward
+                    Ward Type
                     <LuFilter size={16} style={{ marginLeft: 8 }} />
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: 600 }}>
-                    Last Appointment
+                    Last Lab Date
                     <LuFilter size={16} style={{ marginLeft: 8 }} />
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: 600 }}>
-                    Next Follow-up
+                    Medications
                     <LuFilter size={16} style={{ marginLeft: 8 }} />
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: 600 }}>Actions</TableCell>
@@ -424,21 +427,17 @@ const ClientOnboarding = () => {
                     <TableCell>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                         <Avatar
-                          src={client.profilePic}
-                          alt={client.name}
                           sx={{ 
                             width: 40, 
                             height: 40,
-                            objectFit: "contain",
-                            backgroundColor: "transparent",
-                            padding: 1,
-                            "& img": {
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "contain"
-                            }
+                            backgroundColor: theme.palette.mode === 'dark' ? "#02BE6A" : "#02BE6A",
+                            color: "white",
+                            fontWeight: 600,
+                            fontSize: "16px"
                           }}
-                        />
+                        >
+                          {client.name.charAt(0).toUpperCase()}
+                        </Avatar>
                         <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50" }}>
                           {client.name}
                         </Typography>
@@ -451,17 +450,17 @@ const ClientOnboarding = () => {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50" }}>
-                        {client.ward}
+                        {client.ward_type}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50" }}>
-                        {client.lastAppointment}
+                        {client.lab_results.length > 0 ? new Date(client.lab_results[0].date).toLocaleDateString() : "N/A"}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50" }}>
-                        {client.nextFollowUp}
+                        {client.medications.length > 0 ? `${client.medications.length} meds` : "N/A"}
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -484,6 +483,7 @@ const ClientOnboarding = () => {
                           <LuEye size={14} />
                         </IconButton>
                         <IconButton
+                          onClick={() => navigate('/client-file')}
                           sx={{
                             backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
@@ -567,22 +567,19 @@ const ClientOnboarding = () => {
                       alignItems: "center",
                       textAlign: "center"
                     }}>
-                                            <Avatar
-                          src={client.profilePic}
-                          alt={client.name}
+                        <Avatar
                           sx={{ 
-                            width: 40, 
-                            height: 40,
-                            objectFit: "contain",
-                            backgroundColor: "transparent",
-                            padding: 1,
-                            "& img": {
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "contain"
-                            }
+                            width: 60, 
+                            height: 60,
+                            backgroundColor: theme.palette.mode === 'dark' ? "#02BE6A" : "#02BE6A",
+                            color: "white",
+                            fontWeight: 600,
+                            fontSize: "24px",
+                            mb: 2
                           }}
-                        />
+                        >
+                          {client.name.charAt(0).toUpperCase()}
+                        </Avatar>
                       
                       <Typography variant="h6" sx={{ 
                         fontWeight: 600, 
@@ -598,7 +595,7 @@ const ClientOnboarding = () => {
                         fontSize: "14px",
                         mb: 1
                       }}>
-                        Age: {client.age}
+                        Age: {client.age} y.o
                       </Typography>
                       
                       <Typography variant="body2" sx={{ 
@@ -614,7 +611,7 @@ const ClientOnboarding = () => {
                         fontSize: "14px",
                         mb: 1
                       }}>
-                        Ward: {client.ward}
+                        Ward: {client.ward_type}
                       </Typography>
                       
                       <Typography variant="body2" sx={{ 
@@ -622,7 +619,7 @@ const ClientOnboarding = () => {
                         fontSize: "14px",
                         mb: 1
                       }}>
-                        Last appointment: {client.lastAppointment}
+                        Lab Results: {client.lab_results.length}
                       </Typography>
                       
                       <Typography variant="body2" sx={{ 
@@ -630,7 +627,7 @@ const ClientOnboarding = () => {
                         fontSize: "14px",
                         mb: 2
                       }}>
-                        Next follow up: {client.nextFollowUp}
+                        Medications: {client.medications.length}
                       </Typography>
 
                       <Box sx={{ display: "flex", gap: 1 }}>
@@ -652,6 +649,7 @@ const ClientOnboarding = () => {
                           <LuEye size={14} />
                         </IconButton>
                         <IconButton
+                          onClick={() => navigate('/client-file')}
                           sx={{
                             backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
@@ -706,6 +704,7 @@ const ClientOnboarding = () => {
               </Grid>
             ))}
           </Grid>
+          )
         )}
 
         {/* Pagination */}
@@ -1033,17 +1032,21 @@ const ClientOnboarding = () => {
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
                 <Avatar
-                  src={selectedClient.profilePic}
-                  alt={selectedClient.name}
                   sx={{
                     width: 80,
                     height: 80,
+                    backgroundColor: theme.palette.mode === 'dark' ? "#02BE6A" : "#02BE6A",
+                    color: "white",
+                    fontWeight: 600,
+                    fontSize: "32px",
                     border: theme.palette.mode === 'dark' ? "3px solid #333333" : "3px solid #ffffff",
                     boxShadow: theme.palette.mode === 'dark' 
                       ? "0 4px 12px rgba(255,255,255,0.1)" 
                       : "0 4px 12px rgba(0,0,0,0.1)"
                   }}
-                />
+                >
+                  {selectedClient.name.charAt(0).toUpperCase()}
+                </Avatar>
                 <Box>
                   <Typography variant="h5" sx={{ 
                     fontWeight: 700, 
@@ -1058,56 +1061,24 @@ const ClientOnboarding = () => {
                     fontSize: "16px",
                     mb: 2
                   }}>
-                    {selectedClient.profession}
+                    {selectedClient.age} years old • {selectedClient.gender}
                   </Typography>
                   <Box sx={{
                     display: "inline-block",
                     px: 2,
                     py: 0.5,
                     borderRadius: 2,
-                    backgroundColor: selectedClient.status === "Active" 
-                      ? (theme.palette.mode === 'dark' ? "#004d1a" : "#d4edda") 
-                      : (theme.palette.mode === 'dark' ? "#4d4d00" : "#fff3cd"),
-                    color: selectedClient.status === "Active" 
-                      ? (theme.palette.mode === 'dark' ? "#66ff99" : "#155724") 
-                      : (theme.palette.mode === 'dark' ? "#ffff99" : "#856404"),
+                    backgroundColor: theme.palette.mode === 'dark' ? "#004d1a" : "#d4edda",
+                    color: theme.palette.mode === 'dark' ? "#66ff99" : "#155724",
                     fontSize: "12px",
                     fontWeight: 600
                   }}>
-                    {selectedClient.status}
+                    Active Client
                   </Box>
                 </Box>
               </Box>
 
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Box>
-                  <Typography variant="body2" sx={{ 
-                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
-                    mb: 0.5 
-                  }}>
-                    Email
-                  </Typography>
-                  <Typography variant="body1" sx={{ 
-                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50", 
-                    fontWeight: 500 
-                  }}>
-                    {selectedClient.email}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="body2" sx={{ 
-                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
-                    mb: 0.5 
-                  }}>
-                    Phone
-                  </Typography>
-                  <Typography variant="body1" sx={{ 
-                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50", 
-                    fontWeight: 500 
-                  }}>
-                    {selectedClient.phone}
-                  </Typography>
-                </Box>
                 <Box>
                   <Typography variant="body2" sx={{ 
                     color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
@@ -1120,6 +1091,76 @@ const ClientOnboarding = () => {
                     fontWeight: 500 
                   }}>
                     #{selectedClient.id.toString().padStart(4, '0')}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
+                    mb: 0.5 
+                  }}>
+                    Date of Birth
+                  </Typography>
+                  <Typography variant="body1" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50", 
+                    fontWeight: 500 
+                  }}>
+                    {new Date(selectedClient.date_of_birth).toLocaleDateString()}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
+                    mb: 0.5 
+                  }}>
+                    Ward Type
+                  </Typography>
+                  <Typography variant="body1" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50", 
+                    fontWeight: 500 
+                  }}>
+                    {selectedClient.ward_type}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
+                    mb: 0.5 
+                  }}>
+                    Physical Activity
+                  </Typography>
+                  <Typography variant="body1" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50", 
+                    fontWeight: 500 
+                  }}>
+                    {selectedClient.physical_activity}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
+                    mb: 0.5 
+                  }}>
+                    Lab Results
+                  </Typography>
+                  <Typography variant="body1" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50", 
+                    fontWeight: 500 
+                  }}>
+                    {selectedClient.lab_results.length} test(s)
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
+                    mb: 0.5 
+                  }}>
+                    Medications
+                  </Typography>
+                  <Typography variant="body1" sx={{ 
+                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50", 
+                    fontWeight: 500 
+                  }}>
+                    {selectedClient.medications.length} medication(s)
                   </Typography>
                 </Box>
               </Box>
