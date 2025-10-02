@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Client, LabResult, Medication,Appointment
+from .models import Client, LabResult, Medication,Appointment,FollowUp
 
 
 # class MealPlanSerializer(serializers.ModelSerializer):
@@ -86,13 +86,38 @@ class ClientSerializer(serializers.ModelSerializer):
 
         return instance
 
+class FollowUpSerializer(serializers.ModelSerializer):
+    lab_results = BiochemicalSerializer(many=True, required=False)
+    medications = MedicationSerializer(many=True, required=False)
+
+    class Meta:
+        model = FollowUp
+        exclude = ('client',)
+
+    def create(self, validated_data):
+        lab_results_data = validated_data.pop('lab_results', [])
+        meds_data = validated_data.pop('medications', [])
+
+        client = self.context['client']  # هنجيب الكلاينت من الفيو
+        follow_up = FollowUp.objects.create(client=client, **validated_data)
+
+        for lab in lab_results_data:
+            LabResult.objects.create(client=client, **lab)
+
+        for med in meds_data:
+            Medication.objects.create(client=client, **med)
+
+        return follow_up
+
+
+
 class ClientNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = ['id', 'name'] 
 
 class AppointmentSerializer(serializers.ModelSerializer):
-    patient_name = ClientNameSerializer(read_only=True)  # إظهار الاسم
+    patient_name = ClientNameSerializer(read_only=True)  
     patient_name_id = serializers.PrimaryKeyRelatedField(
         queryset=Client.objects.all(), source='patient_name', write_only=True
     )
@@ -103,13 +128,23 @@ class AppointmentSerializer(serializers.ModelSerializer):
             'id',
             'patient_name',    
             'patient_name_id', 
-            'doctor_name',
             'start_time',
             'end_time',
             'appointment_type',
             'status',
             'notes',
         ]
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        appointment = Appointment.objects.create(doctor_name=user, **validated_data)
+        return appointment    
+    
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 

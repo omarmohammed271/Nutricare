@@ -53,11 +53,11 @@ STRESS_FACTOR_VALUES = {
 class Client(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='clients')
     name = models.CharField(max_length=100,unique=True)
-    gender = models.CharField(max_length=10,choices=[('male','Male'),('female','Female')])
+    gender = models.CharField(max_length=10,choices=[('male','Male'),('female','Female')],blank=True,null=True)
     age = models.IntegerField(blank=True,null=True)
-    date_of_birth = models.DateField()
-    weight = models.FloatField(help_text="Weight in kg")
-    height = models.FloatField(help_text="Height in cm")
+    date_of_birth = models.DateField(blank=True,null=True)
+    weight = models.FloatField(help_text="Weight in kg",blank=True,null=True)
+    height = models.FloatField(help_text="Height in m",blank=True,null=True)
     physical_activity = models.CharField(
         max_length=20, choices=PHYSICAL_ACTIVITY_CHOICES
     )
@@ -69,13 +69,13 @@ class Client(models.Model):
             ("medical", "Medical Ward"),
             ("cardiac", "Cardiac Ward"),
             ("others", "Others"),
-        ]
+        ],blank=True,null=True
     )
     stress_factor = models.CharField(
         max_length=30,
         choices=STRESS_FACTOR_CHOICES,
         null=True,
-        blank=True
+        blank=True,
     )
 
     feeding_type = models.CharField(
@@ -84,7 +84,7 @@ class Client(models.Model):
             ("oral", "Oral"),
             ("enteral_parenteral", "Enteral & Parenteral"),
             ("tpn", "TPN")
-        ]
+        ],blank=True,null=True
     )
     is_finished = models.BooleanField(default=False)
     def __str__(self):
@@ -93,9 +93,9 @@ class Client(models.Model):
 class LabResult(models.Model):
     
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="lab_results")
-    test_name = models.CharField(max_length=100)
-    result = models.CharField(max_length=50)
-    reference_range = models.CharField(max_length=50)
+    test_name = models.CharField(max_length=100,blank=True,null=True)
+    result = models.CharField(max_length=50,blank=True,null=True)
+    reference_range = models.CharField(max_length=50,blank=True,null=True)
     interpretation = models.TextField(blank=True, null=True)
     file = models.FileField(upload_to='lab_reports/', blank=True, null=True)
     date = models.DateField()
@@ -105,9 +105,9 @@ class LabResult(models.Model):
 
 class Medication(models.Model):
     
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="medications")
-    name = models.CharField(max_length=100)
-    dosage = models.CharField(max_length=100)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="medications",)
+    name = models.CharField(max_length=100,blank=True,null=True)
+    dosage = models.CharField(max_length=100,blank=True,null=True)
     notes = models.TextField(blank=True, null=True)    
 
     def __str__(self):
@@ -119,7 +119,13 @@ class Medication(models.Model):
 #     description = models.TextField()
 #     total_calories = models.FloatField(null=True, blank=True)
 
+class FollowUp(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="follow_ups")
+    date = models.DateField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return f"Follow-up for {self.client.name} on {self.date}"
 
 class Appointment(models.Model):
     

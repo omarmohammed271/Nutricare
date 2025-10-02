@@ -38,13 +38,12 @@ class ClientListCreateAPIView(generics.ListCreateAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    # 🔹 عند طلب GET → يرجع عملاء المستخدم الحالي فقط
     def get_queryset(self):
         return Client.objects.filter(user=self.request.user)
 
-    # 🔹 عند طلب POST → ينشئ عميل جديد مع التابات
+    
     def perform_create(self, serializer):
-        serializer.save()   # الـ user يضاف داخل serializer.create
+        serializer.save()   
 
 class ClientRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ClientSerializer
@@ -62,7 +61,9 @@ class AppointmentListCreateAPIView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Appointment.objects.filter(user=self.request.user)
+        return Appointment.objects.filter(doctor_name=self.request.user)
+    def perform_create(self, serializer):
+        serializer.save()
 
 class AppointmentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AppointmentSerializer
@@ -71,5 +72,8 @@ class AppointmentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
     lookup_field = 'id' 
 
     def get_queryset(self):
-        return Appointment.objects.filter(user=self.request.user)
+        return Appointment.objects.filter(doctor_name=self.request.user)
+    
+    def perform_update(self, serializer):
+        serializer.save()
     
