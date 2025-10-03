@@ -4,8 +4,8 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
-from .models import Client,Appointment
-from .serializers import ClientSerializer,AppointmentSerializer
+from .models import Client,Appointment,FollowUp
+from .serializers import ClientSerializer,AppointmentSerializer,FollowUpSerializer
 
 
 
@@ -13,6 +13,11 @@ from .serializers import ClientSerializer,AppointmentSerializer
     request=ClientSerializer,         
     responses=ClientSerializer,    
     description="Create new client with all tabs (assessment, biochemical, medication, meal plan)."
+)
+@extend_schema(
+    request=FollowUpSerializer,         
+    responses=FollowUpSerializer,    
+    description="Create new followup with all tabs (assessment, biochemical, medication, meal plan)."
 )
 
 
@@ -54,6 +59,28 @@ class ClientRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Client.objects.filter(user=self.request.user)     
 
+
+class FollowUpListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = FollowUpSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return FollowUp.objects.filter(client__user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save()
+class FollowUpRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = FollowUpSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id' 
+
+    def get_queryset(self):
+        return FollowUp.objects.filter(client__user=self.request.user)
+    
+    def perform_update(self, serializer):
+        serializer.save()        
     
 class AppointmentListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = AppointmentSerializer
@@ -76,4 +103,5 @@ class AppointmentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
     
     def perform_update(self, serializer):
         serializer.save()
+
     

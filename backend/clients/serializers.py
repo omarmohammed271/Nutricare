@@ -28,7 +28,7 @@ class ClientSerializer(serializers.ModelSerializer):
         fields = [
             'id','name','gender','age','date_of_birth',
             'weight','height','physical_activity','ward_type',
-            'stress_factor','feeding_type','lab_results','medications'
+            'stress_factor','feeding_type','lab_results','medications','is_finished'
         ]
 
     def create(self, validated_data):
@@ -92,7 +92,7 @@ class FollowUpSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FollowUp
-        exclude = ('client',)
+        exclude = ('client',)    
 
     def create(self, validated_data):
         lab_results_data = validated_data.pop('lab_results', [])
@@ -108,6 +108,35 @@ class FollowUpSerializer(serializers.ModelSerializer):
             Medication.objects.create(client=client, **med)
 
         return follow_up
+    def update(self, instance, validated_data):
+        lab_results_data = validated_data.pop('lab_results', [])
+        meds_data = validated_data.pop('medications', [])
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        existing_labs = {lab.id: lab for lab in instance.client.lab_results.all()}
+        for lab in lab_results_data:
+            lab_id = lab.get('id', None)
+            if lab_id and lab_id in existing_labs:
+                for attr, value in lab.items():
+                    setattr(existing_labs[lab_id], attr, value)
+                existing_labs[lab_id].save()
+            else:
+                LabResult.objects.create(client=instance.client, **lab)
+
+        existing_meds = {med.id: med for med in instance.client.medications.all()}
+        for med in meds_data:
+            med_id = med.get('id', None)
+            if med_id and med_id in existing_meds:
+                for attr, value in med.items():
+                    setattr(existing_meds[med_id], attr, value)
+                existing_meds[med_id].save()
+            else:
+                Medication.objects.create(client=instance.client, **med)
+
+        return instance
 
 
 
