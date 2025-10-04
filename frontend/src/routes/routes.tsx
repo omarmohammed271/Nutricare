@@ -125,7 +125,7 @@ const adminRoutes: RoutesProps[] = [
   { path: "/client-file/biochemical-data", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientFile"))} /> },
   { path: "/client-file/medication", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientFile"))} /> },
   { path: "/client-file/meal-plans", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientFile"))} /> },
-  { path: "/clients/onboarding", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientOnboarding"))} /> },
+  { path: "/clients/onboarding", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/ClientOnBbording/ClientOnboarding"))} /> },
   { path: "/test-clients", element: <div style={{ padding: '50px', fontSize: '24px', color: 'green' }}>CLIENT ONBOARDING TEST ROUTE IS WORKING!</div> },
   { path: "/library", element: <LoadComponent component={lazy(() => import("@src/pages/Library"))} /> },
   { path: "/reports/:tab", element: <LoadComponent component={lazy(() => import("@src/pages/dashboard/reports"))} /> },

@@ -11,13 +11,15 @@ import { useViewPort } from "@src/hooks";
 type CalendarProps = {
   onDateClick: (value: any) => void;
   onEventClick: (value: any) => void;
+  onEventDrop?: (value: any) => void;
+  onEventResize?: (value: any) => void;
   events: EventInput[];
   currentView: 'day' | 'week' | 'month' | 'list';
   onCalendarRef: (ref: any) => void;
   currentDate: Date;
 };
 
-const Calendar = ({ onDateClick, onEventClick, events, currentView, onCalendarRef, currentDate }: CalendarProps) => {
+const Calendar = ({ onDateClick, onEventClick, onEventDrop, onEventResize, events, currentView, onCalendarRef, currentDate }: CalendarProps) => {
   const { height } = useViewPort();
   
   const getInitialView = () => {
@@ -39,6 +41,16 @@ const Calendar = ({ onDateClick, onEventClick, events, currentView, onCalendarRe
   const handleEventClick = (arg: any) => {
     onEventClick(arg);
   };
+  const handleEventDrop = (arg: any) => {
+    if (onEventDrop) {
+      onEventDrop(arg);
+    }
+  };
+  const handleEventResize = (arg: any) => {
+    if (onEventResize) {
+      onEventResize(arg);
+    }
+  };
 
   const renderEventContent = (eventInfo: any) => {
     const { event } = eventInfo;
@@ -56,6 +68,11 @@ const Calendar = ({ onDateClick, onEventClick, events, currentView, onCalendarRe
       hour12: true 
     }) : '';
     
+    // Get patient name from the new API structure
+    const patientName = extendedProps.patient_name?.name || 'Unknown Patient';
+    const appointmentType = extendedProps.appointment_type || 'Appointment';
+    const status = extendedProps.status || 'next';
+    
     return (
       <Box sx={{
         p: 0.5,
@@ -65,14 +82,14 @@ const Calendar = ({ onDateClick, onEventClick, events, currentView, onCalendarRe
         display: 'flex',
         flexDirection: 'column',
         gap: 0.3,
-        border: `2px solid ${getEventColor(extendedProps.status).border}`,
-        backgroundColor: getEventColor(extendedProps.status).bg,
+        border: `2px solid ${getEventColor(status).border}`,
+        backgroundColor: getEventColor(status).bg,
         overflow: 'hidden',
         boxSizing: 'border-box'
       }}>
         {/* Prominent Time Display at Top */}
         <Box sx={{
-          backgroundColor: getEventColor(extendedProps.status).border,
+          backgroundColor: getEventColor(status).border,
           color: 'white',
           px: 0.5,
           py: 0.3,
@@ -90,7 +107,7 @@ const Calendar = ({ onDateClick, onEventClick, events, currentView, onCalendarRe
         
         {/* Status Badge */}
         <Box sx={{
-          backgroundColor: getEventColor(extendedProps.status).border,
+          backgroundColor: getEventColor(status).border,
           color: 'white',
           px: 0.5,
           py: 0.2,
@@ -104,10 +121,10 @@ const Calendar = ({ onDateClick, onEventClick, events, currentView, onCalendarRe
           textOverflow: 'ellipsis',
           maxWidth: '100%'
         }}>
-          {extendedProps.status?.toUpperCase() || 'EVENT'}
+          {status?.toUpperCase() || 'EVENT'}
         </Box>
         
-        {/* Client Name */}
+        {/* Patient Name */}
         <Typography 
           variant="caption" 
           sx={{ 
@@ -122,10 +139,10 @@ const Calendar = ({ onDateClick, onEventClick, events, currentView, onCalendarRe
             width: '100%'
           }}
         >
-          {extendedProps.clientName || 'N/A'}
+          {patientName || 'N/A'}
         </Typography>
         
-        {/* Session Type */}
+        {/* Appointment Type */}
         <Typography 
           variant="caption" 
           sx={{ 
@@ -140,7 +157,7 @@ const Calendar = ({ onDateClick, onEventClick, events, currentView, onCalendarRe
             width: '100%'
           }}
         >
-          {extendedProps.sessionType || event.title}
+          {appointmentType || event.title}
         </Typography>
       </Box>
     );
@@ -285,6 +302,8 @@ const Calendar = ({ onDateClick, onEventClick, events, currentView, onCalendarRe
           events={events}
           dateClick={handleDateClick}
           eventClick={handleEventClick}
+          eventDrop={handleEventDrop}
+          eventResize={handleEventResize}
           eventContent={renderEventContent}
           slotLabelFormat={{
             hour: 'numeric',
