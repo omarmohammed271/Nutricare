@@ -1,17 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { EventInput } from "@fullcalendar/core";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { LuX } from "react-icons/lu";
-import { Box, Button, DialogContent, DialogTitle, IconButton, MenuItem, Typography, Autocomplete, TextField } from "@mui/material";
+import { Box, Button, DialogContent, DialogTitle, IconButton, MenuItem, Typography } from "@mui/material";
 import { BootstrapDialog } from "@src/pages/base-ui/Dialogs";
 import { FormInput, SelectInput } from "@src/components";
-import { createAppointment, patchAppointment } from "@src/api/endpoints";
-import { useClients } from "./Api/calendarApi";
+import { createAppointment } from "@src/api/endpoints";
 
 type FormValues = {
-  Status:string;
+  className: string;
   appointmentType: string;
   startTime: string;
   endTime: string;
@@ -39,34 +38,17 @@ const AddEditEvent = ({
   onUpdateEvent,
   onAddEvent,
   dateInfo,
-  selectedClient: propSelectedClient,
+  selectedClient,
 }: AddEditEventProps) => {
-  // event state - use the eventData prop directly and update when it changes
-  const event = eventData;
-  console.log(event)
+  // event state
+  const [event] = useState<EventInput>(eventData);
 
-  // Fetch clients using TanStack Query
-  const { data: clients = [], isLoading: clientsLoading } = useClients();
-  
-  // State for selected client
-  const [selectedClient, setSelectedClient] = useState<any>(propSelectedClient || null);
-
-  // Update selected client when prop changes
-  useEffect(() => {
-    if (propSelectedClient) {
-      setSelectedClient(propSelectedClient);
-    } else if (!isEditable && clients.length > 0) {
-      // For new events, reset selected client
-      setSelectedClient(null);
-    }
-  }, [propSelectedClient, isEditable, clients]);
-
-  /*  
+  /*
    * form validation schema
    */
   const schemaResolver = yupResolver(
     yup.object().shape({
-      Status: yup.string().required("Please select status"),
+      className: yup.string().required("Please select category"),
       appointmentType: yup.string().required("Please select appointment type"),
       startTime: yup.string().required("Please select start time"),
       endTime: yup.string().required("Please select end time"),
@@ -99,40 +81,25 @@ const AddEditEvent = ({
     }
   };
   
-const methods = useForm<FormValues>({
-  defaultValues: {
-    Status: "event-next",
-    appointmentType: "initial",
-    startTime: "09:00",
-    endTime: "10:00",
-    date: "",
-  },
-  resolver: schemaResolver,
-});
-
-useEffect(() => {
-  if (event) {
-    methods.reset({
-      Status: event.className ? String(event.className) : "event-next",
+  const methods = useForm<FormValues>({
+    defaultValues: {
+      className: event.className ? String(event.className) : "event-next",
+      // Ensure appointmentType is one of the valid options
       appointmentType: (event.extendedProps?.appointment_type === "initial" || event.extendedProps?.appointment_type === "follow_up") 
         ? event.extendedProps?.appointment_type 
         : "initial",
       startTime: getTimeString(event.start),
       endTime: event.end ? getTimeString(event.end) : "10:00",
       date: dateInfo?.dateStr || getDateString(event.start),
-    });
-  }
-}, [event, dateInfo, methods]);
-
-
-
+    },
+    resolver: schemaResolver,
+  });
   const { handleSubmit, reset, control } = methods;
 
   /*
    * handle form submission
    */
   const onSubmitEvent = async (data: FormValues) => {
-      
     // Create start and end datetime objects
     // HTML5 time input always returns 24-hour format (HH:MM)
     const startDateTime = new Date(`${data.date}T${data.startTime}:00.000`);
@@ -140,49 +107,36 @@ useEffect(() => {
     
     // Format data according to the required structure
     const appointmentData = {
-      patient_name_id: isEditable 
-        ? (event.extendedProps?.patient_name?.id || 0) 
-        : (selectedClient?.id || 0),
+      patient_name_id: selectedClient?.id || 0,
       start_time: startDateTime.toISOString(),
       end_time: endDateTime.toISOString(),
       appointment_type: data.appointmentType,
-      status: data.Status.replace('event-', ''),
+      status: data.className.replace('event-', ''),
       notes: data.appointmentType
     };
     
     try {
       // Submit the appointment data to the API
       console.log('Submitting appointment data:', appointmentData);
-      console.log('Appointment data:', event.id);
-      if (isEditable && event.id) {
-        // For existing events, use PATCH to update
-        const eventId = parseInt(event.id);
-        const response = await patchAppointment(eventId, appointmentData);
-        console.log('Appointment updated:', response);
-      } else {
-        // For new events, use POST to create
-        const response = await createAppointment(appointmentData);
-        console.log('Appointment created:', response);
-      }
+      
+      // Make the API call to create the appointment
+      const response = await createAppointment(appointmentData);
+      console.log('Appointment created:', response);
       
       // Create event data for the calendar
       const eventData = {
         ...(isEditable && event.id && { id: event.id }), // Include ID when editing
-        className: data.Status,
+        className: data.className,
         start: startDateTime.toISOString(),
         end: endDateTime.toISOString(),
         extendedProps: {
           patient_name: {
-            id: isEditable 
-              ? (event.extendedProps?.patient_name?.id || 0) 
-              : (selectedClient?.id || 0),
-            name: isEditable 
-              ? (event.extendedProps?.patient_name?.name || "") 
-              : (selectedClient?.name || "")
+            id: selectedClient?.id || (isEditable ? event.extendedProps?.patient_name?.id || 0 : 0),
+            name: selectedClient?.name || ""
           },
           doctor_name: isEditable ? event.extendedProps?.doctor_name || "" : "",
           appointment_type: data.appointmentType,
-          status: data.Status.replace('event-', ''),
+          status: data.className.replace('event-', ''),
           notes: data.appointmentType
         }
       };
@@ -203,7 +157,7 @@ useEffect(() => {
   };
 
   return (
-    <BootstrapDialog open={isOpen} onClose={onClose}>
+    <BootstrapDialog open={isOpen} onClose={onClose} >
       <DialogTitle sx={{ m: 0, p: 2 }}>{isEditable ? "Edit Event" : "Add New Event"}</DialogTitle>
       <IconButton
         aria-label="close"
@@ -232,31 +186,6 @@ useEffect(() => {
                 <MenuItem value="follow_up">Follow Up</MenuItem>
               </SelectInput>
             </Box>
-            
-            {!isEditable && (
-              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mt: 1 }}>
-                <Typography sx={{ width: '15%', fontSize: '0.875rem', fontWeight: 500 }}>Client:</Typography>
-                <Autocomplete
-                  fullWidth
-                  options={clients}
-                  getOptionLabel={(option) => option.name || ''}
-                  value={selectedClient}
-                  onChange={(event, newValue) => {
-                    setSelectedClient(newValue);
-                  }}
-                  loading={clientsLoading}
-                  renderInput={(params) => (
-                    <TextField 
-                      {...params} 
-                      placeholder="Select a client" 
-                      variant="outlined" 
-                      size="small"
-                    />
-                  )}
-                  sx={{ flex: 1 }}
-                />
-              </Box>
-            )}
             
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mt: 1 }}>
               <Typography sx={{ width: '15%', fontSize: '0.875rem', fontWeight: 500 }}>Date:</Typography>
@@ -294,12 +223,12 @@ useEffect(() => {
               <Typography sx={{ width: '15%', fontSize: '0.875rem', fontWeight: 500 }}>Status:</Typography>
               <SelectInput 
                 type="select" 
-                name="Status" 
+                name="className" 
                 control={control}
                 containerSx={{ flex: 1 }}
               >
-                <MenuItem value="event-completed" >Completed</MenuItem>
-                <MenuItem value="event-cancelled" >cancelled</MenuItem>
+                <MenuItem value="event-completed" disabled>Completed</MenuItem>
+                <MenuItem value="event-canceled" disabled>Canceled</MenuItem>
                 <MenuItem value="event-next">Next</MenuItem>
               </SelectInput>
             </Box>
