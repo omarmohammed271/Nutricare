@@ -99,6 +99,7 @@ class Client(models.Model):
 class LabResult(models.Model):
     
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="lab_results")
+    follow_up = models.ForeignKey('FollowUp', on_delete=models.CASCADE, related_name="lab_results", blank=True, null=True)
     test_name = models.CharField(max_length=100,blank=True,null=True)
     result = models.CharField(max_length=50,blank=True,null=True)
     reference_range = models.CharField(max_length=50,blank=True,null=True)
@@ -112,6 +113,7 @@ class LabResult(models.Model):
 class Medication(models.Model):
     
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="medications",)
+    follow_up = models.ForeignKey('FollowUp', on_delete=models.CASCADE, related_name="medications", blank=True, null=True)
     name = models.CharField(max_length=100,blank=True,null=True)
     dosage = models.CharField(max_length=100,blank=True,null=True)
     notes = models.TextField(blank=True, null=True)    
@@ -119,11 +121,7 @@ class Medication(models.Model):
     def __str__(self):
         return f"{self.name} - {self.client.name}"
 
-# class MealPlan(models.Model):
-#     
-#     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="meal_plans")
-#     description = models.TextField()
-#     total_calories = models.FloatField(null=True, blank=True)
+
 
 class FollowUp(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="follow_ups")
@@ -164,6 +162,12 @@ class FollowUp(models.Model):
     def __str__(self):
         return f"Follow-up for {self.client.name} on {self.date}"
 
+
+# class MealPlan(models.Model):
+#     
+#     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="meal_plans")
+#     description = models.TextField()
+#     total_calories = models.FloatField(null=True, blank=True)
 class Appointment(models.Model):
     
     patient_name = models.ForeignKey(Client, on_delete=models.CASCADE,blank=True, null=True)
