@@ -1,8 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import "@fullcalendar/react";
 import { DateClickArg, Draggable } from "@fullcalendar/interaction";
 import { DateInput, EventClickArg, EventDropArg, EventInput } from "@fullcalendar/core";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 // test data
 import { defaultEvents } from "./helper";
@@ -15,25 +15,36 @@ import {
   Typography, 
   Chip,
   IconButton,
-  ButtonGroup
+  ButtonGroup,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+  Snackbar,
+  Alert
 } from "@mui/material";
 import { 
   Add as AddIcon,
   Sync as SyncIcon,
   Share as ShareIcon,
   NavigateBefore as NavigateBeforeIcon,
-  NavigateNext as NavigateNextIcon
+  NavigateNext as NavigateNextIcon,
+  Delete as DeleteIcon
 } from '@mui/icons-material';
 import { PageBreadcrumb } from "@src/components";
 import Calendar from "./Calendar";
 import SidePanel from "./SidePanel";
 import AddEditEvent from "./AddEditEvent";
 import { LuPlusCircle } from "react-icons/lu";
+import { useCalendarEvents, useDeleteAppointment } from "./Api/calendarApi";
+import { deleteAppointment, patchAppointment } from "@src/api/endpoints";
 
 const CalendarIndex = () => {
   const [currentView, setCurrentView] = useState<'day' | 'week' | 'month' | 'list'>('week');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarRef, setCalendarRef] = useState<any>(null);
+  
   /*
    * modal handling
    */
@@ -50,9 +61,53 @@ const CalendarIndex = () => {
   /*
    * event data
    */
-  const [events, setEvents] = useState<EventInput[]>([...defaultEvents]);
   const [eventData, setEventData] = useState<EventInput>({});
   const [dateInfo, setDateInfo] = useState<any>({});
+
+  // State for delete confirmation dialog
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState<EventInput | null>(null);
+
+  // State for showing success/error messages
+  const [snackbar, setSnackbar] = useState<{open: boolean, message: string, severity: 'success' | 'error'}>({open: false, message: '', severity: 'success'});
+
+  // Fetch events from API using our custom hook
+  const { data: events, isLoading, isError, refetch } = useCalendarEvents();
+
+  // Delete appointment mutation
+  const deleteMutation = useDeleteAppointment();
+
+  // Handle delete event
+  const handleDeleteEvent = (event: EventInput) => {
+    setEventToDelete(event);
+    setDeleteDialogOpen(true);
+  };
+
+  // Confirm delete
+  const confirmDelete = () => {
+    if (eventToDelete && eventToDelete.id) {
+      deleteMutation.mutate(parseInt(eventToDelete.id), {
+        
+        onSuccess: () => {
+          console.log('Event deleted successfully');
+          setDeleteDialogOpen(false);
+          setEventToDelete(null);
+          setShow(false)
+        },
+        onError: (error) => {
+          console.error('Error deleting event:', error);
+          setDeleteDialogOpen(false);
+          setEventToDelete(null);
+        }
+      });
+    }
+  };
+
+  // Cancel delete
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setEventToDelete(null);
+  };
 
   /*
     calendar events
@@ -83,77 +138,126 @@ const CalendarIndex = () => {
     on add event
     */
   const onAddEvent = (data: any) => {
-    const modifiedEvents = [...events];
-    const event = {
-      id: String(Date.now()), // Use timestamp for unique ID
-      title: data.title,
-      start: data.start,
-      end: data.end,
-      className: data.className,
-      extendedProps: data.extendedProps
-    };
-    modifiedEvents.push(event);
-    setEvents(modifiedEvents);
+    console.log('=== Adding New Event ===');
+    console.log('Received data:', data);
+    
+    // Refetch events to get the updated list
+    refetch();
     onCloseModal();
+    
+    console.log('========================');
   };
 
   /*
     on update event
     */
   const onUpdateEvent = (data: any) => {
-    const modifiedEvents = [...events];
-    const idx = modifiedEvents.findIndex((e: any) => e["id"] === eventData!.id);
+    console.log('=== Updating Event ===');
+    console.log('Received data:', data);
+    console.log('Event ID to update:', eventData?.id);
     
-    if (idx !== -1) {
-      modifiedEvents[idx] = {
-        ...modifiedEvents[idx],
-        title: data.title,
-        className: data.className,
-        start: data.start,
-        end: data.end,
-        extendedProps: data.extendedProps
-      };
-      setEvents(modifiedEvents);
-    } else {
-      console.error('Event not found for update:', eventData?.id);
-    }
-    
+    // Refetch events to get the updated list
+    refetch();
     onCloseModal();
     setIsEditable(false);
     setEventData({});
+    
+    console.log('========================');
   };
 
   /*
     on remove event
     */
   const onRemoveEvent = () => {
-    const modifiedEvents = [...events];
-    const idx = modifiedEvents.findIndex((e: any) => e["id"] === eventData!.id);
-    
-    if (idx !== -1) {
-      modifiedEvents.splice(idx, 1);
-      setEvents(modifiedEvents);
-    } else {
-      console.error('Event not found for deletion:', eventData?.id);
+    if (eventData && eventData.id) {
+      handleDeleteEvent(eventData);
     }
-    
-    onCloseModal();
-    setIsEditable(false);
-    setEventData({});
   };
 
   /**
    * on event drop
    */
-  const onEventDrop = (arg: any) => {
-    const modifiedEvents = [...events];
-    const idx = modifiedEvents.findIndex((e) => e["id"] === arg.event.id);
-    modifiedEvents[idx]["title"] = arg.event.title;
-    modifiedEvents[idx]["className"] = arg.event.classNames;
-    modifiedEvents[idx]["start"] = arg.event.start;
-    modifiedEvents[idx]["end"] = arg.event.end;
-    setEvents(modifiedEvents);
-    setIsEditable(false);
+  const onEventDrop = async (arg: EventDropArg) => {
+    try {
+      // Extract the event ID and new dates
+      const eventId = parseInt(arg.event.id);
+      const newStart = arg.event.start;
+      const newEnd = arg.event.end;
+      
+      // Format the dates for the API
+      const appointmentData = {
+        start_time: newStart?.toISOString(),
+        end_time: newEnd?.toISOString()
+      };
+      
+      // Send PATCH request to update the appointment
+      await patchAppointment(eventId, appointmentData);
+      
+      // Show success message
+      setSnackbar({
+        open: true,
+        message: 'Appointment time updated successfully',
+        severity: 'success'
+      });
+      
+      // Refetch events to get the updated list
+      refetch();
+    } catch (error) {
+      console.error('Error updating appointment time:', error);
+      
+      // Show error message
+      setSnackbar({
+        open: true,
+        message: 'Failed to update appointment time',
+        severity: 'error'
+      });
+      
+      // Revert the event to its original position
+      arg.revert();
+    }
+  };
+
+  /*
+    on event resize
+    */
+  const onEventResize = async (arg: any) => {
+    try {
+      // Extract the event ID and new dates
+      const eventId = parseInt(arg.event.id);
+      const newStart = arg.event.start;
+      const newEnd = arg.event.end;
+      
+      // Format the dates for the API
+      const appointmentData = {
+        start_time: newStart?.toISOString(),
+        end_time: newEnd?.toISOString()
+      };
+      
+      // Send PATCH request to update the appointment
+      await patchAppointment(eventId, appointmentData);
+      
+      // Show success message
+      setSnackbar({
+        open: true,
+        message: 'Appointment duration updated successfully',
+        severity: 'success'
+      });
+      
+      // Refetch events to get the updated list
+      refetch();
+    } catch (error) {
+      console.error('Error updating appointment duration:', error);
+      
+      // Show error message
+      setSnackbar({
+        open: true,
+        message: 'Failed to update appointment duration',
+        severity: 'error'
+      });
+      
+      // Revert the event to its original duration
+      arg.revert();
+    }
   };
 
   // create new event
@@ -197,6 +301,11 @@ const CalendarIndex = () => {
     }
   };
 
+  // Sync handler to refetch data
+  const handleSync = () => {
+    refetch();
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <PageBreadcrumb title="Calendar" subName="Apps" />
@@ -225,6 +334,7 @@ const CalendarIndex = () => {
             <Button
               variant="outlined"
               startIcon={<SyncIcon />}
+              onClick={handleSync}
               sx={{
                 borderColor: '#02BE6A',
                 color: '#02BE6A',
@@ -323,14 +433,26 @@ const CalendarIndex = () => {
       {/* Calendar Section */}
       <Card sx={{ mb: 3, borderRadius: 2, boxShadow: 1 }}>
         <CardContent sx={{ p: 0 }}>
-          <Calendar
-            onDateClick={onDateClick}
-            onEventClick={onEventClick}
-            events={events}
-            currentView={currentView}
-            onCalendarRef={setCalendarRef}
-            currentDate={currentDate}
-          />
+          {isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 400 }}>
+              <Typography>Loading appointments...</Typography>
+            </Box>
+          ) : isError ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 400 }}>
+              <Typography>Error loading appointments. Please try again.</Typography>
+            </Box>
+          ) : (
+            <Calendar
+              onDateClick={onDateClick}
+              onEventClick={onEventClick}
+              onEventDrop={onEventDrop}
+              onEventResize={onEventResize}
+              events={events || defaultEvents}
+              currentView={currentView}
+              onCalendarRef={setCalendarRef}
+              currentDate={currentDate}
+            />
+          )}
         </CardContent>
       </Card>
 
@@ -381,6 +503,53 @@ const CalendarIndex = () => {
         onAddEvent={onAddEvent}
         dateInfo={dateInfo}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={cancelDelete}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+      >
+        <DialogTitle id="delete-dialog-title">
+          Confirm Delete
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-dialog-description">
+            Are you sure you want to delete this appointment?
+            This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} color="primary">
+            Cancel
+          </Button>
+          <Button 
+            onClick={confirmDelete} 
+            color="error" 
+            variant="contained"
+            disabled={deleteMutation.isPending}
+          >
+            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar for success/error messages */}
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={6000} 
+        onClose={() => setSnackbar({...snackbar, open: false})}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={() => setSnackbar({...snackbar, open: false})} 
+          severity={snackbar.severity} 
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

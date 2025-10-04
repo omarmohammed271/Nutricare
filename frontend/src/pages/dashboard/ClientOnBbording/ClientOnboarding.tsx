@@ -33,6 +33,7 @@ import {
 import { LuEye, LuX, LuUserPlus, LuList, LuSquare, LuSearch, LuPlus, LuCalendar, LuTrash2, LuFilter } from "react-icons/lu";
 import PageMetaData from "@src/components/PageMetaData";
 import { getClients } from "@src/api/endpoints";
+import AddEditEvent from "./componenets/AddEditEvent";
 
 interface LabResult {
   id: number;
@@ -81,6 +82,7 @@ const ClientOnboarding = () => {
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [showViewDialog, setShowViewDialog] = useState(false);
+  const [showAddEventDialog, setShowAddEventDialog] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [newClient, setNewClient] = useState({
     name: "",
@@ -500,6 +502,10 @@ const ClientOnboarding = () => {
                           <LuPlus size={14} />
                         </IconButton>
                         <IconButton
+                        onClick={() => {
+                          setSelectedClient(client);
+                          setShowAddEventDialog(true);
+                        }}
                           sx={{
                             backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
@@ -1191,6 +1197,27 @@ const ClientOnboarding = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Add Event Dialog */}
+      <AddEditEvent
+        isOpen={showAddEventDialog}
+        onClose={() => setShowAddEventDialog(false)}
+        isEditable={false}
+        eventData={{}}
+        selectedClient={selectedClient}
+        onAddEvent={(data) => {
+          console.log('Adding new event:', data);
+          setShowAddEventDialog(false);
+        }}
+        onUpdateEvent={(data) => {
+          console.log('Updating event:', data);
+          setShowAddEventDialog(false);
+        }}
+        onRemoveEvent={() => {
+          console.log('Removing event');
+          setShowAddEventDialog(false);
+        }}
+      />
     </>
   );
 };
