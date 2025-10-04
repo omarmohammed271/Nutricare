@@ -55,7 +55,8 @@ class ClientRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ClientSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    lookup_field = 'id' 
+    lookup_field = 'pk' 
+    lookup_url_kwarg = 'id'
 
     def get_queryset(self):
         return Client.objects.prefetch_related('follow_ups').filter(user=self.request.user)     

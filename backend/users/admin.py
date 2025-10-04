@@ -56,7 +56,6 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
     
-    # إصلاح add_fieldsets - استخدم الحقول الأساسية فقط
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
