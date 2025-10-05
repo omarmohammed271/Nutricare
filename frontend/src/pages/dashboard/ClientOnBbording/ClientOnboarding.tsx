@@ -34,6 +34,7 @@ import { LuEye, LuX, LuUserPlus, LuList, LuSquare, LuSearch, LuPlus, LuCalendar,
 import PageMetaData from "@src/components/PageMetaData";
 import { getClients, createFollowUp } from "@src/api/endpoints";
 import httpClient from "@src/helpers/httpClient";
+import AddEditEvent from "./componenets/AddEditEvent";
 
 interface LabResult {
   id: number;
@@ -125,6 +126,7 @@ const ClientOnboarding = () => {
   const [showViewDialog, setShowViewDialog] = useState(false);
   const [showFollowUpDialog, setShowFollowUpDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showAddEventDialog, setShowAddEventDialog] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
   // Removed edit mode states - now using ClientFile tabs for editing
@@ -880,6 +882,10 @@ const ClientOnboarding = () => {
                           <LuPlus size={14} />
                         </IconButton>
                         <IconButton
+                          onClick={() => {
+                            setSelectedClient(client);
+                            setShowAddEventDialog(true);
+                          }}
                           sx={{
                             backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
@@ -1127,6 +1133,10 @@ const ClientOnboarding = () => {
                           <LuPlus size={14} />
                         </IconButton>
                         <IconButton
+                          onClick={() => {
+                            setSelectedClient(client);
+                            setShowAddEventDialog(true);
+                          }}
                           sx={{
                             backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
@@ -1161,12 +1171,12 @@ const ClientOnboarding = () => {
                         </IconButton>
                       </Box>
                     </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
+                    </CardContent>
+                  </Card>
+                </Grid>
             ))}
           </Grid>
-          )
+        )
         )}
 
         {/* Pagination */}
@@ -1972,6 +1982,7 @@ const ClientOnboarding = () => {
                           <Box sx={{ mt: 2 }}>
                             <Typography variant="body2" sx={{ 
                               color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
+ 
                               mb: 1,
                               fontWeight: 600
                             }}>
@@ -2616,6 +2627,27 @@ const ClientOnboarding = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Add Event Dialog */}
+      <AddEditEvent
+        isOpen={showAddEventDialog}
+        onClose={() => setShowAddEventDialog(false)}
+        isEditable={false}
+        eventData={{}}
+        selectedClient={selectedClient}
+        onAddEvent={(data) => {
+          console.log('Adding new event:', data);
+          setShowAddEventDialog(false);
+        }}
+        onUpdateEvent={(data) => {
+          console.log('Updating event:', data);
+          setShowAddEventDialog(false);
+        }}
+        onRemoveEvent={() => {
+          console.log('Removing event');
+          setShowAddEventDialog(false);
+        }}
+      />
 
       {/* Delete Confirmation Dialog */}
       <Dialog

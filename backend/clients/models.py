@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from datetime import date
 User = get_user_model()
 
 # Create your models here.
@@ -54,7 +55,6 @@ class Client(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='clients')
     name = models.CharField(max_length=100,unique=True)
     gender = models.CharField(max_length=10,choices=[('male','Male'),('female','Female')],blank=True,null=True)
-    age = models.IntegerField(blank=True,null=True)
     date_of_birth = models.DateField(blank=True,null=True)
     weight = models.FloatField(help_text="Weight in kg",blank=True,null=True)
     height = models.FloatField(help_text="Height in m",blank=True,null=True)
@@ -87,12 +87,19 @@ class Client(models.Model):
         ],blank=True,null=True
     )
     is_finished = models.BooleanField(default=False)
+    @property
+    def age(self):
+        today = date.today()
+        return today.year - self.date_birth.year - (
+            (today.month, today.day) < (self.date_birth.month, self.date_birth.day)
+        )
     def __str__(self):
         return self.name
 
 class LabResult(models.Model):
     
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="lab_results")
+    follow_up = models.ForeignKey('FollowUp', on_delete=models.CASCADE, related_name="lab_results", blank=True, null=True)
     test_name = models.CharField(max_length=100,blank=True,null=True)
     result = models.CharField(max_length=50,blank=True,null=True)
     reference_range = models.CharField(max_length=50,blank=True,null=True)
@@ -106,6 +113,7 @@ class LabResult(models.Model):
 class Medication(models.Model):
     
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="medications",)
+    follow_up = models.ForeignKey('FollowUp', on_delete=models.CASCADE, related_name="medications", blank=True, null=True)
     name = models.CharField(max_length=100,blank=True,null=True)
     dosage = models.CharField(max_length=100,blank=True,null=True)
     notes = models.TextField(blank=True, null=True)    
@@ -113,20 +121,53 @@ class Medication(models.Model):
     def __str__(self):
         return f"{self.name} - {self.client.name}"
 
-# class MealPlan(models.Model):
-#     
-#     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="meal_plans")
-#     description = models.TextField()
-#     total_calories = models.FloatField(null=True, blank=True)
+
 
 class FollowUp(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="follow_ups")
     date = models.DateField(blank=True, null=True)
+    weight = models.FloatField(help_text="Weight in kg",blank=True,null=True)
+    height = models.FloatField(help_text="Height in m",blank=True,null=True)
+    physical_activity = models.CharField(
+        max_length=20, choices=PHYSICAL_ACTIVITY_CHOICES,blank=True,null=True
+    )
+    ward_type = models.CharField(
+        max_length=50,
+        choices=[
+            ("outpatient", "Out-patient"),
+            ("icu", "ICU"),
+            ("medical", "Medical Ward"),
+            ("cardiac", "Cardiac Ward"),
+            ("others", "Others"),
+        ],blank=True,null=True
+    )
+    stress_factor = models.CharField(
+        max_length=30,
+        choices=STRESS_FACTOR_CHOICES,
+        null=True,
+        blank=True,
+    )
+
+    feeding_type = models.CharField(
+        max_length=50,
+        choices=[
+            ("oral", "Oral"),
+            ("enteral_parenteral", "Enteral & Parenteral"),
+            ("tpn", "TPN")
+        ],blank=True,null=True
+    )
+    is_finished = models.BooleanField(default=False)
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"Follow-up for {self.client.name} on {self.date}"
 
+
+# class MealPlan(models.Model):
+#     
+#     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="meal_plans")
+#     description = models.TextField()
+#     total_calories = models.FloatField(null=True, blank=True)
 class Appointment(models.Model):
     
     patient_name = models.ForeignKey(Client, on_delete=models.CASCADE,blank=True, null=True)
