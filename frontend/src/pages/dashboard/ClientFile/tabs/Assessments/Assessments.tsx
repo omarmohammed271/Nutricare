@@ -5,8 +5,12 @@ import {
   CardContent,
   Grid,
   Button,
-  useTheme
+  useTheme,
+  Collapse,
+  IconButton,
+  Typography
 } from '@mui/material';
+import { ExpandMore, ExpandLess } from '@mui/icons-material';
 import { AssessmentData, CalculationResults, AdimeNote } from './types';
 import { defaultAssessmentData, defaultCalculations, defaultAdimeNote } from './constants';
 import { AssessmentForm, CalculationsPanel, AdimeNotePanel } from './components';
@@ -19,6 +23,9 @@ const Assessments = () => {
   const [formData, setFormData] = useState<AssessmentData>(defaultAssessmentData);
   const [calculations, setCalculations] = useState<CalculationResults>(defaultCalculations);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [editingFields, setEditingFields] = useState<Set<string>>(new Set());
+  const [calculationsExpanded, setCalculationsExpanded] = useState<boolean>(true);
+  const [adimeNoteExpanded, setAdimeNoteExpanded] = useState<boolean>(true);
 
   // Generate dynamic ADIME Note content based on form data
   const generateAdimeNote = () => {
@@ -66,11 +73,58 @@ const Assessments = () => {
 
   const dynamicAdimeNote = generateAdimeNote();
 
-  // Load data from context on mount
+  // Load data from context on mount and when context changes
   useEffect(() => {
     console.log('📥 Loading context data into form:', contextData.assessment);
-    setFormData(contextData.assessment);
-  }, [contextData.assessment]);
+    console.log('📥 Current form data:', formData);
+    console.log('📥 Editing fields count:', editingFields.size);
+    
+    // Check if context has meaningful data to load
+    const hasContextData = contextData.assessment && 
+      Object.values(contextData.assessment).some(value => value && value !== '');
+    
+    console.log('📥 Has context data:', hasContextData);
+    
+    // Also check if current form data is empty and context has data
+    const currentFormEmpty = !formData.name && !formData.gender && !formData.dateOfBirth;
+    const shouldLoadData = hasContextData || (currentFormEmpty && contextData.assessment);
+    
+    console.log('📥 Current form empty:', currentFormEmpty);
+    console.log('📥 Should load data:', shouldLoadData);
+    
+    if (shouldLoadData) {
+      console.log('✅ Updating form data from context');
+      setFormData(contextData.assessment);
+    } else {
+      console.log('⏭️ No meaningful context data to load');
+    }
+  }, [contextData.assessment, formData]);
+
+  // Additional useEffect to check localStorage directly if context fails
+  useEffect(() => {
+    const isEditMode = localStorage.getItem('isEditMode') === 'true';
+    const currentFormEmpty = !formData.name && !formData.gender && !formData.dateOfBirth;
+    
+    if (isEditMode && currentFormEmpty) {
+      console.log('🔍 Edit mode detected with empty form, checking localStorage directly...');
+      const savedData = localStorage.getItem('clientFileData');
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData);
+          console.log('📋 Found saved data in localStorage:', parsedData.assessment);
+          
+          if (parsedData.assessment && Object.values(parsedData.assessment).some(value => value && value !== '')) {
+            console.log('✅ Loading data directly from localStorage');
+            setFormData(parsedData.assessment);
+            // Also update the context
+            updateAssessment(parsedData.assessment);
+          }
+        } catch (error) {
+          console.error('❌ Error parsing saved data:', error);
+        }
+      }
+    }
+  }, [formData, updateAssessment]);
 
   // Debug: Log whenever formData changes
   useEffect(() => {
@@ -87,6 +141,9 @@ const Assessments = () => {
     console.log(`🔄 Assessment field changed: ${field} = ${newValue}`);
     console.log('📝 Updated data:', updatedData);
     
+    // Mark field as being edited
+    setEditingFields(prev => new Set(prev).add(field));
+    
     setFormData(updatedData);
     
     // Update context
@@ -102,6 +159,16 @@ const Assessments = () => {
         return newErrors;
       });
     }
+  };
+
+  const handleInputBlur = (field: keyof AssessmentData) => () => {
+    // Remove field from editing set when user finishes editing
+    setEditingFields(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(field);
+      return newSet;
+    });
+    console.log(`✅ Finished editing field: ${field}`);
   };
 
   const handleMacroSliderChange = (macro: keyof typeof calculations.macronutrients) => (event: Event, newValue: number | number[]) => {
@@ -130,6 +197,7 @@ const Assessments = () => {
               <AssessmentForm 
                 formData={formData}
                 onInputChange={handleInputChange}
+                onInputBlur={handleInputBlur}
                 validationErrors={validationErrors}
               />
 
@@ -162,12 +230,31 @@ const Assessments = () => {
             mb: 3,
             bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2'
           }}>
-            <CardContent sx={{ p: 3 }}>
-              <CalculationsPanel 
-                calculations={calculations}
-                onMacroSliderChange={handleMacroSliderChange}
-              />
-            </CardContent>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between',
+              p: 2,
+              borderBottom: calculationsExpanded ? '1px solid #e0e0e0' : 'none'
+            }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.mode === 'dark' ? '#fff' : '#333' }}>
+                Real-Time Auto Calculations
+              </Typography>
+              <IconButton 
+                onClick={() => setCalculationsExpanded(!calculationsExpanded)}
+                sx={{ color: theme.palette.mode === 'dark' ? '#fff' : '#333' }}
+              >
+                {calculationsExpanded ? <ExpandLess /> : <ExpandMore />}
+              </IconButton>
+            </Box>
+            <Collapse in={calculationsExpanded}>
+              <CardContent sx={{ p: 3 }}>
+                <CalculationsPanel 
+                  calculations={calculations}
+                  onMacroSliderChange={handleMacroSliderChange}
+                />
+              </CardContent>
+            </Collapse>
           </Card>
 
           {/* ADIME Note */}
@@ -176,9 +263,28 @@ const Assessments = () => {
             boxShadow: 2,
             bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2'
           }}>
-            <CardContent sx={{ p: 3 }}>
-              <AdimeNotePanel adimeNote={dynamicAdimeNote} />
-            </CardContent>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between',
+              p: 2,
+              borderBottom: adimeNoteExpanded ? '1px solid #e0e0e0' : 'none'
+            }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.mode === 'dark' ? '#fff' : '#333' }}>
+                ADIME Note
+              </Typography>
+              <IconButton 
+                onClick={() => setAdimeNoteExpanded(!adimeNoteExpanded)}
+                sx={{ color: theme.palette.mode === 'dark' ? '#fff' : '#333' }}
+              >
+                {adimeNoteExpanded ? <ExpandLess /> : <ExpandMore />}
+              </IconButton>
+            </Box>
+            <Collapse in={adimeNoteExpanded}>
+              <CardContent sx={{ p: 3 }}>
+                <AdimeNotePanel adimeNote={dynamicAdimeNote} />
+              </CardContent>
+            </Collapse>
           </Card>
         </Grid>
       </Grid>

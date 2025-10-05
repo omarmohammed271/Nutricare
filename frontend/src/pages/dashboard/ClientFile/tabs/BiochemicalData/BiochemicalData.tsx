@@ -14,7 +14,7 @@ import { useClientFile } from '../../context/ClientFileContext';
 
 const BiochemicalData = () => {
   const theme = useTheme();
-  const { formData: contextData, updateBiochemical } = useClientFile();
+  const { formData: contextData, updateBiochemical, existingData } = useClientFile();
   const [tests, setTests] = useState<LabResult[]>([]);
   const [addTestDialog, setAddTestDialog] = useState<AddTestDialogState>({
     open: false,
@@ -26,12 +26,24 @@ const BiochemicalData = () => {
     date: new Date().toISOString().split('T')[0]
   });
 
-  // Load data from context on mount
+  // Load existing lab results from API data (for display only, not for editing)
   useEffect(() => {
-    if (contextData.biochemical.labResults.length > 0) {
-      setTests(contextData.biochemical.labResults);
+    if (existingData.labResults.length > 0) {
+      setTests(existingData.labResults);
+    } else {
+      setTests([]);
     }
-  }, [contextData.biochemical.labResults]);
+  }, [existingData.labResults]);
+
+  // Clear local lab results when form context is cleared (after submission)
+  useEffect(() => {
+    if (contextData.biochemical.labResults.length === 0 && tests.some(test => !test.id || test.id < 1000)) {
+      // Only clear new lab results, keep existing ones
+      const existingTests = tests.filter(test => test.id && test.id >= 1000);
+      setTests(existingTests);
+      console.log('🧹 Cleared new lab results from local state after form context was cleared');
+    }
+  }, [contextData.biochemical.labResults, tests]);
 
   // Generate dynamic ADIME Note content based on form data
   const generateAdimeNote = () => {
@@ -112,15 +124,17 @@ const BiochemicalData = () => {
         result: addTestDialog.result,
         reference_range: addTestDialog.reference_range,
         interpretation: addTestDialog.interpretation,
-        file: addTestDialog.file || '',
+        file: addTestDialog.file || null, // Store null instead of empty string
         date: addTestDialog.date
       };
       
       const updatedTests = [...tests, newTest];
       setTests(updatedTests);
       
-      // Update context with lab results
-      updateBiochemical({ labResults: updatedTests });
+      // Only send NEW lab results to context (not existing ones from API)
+      const newTests = tests.filter(test => !test.id || test.id < 1000); // Existing tests have IDs from API (usually > 1000)
+      const contextTests = [...newTests, newTest];
+      updateBiochemical({ labResults: contextTests });
       
       setAddTestDialog({
         open: false,
@@ -141,7 +155,10 @@ const BiochemicalData = () => {
   const handleDeleteTest = (id: number) => {
     const updatedTests = tests.filter(test => test.id !== id);
     setTests(updatedTests);
-    updateBiochemical({ labResults: updatedTests });
+    
+    // Only send NEW lab results to context (not existing ones from API)
+    const newTests = updatedTests.filter(test => !test.id || test.id < 1000); // Existing tests have IDs from API (usually > 1000)
+    updateBiochemical({ labResults: newTests });
   };
 
   return (

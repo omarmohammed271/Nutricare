@@ -7,15 +7,9 @@ import {
   TextField,
   Grid,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Autocomplete,
   useTheme
 } from '@mui/material';
 import { AddMedicationDialogState } from '../types';
-import { medicationOptions, frequencyOptions, routeOptions } from '../constants';
 
 interface AddMedicationDialogProps {
   dialogState: AddMedicationDialogState;
@@ -51,158 +45,15 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
       </DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12} md={6}>
-            <Autocomplete
-              freeSolo
-              options={medicationOptions}
+          <Grid item xs={12}>
+            <TextField
+              label="Medication Name"
               value={dialogState.name}
-              onChange={(event, newValue) => onDialogChange('name', newValue || '')}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Medication Name"
-                  size="small"
-                  fullWidth
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
-                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
-                    },
-                    '& .MuiFormLabel-root': {
-                      color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
-                    }
-                  }}
-                />
-              )}
-            />
-          </Grid>
-          
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Dosage"
-              value={dialogState.dosage}
-              onChange={(e) => onDialogChange('dosage', e.target.value)}
+              onChange={(e) => onDialogChange('name', e.target.value)}
               fullWidth
               size="small"
-              placeholder="e.g., 500mg, 10mg"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
-                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
-                },
-                '& .MuiFormLabel-root': {
-                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
-                }
-              }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Frequency</InputLabel>
-              <Select
-                value={dialogState.frequency}
-                onChange={(e) => onDialogChange('frequency', e.target.value)}
-                sx={{
-                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
-                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
-                }}
-              >
-                {frequencyOptions.map((freq) => (
-                  <MenuItem key={freq} value={freq}>{freq}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Route</InputLabel>
-              <Select
-                value={dialogState.route}
-                onChange={(e) => onDialogChange('route', e.target.value)}
-                sx={{
-                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
-                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
-                }}
-              >
-                {routeOptions.map((route) => (
-                  <MenuItem key={route} value={route}>{route}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Start Date"
-              type="date"
-              value={dialogState.startDate}
-              onChange={(e) => onDialogChange('startDate', e.target.value)}
-              fullWidth
-              size="small"
-              InputLabelProps={{ shrink: true }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
-                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
-                },
-                '& .MuiFormLabel-root': {
-                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
-                }
-              }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="End Date (Optional)"
-              type="date"
-              value={dialogState.endDate}
-              onChange={(e) => onDialogChange('endDate', e.target.value)}
-              fullWidth
-              size="small"
-              InputLabelProps={{ shrink: true }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
-                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
-                },
-                '& .MuiFormLabel-root': {
-                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
-                }
-              }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Prescribed By"
-              value={dialogState.prescribedBy}
-              onChange={(e) => onDialogChange('prescribedBy', e.target.value)}
-              fullWidth
-              size="small"
-              placeholder="e.g., Dr. Smith"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
-                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
-                },
-                '& .MuiFormLabel-root': {
-                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
-                }
-              }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Indication"
-              value={dialogState.indication}
-              onChange={(e) => onDialogChange('indication', e.target.value)}
-              fullWidth
-              size="small"
-              placeholder="e.g., Diabetes, Hypertension"
+              placeholder="e.g., Aspirin, Metformin"
+              required
               sx={{
                 '& .MuiOutlinedInput-root': {
                   backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
@@ -217,7 +68,27 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
           
           <Grid item xs={12}>
             <TextField
-              label="Notes (Optional)"
+              label="Dosage"
+              value={dialogState.dosage}
+              onChange={(e) => onDialogChange('dosage', e.target.value)}
+              fullWidth
+              size="small"
+              placeholder="e.g., 100mg, 500mg twice daily"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                },
+                '& .MuiFormLabel-root': {
+                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
+                }
+              }}
+            />
+          </Grid>
+          
+          <Grid item xs={12}>
+            <TextField
+              label="Notes"
               value={dialogState.notes}
               onChange={(e) => onDialogChange('notes', e.target.value)}
               fullWidth
