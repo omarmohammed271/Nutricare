@@ -13,7 +13,10 @@ import {
   IconButton,
   Accordion,
   AccordionSummary,
-  AccordionDetails
+  AccordionDetails,
+  FormControlLabel,
+  Checkbox,
+  Alert
 } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon } from '@mui/icons-material';
@@ -44,7 +47,7 @@ import { useClientFile } from '../../context/ClientFileContext';
 
 const MealPlans: React.FC = () => {
   const theme = useTheme();
-  const { formData: contextData, updateMealPlan } = useClientFile();
+  const { formData: contextData, updateMealPlan, isDataComplete, setCompletionStatus } = useClientFile();
   const [tabValue, setTabValue] = useState('1');
   const [basketItems, setBasketItems] = useState<SelectedFood[]>([]);
   const [mealPlans, setMealPlans] = useState<MealPlan[]>(mockMealPlans);
@@ -533,6 +536,89 @@ const MealPlans: React.FC = () => {
               <AdimeNotePanel />
             </AccordionDetails>
           </Accordion>
+
+          {/* Completion Status Section */}
+          <Card 
+            sx={{ 
+              borderRadius: 3, 
+              boxShadow: 2, 
+              height: 'fit-content',
+              mt: 2,
+              bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
+            }}
+          >
+            <CardContent sx={{ 
+              p: 3, 
+              bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2' 
+            }}>
+              <Typography variant="h6" sx={{ 
+                fontWeight: 700, 
+                mb: 3, 
+                color: '#02BE6A' 
+              }}>
+                Complete Client File
+              </Typography>
+              
+              <Box sx={{ mb: 2 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={contextData.isComplete || false}
+                      onChange={(e) => setCompletionStatus(e.target.checked)}
+                      sx={{
+                        color: '#02BE6A',
+                        '&.Mui-checked': {
+                          color: '#02BE6A',
+                        },
+                      }}
+                    />
+                  }
+                  label={
+                    <Typography variant="body1" sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#2c3e50',
+                      fontWeight: 500
+                    }}>
+                      Mark as complete and ready for submission
+                    </Typography>
+                  }
+                />
+              </Box>
+
+              {!isDataComplete() && (
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                  <Typography variant="body2">
+                    <strong>Incomplete Data:</strong> Please ensure all required fields are filled before marking as complete.
+                  </Typography>
+                </Alert>
+              )}
+
+              {isDataComplete() && !contextData.isComplete && (
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  <Typography variant="body2">
+                    <strong>Ready to Complete:</strong> All required data is present. You can now mark this client file as complete.
+                  </Typography>
+                </Alert>
+              )}
+
+              {contextData.isComplete && (
+                <Alert severity="success" sx={{ mb: 2 }}>
+                  <Typography variant="body2">
+                    <strong>Complete:</strong> This client file is marked as complete and ready for final submission.
+                  </Typography>
+                </Alert>
+              )}
+
+              <Typography variant="body2" sx={{ 
+                color: theme.palette.mode === 'dark' ? '#cccccc' : '#666666',
+                fontSize: '0.875rem',
+                lineHeight: 1.6
+              }}>
+                Only check this box when you have completed all required information across all steps. 
+                This will mark the client file as complete and ready for final submission.
+              </Typography>
+            </CardContent>
+          </Card>
+
         </Grid>
       </Grid>
 
@@ -552,6 +638,7 @@ const MealPlans: React.FC = () => {
         onSave={handleSaveNote}
         onNoteChange={handleNoteChange}
       />
+
     </Box>
   );
 };

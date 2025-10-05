@@ -3,13 +3,14 @@ export interface LabResult {
   id: number;
   test_name: string;
   result: string;
-  reference_range: string;
-  interpretation: string;
-  file: string | File;
+  reference_range?: string;
+  interpretation?: string;
+  file?: string | File | null;
   date: string;
 }
 
 export interface Medication {
+  id?: string | number;
   name: string;
   dosage: string;
   notes: string;
@@ -28,6 +29,7 @@ export interface ClientFileData {
   feeding_type: "oral" | "enteral_parenteral" | "tpn";
   lab_results: LabResult[];
   medications: Medication[];
+  is_finished?: boolean;
 }
 
 // Form validation types
@@ -63,5 +65,6 @@ export interface ClientFileFormData {
   biochemical: BiochemicalFormData;
   medication: MedicationFormData;
   mealPlan: MealPlanFormData;
+  isComplete?: boolean;
 }
 

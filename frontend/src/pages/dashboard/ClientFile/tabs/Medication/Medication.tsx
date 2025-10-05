@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -9,22 +9,30 @@ import {
   useTheme,
   Autocomplete,
   TextField,
-  CircularProgress
+  CircularProgress,
+  Button,
+  Alert
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import { Medication as MedicationInterface, AddMedicationDialogState } from './types';
 import { interactionAlerts } from './constants';
-import { AddMedicationDialog } from './components';
+import { AddMedicationDialog, DrugSelectionDialog } from './components';
 import { useClientFile } from '../../context/ClientFileContext';
-import { useDrugCategories, useSearchDrugs } from '@src/hooks/useNutritionApi';
-import { Drug } from '@src/services/nutritionApi';
+import { useDrugCategories, useSearchDrugs, useDrugDetails } from '@src/hooks/useNutritionApi';
+import { Drug, DrugCategory, DrugDetail } from '@src/services/nutritionApi';
+import { useDrugSelection } from './hooks';
 
 const Medication = () => {
   const theme = useTheme();
-  const { formData: contextData, updateMedication } = useClientFile();
+  const { formData: contextData, updateMedication, existingData, clientId } = useClientFile();
   const [medications, setMedications] = useState<MedicationInterface[]>([]);
   const [selectedDrug, setSelectedDrug] = useState<Drug | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [autoSearchEnabled, setAutoSearchEnabled] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const [addMedicationDialog, setAddMedicationDialog] = useState<AddMedicationDialogState>({
     open: false,
     name: '',
@@ -51,26 +59,114 @@ const Medication = () => {
     error: searchError 
   } = useSearchDrugs(searchQuery);
 
-  // Load data from context on mount
-  useEffect(() => {
-    if (contextData.medication.medications.length > 0) {
-      // Convert MedicationApi to MedicationInterface format
-      const contextMedications = contextData.medication.medications.map(med => ({
-        id: Date.now().toString() + Math.random(),
-        name: med.name,
-        dosage: med.dosage,
-        frequency: 'Daily', // Default frequency
-        route: 'Oral', // Default route
-        startDate: new Date().toISOString().split('T')[0],
-        endDate: '',
-        prescribedBy: 'Dr. Smith', // Default prescriber
-        indication: 'Treatment', // Default indication
-        notes: med.notes || '',
-        status: 'Active' as const
-      }));
-      setMedications(contextMedications);
+  // Ensure drugCategories is always an array
+  const drugCategories = Array.isArray(drugCategoriesData) ? drugCategoriesData : [];
+
+  // Create a flat list of all drugs with category information
+  const allDrugsWithCategory = useMemo(() => {
+    const drugs: any[] = [];
+    
+    drugCategories.forEach(category => {
+      if (category.drugs && Array.isArray(category.drugs)) {
+        category.drugs.forEach(drug => {
+          drugs.push({
+            ...drug,
+            categoryName: category.name,
+            categoryId: category.id,
+            groupBy: category.name
+          });
+        });
+      }
+    });
+    
+    return drugs;
+  }, [drugCategories]);
+
+  // Always show all drugs, but filter them when searching
+  const availableDrugs = useMemo(() => {
+    if (searchQuery && searchQuery.length > 0) {
+      const searchTerm = searchQuery.toLowerCase().trim();
+      const results: any[] = [];
+
+      // Add all drugs from matching categories
+      drugCategories.forEach(category => {
+        const categoryMatches = category.name.toLowerCase().includes(searchTerm);
+        if (categoryMatches && category.drugs) {
+          category.drugs.forEach(drug => {
+            if (!results.some(d => d.id === drug.id)) {
+              results.push({
+                ...drug,
+                categoryName: category.name,
+                categoryId: category.id,
+                groupBy: category.name
+              });
+            }
+          });
+        }
+      });
+
+      // Add drugs that match by name (even if category didn't match)
+      drugCategories.forEach(category => {
+        if (category.drugs) {
+          category.drugs.forEach(drug => {
+            const drugMatches = drug.name.toLowerCase().includes(searchTerm);
+            if (drugMatches && !results.some(d => d.id === drug.id)) {
+              results.push({
+                ...drug,
+                categoryName: category.name,
+                categoryId: category.id,
+                groupBy: category.name
+              });
+            }
+          });
+        }
+      });
+
+      return results;
     }
-  }, [contextData.medication.medications]);
+
+    // No search query - show all drugs
+    return allDrugsWithCategory;
+  }, [searchQuery, allDrugsWithCategory, drugCategories]);
+
+  // Prepare drugs for autocomplete options with grouped display
+  const allDrugs = useMemo(() => {
+    const drugs = availableDrugs.map((drug: any) => {
+      const mappedDrug = {
+        ...drug,
+        name: drug.name || 'Unknown Drug',
+        id: drug.id || 0,
+        categoryName: drug.categoryName || 'Other',
+        groupBy: drug.categoryName || 'Other'
+      };
+      
+      return mappedDrug;
+    });
+    
+    return drugs;
+  }, [availableDrugs]);
+
+  // Drug selection hook
+  const {
+    drugSelection,
+    selectDrug,
+    openDialog: openDrugDialog,
+    closeDialog: closeDrugDialog,
+    clearSelection: clearDrugSelection,
+    drugDetails,
+    detailsLoading,
+    detailsError
+  } = useDrugSelection();
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
+
 
   // Filter medications based on search query
   const filteredMedications = medications.filter(medication =>
@@ -130,11 +226,17 @@ const Medication = () => {
     setAddMedicationDialog(prev => ({ ...prev, [field]: value }));
   };
 
-  // Load data from context on mount
+  // Load medications from context data
   useEffect(() => {
+    console.log('🔄 Medication useEffect triggered');
+    console.log('📋 Context medications:', contextData.medication.medications);
+    console.log('📋 Current local medications:', medications);
+    console.log('📋 Context medications length:', contextData.medication.medications.length);
+    console.log('📋 Current local medications length:', medications.length);
+    
     if (contextData.medication.medications.length > 0) {
       const contextMedications = contextData.medication.medications.map((med, index) => ({
-        id: index.toString(),
+        id: med.id?.toString() || `med-${index}-${Date.now()}`,
         name: med.name,
         dosage: med.dosage,
         frequency: '', // Not in API schema
@@ -146,9 +248,30 @@ const Medication = () => {
         status: 'Active' as const,
         notes: med.notes || ''
       }));
-      setMedications(contextMedications);
+      
+      console.log('🔄 Mapped context medications:', contextMedications);
+      
+      // Only update if the medications are different to avoid infinite loops
+      const currentIds = medications.map(med => med.id).sort();
+      const newIds = contextMedications.map(med => med.id).sort();
+      
+      console.log('🔍 Current IDs:', currentIds);
+      console.log('🔍 New IDs:', newIds);
+      console.log('🔍 IDs match:', JSON.stringify(currentIds) === JSON.stringify(newIds));
+      
+      if (JSON.stringify(currentIds) !== JSON.stringify(newIds)) {
+        console.log('✅ Updating medications with new data');
+        setMedications(contextMedications);
+      } else {
+        console.log('⏭️ Skipping update - medications unchanged');
+      }
+    } else {
+      console.log('🧹 Clearing medications - no context data');
+      // Clear medications if no context data
+      setMedications([]);
     }
   }, [contextData.medication.medications]);
+
 
   const handleSaveMedication = () => {
     if (addMedicationDialog.name && addMedicationDialog.dosage) {
@@ -169,13 +292,15 @@ const Medication = () => {
       const updatedMedications = [...medications, newMedication];
       setMedications(updatedMedications);
       
-      // Update context with medications in API format
+      // Send ALL medications to context (both new and existing ones)
       const apiMedications = updatedMedications.map(med => ({
+        id: med.id,
         name: med.name,
         dosage: med.dosage,
         notes: med.notes || ''
       }));
       
+      console.log('📤 Sending medications to context (replacement):', apiMedications);
       updateMedication({ medications: apiMedications });
       
       setAddMedicationDialog({
@@ -204,22 +329,70 @@ const Medication = () => {
     }
   };
 
+  const handleSearchInputChange = (event: any, newInputValue: string) => {
+    setSearchInput(newInputValue);
+    
+    // Clear any existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
+    // Set a new timeout to enable auto-search after 2 seconds of typing
+    if (newInputValue.trim().length > 0) {
+      searchTimeoutRef.current = setTimeout(() => {
+        setAutoSearchEnabled(true);
+        setSearchQuery(newInputValue);
+        setIsSearching(true);
+      }, 2000);
+    } else {
+      // If input is cleared, disable auto-search
+      setAutoSearchEnabled(false);
+      setIsSearching(false);
+    }
+  };
+
+  const handleSearch = () => {
+    setSearchQuery(searchInput);
+    setIsSearching(true);
+    setAutoSearchEnabled(true);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setSearchInput("");
+    setIsSearching(false);
+    setAutoSearchEnabled(false);
+    
+    // Clear any pending timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+  };
+
   const handleCloseDialog = () => {
     setAddMedicationDialog(prev => ({ ...prev, open: false }));
   };
 
   const handleDeleteMedication = (id: string) => {
+    console.log('🗑️ Deleting medication with ID:', id);
+    console.log('📋 Current medications before deletion:', medications);
+    
     const updatedMedications = medications.filter(med => med.id !== id);
+    console.log('📋 Medications after deletion:', updatedMedications);
+    
     setMedications(updatedMedications);
     
-    // Update context with medications in API format
+    // Send ALL medications to context (both new and existing ones)
     const apiMedications = updatedMedications.map(med => ({
+      id: med.id,
       name: med.name,
       dosage: med.dosage,
       notes: med.notes || ''
     }));
     
+    console.log('📤 Sending to context (replacement):', apiMedications);
     updateMedication({ medications: apiMedications });
+    console.log('✅ Context updated with medications (replacement)');
   };
 
   return (
@@ -240,25 +413,215 @@ const Medication = () => {
               color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
             }}>
               Search and Add Medications
+              {!isSearching && (
+                <Typography component="span" sx={{ 
+                  fontSize: "12px", 
+                  color: theme.palette.mode === 'dark' ? "#888888" : "#666666",
+                  ml: 1,
+                  fontWeight: 400
+                }}>
+                  ({allDrugsWithCategory.length} drugs available - type to search or select from dropdown)
+                </Typography>
+              )}
+              {isSearching && (
+                <Typography component="span" sx={{ 
+                  fontSize: "12px", 
+                  color: theme.palette.mode === 'dark' ? "#888888" : "#666666",
+                  ml: 1,
+                  fontWeight: 400
+                }}>
+                  (Search results)
+                  {availableDrugs.length > 0 && (
+                    <Typography component="span" sx={{ 
+                      fontSize: "11px", 
+                      color: "#02BE6A",
+                      ml: 1,
+                      fontWeight: 500
+                    }}>
+                      {availableDrugs.length} result{availableDrugs.length !== 1 ? 's' : ''} found
+                    </Typography>
+                  )}
+                </Typography>
+              )}
             </Typography>
             
+            {categoriesError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                Failed to load drug categories: {categoriesError.message}
+              </Alert>
+            )}
+            
+            {searchError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                Failed to search drugs: {searchError.message}
+              </Alert>
+            )}
+            
+            {searchLoading && (
+              <Box sx={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: 1, 
+                mb: 2,
+                p: 2,
+                backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#f8f9fa",
+                borderRadius: 2,
+                border: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef"
+              }}>
+                <CircularProgress size={16} />
+                <Typography variant="body2" sx={{ 
+                  color: theme.palette.mode === 'dark' ? "#cccccc" : "#666666",
+                  fontSize: "12px"
+                }}>
+                  Searching by drug name or category...
+                </Typography>
+              </Box>
+            )}
+            
             <Autocomplete
-              options={searchResults || []}
+              options={allDrugs}
               value={selectedDrug}
-              onChange={(event, newValue) => handleDrugSelect(newValue)}
-              getOptionLabel={(option) => option.name || ''}
-              isOptionEqualToValue={(option, value) => !!option && !!value && option.id === value.id}
+              onChange={(event, newValue) => {
+                handleDrugSelect(newValue);
+                setIsOpen(false); // Close dropdown after selection
+                setSearchInput(newValue ? newValue.name : "");
+              }}
+              getOptionLabel={(option) => {
+                return option.name || 'Unknown';
+              }}
               loading={searchLoading || categoriesLoading}
               disabled={searchLoading || categoriesLoading}
-              onInputChange={useCallback((event: any, newInputValue: string) => {
-                if (event) {
-                  setSearchQuery(newInputValue);
+              inputValue={searchInput}
+              onInputChange={(event, newInputValue, reason) => {
+                if (reason === 'input') {
+                  setSearchInput(newInputValue);
+                  
+                  // Clear any existing timeout
+                  if (searchTimeoutRef.current) {
+                    clearTimeout(searchTimeoutRef.current);
+                  }
+                  
+                  // Set a new timeout to trigger search after 2.5 seconds of inactivity
+                  if (newInputValue.trim().length > 0) {
+                    searchTimeoutRef.current = setTimeout(() => {
+                      setSearchQuery(newInputValue);
+                      setIsSearching(true);
+                    }, 500);
+                  } else {
+                    // If input is cleared, reset search immediately
+                    setSearchQuery("");
+                    setIsSearching(false);
+                  }
+                } else if (reason === 'clear') {
+                  setSearchInput("");
+                  setSearchQuery("");
+                  setIsSearching(false);
+                  
+                  // Clear any existing timeout
+                  if (searchTimeoutRef.current) {
+                    clearTimeout(searchTimeoutRef.current);
+                  }
                 }
-              }, [])}
+              }}
+              open={isOpen && allDrugs.length > 0}
+              onOpen={() => {
+                if (allDrugs.length > 0) {
+                  setIsOpen(true);
+                }
+              }}
+              onFocus={() => {
+                if (allDrugs.length > 0) {
+                  setIsOpen(true);
+                }
+              }}
+              onClose={(event, reason) => {
+                // Close dropdown when clicking outside or pressing escape
+                if (reason === 'blur' || reason === 'escape') {
+                  setIsOpen(false);
+                }
+              }}
+              autoComplete={false}
+              freeSolo={false}
+              clearOnBlur={false}
+              disablePortal={false}
+              PopperComponent={(props) => {
+                const { disablePortal, anchorEl, children, ...otherProps } = props;
+                return (
+                  <div {...otherProps} style={{ ...otherProps.style, zIndex: 1300 }}>
+                    {typeof children === 'function' ? children({ placement: 'bottom-start' }) : children}
+                  </div>
+                );
+              }}
+              filterOptions={(options, { inputValue }) => {
+                return options;
+              }}
+              noOptionsText=""
+              slotProps={{
+                popper: {
+                  sx: {
+                    '& .MuiAutocomplete-noOptions': {
+                      display: 'none'
+                    }
+                  }
+                }
+              }}
+              groupBy={(option) => {
+                return option.categoryName || 'Other';
+              }}
+              renderGroup={(params) => (
+                <li key={params.key}>
+                  <Box sx={{ 
+                    px: 2, 
+                    py: 1, 
+                    backgroundColor: theme.palette.mode === 'dark' ? "#1a1a1a" : "#f5f5f5",
+                    borderBottom: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e0e0e0"
+                  }}>
+                    <Typography variant="subtitle2" sx={{ 
+                      fontWeight: 600, 
+                      color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
+                      fontSize: "14px"
+                    }}>
+                      {params.group}
+                    </Typography>
+                  </Box>
+                  <ul style={{ padding: 0, margin: 0 }}>
+                    {params.children}
+                  </ul>
+                </li>
+              )}
+              renderOption={(props, option) => {
+                const { key, ...otherProps } = props;
+                return (
+                  <Box 
+                    key={key}
+                    component="li" 
+                    {...otherProps} 
+                    sx={{ 
+                      pl: 4, 
+                      py: 1,
+                      "&:hover": {
+                        backgroundColor: theme.palette.mode === 'dark' ? "#1a1a1a" : "#f5f5f5"
+                      }
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ 
+                      color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
+                      fontSize: "14px"
+                    }}>
+                      {option.name}
+                    </Typography>
+                  </Box>
+                );
+              }}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  placeholder="Search for medications..."
+                  onClick={() => {
+                    if (allDrugs.length > 0) {
+                      setIsOpen(true);
+                    }
+                  }}
+                  placeholder="Search or select a drug..."
                   variant="outlined"
                   InputProps={{
                     ...params.InputProps,
@@ -266,30 +629,48 @@ const Medication = () => {
                       <>
                         {(searchLoading || categoriesLoading) ? (
                           <CircularProgress color="inherit" size={20} />
-                        ) : null}
+                        ) : (
+                          <Box sx={{ display: 'flex', gap: 0.5 }}>
+                            {searchInput.trim() && (
+                              <IconButton
+                                onClick={handleClearSearch}
+                                size="small"
+                                sx={{
+                                  color: theme.palette.mode === 'dark' ? "#888888" : "#666666",
+                                  "&:hover": {
+                                    color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000"
+                                  }
+                                }}
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </Box>
+                        )}
                         {params.InputProps.endAdornment}
                       </>
                     ),
+                    sx: {
+                      color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+                    }
                   }}
                   sx={{
-                    '& .MuiOutlinedInput-root': {
-                      backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                    "& .MuiOutlinedInput-root": {
+                      backgroundColor: theme.palette.mode === 'dark' ? "#111111" : "#ffffff",
                       borderRadius: 2,
+                      "& fieldset": {
+                        borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#02BE6A",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#02BE6A",
+                      },
                     }
                   }}
                 />
               )}
-              renderOption={(props, option) => {
-                const { key, ...optionProps } = props as any;
-                return (
-                  <Box key={key} component="li" {...optionProps}>
-                    <Typography variant="body2">
-                      {option.name}
-                    </Typography>
-                  </Box>
-                );
-              }}
-              noOptionsText="No medications found"
             />
           </Box>
 
@@ -478,6 +859,137 @@ const Medication = () => {
               </Box>
             </CardContent>
           </Card>
+
+          {/* Drug Interaction Check Section */}
+          <Card 
+            sx={{ 
+              borderRadius: 3, 
+              boxShadow: 2, 
+              height: 'fit-content',
+              mt: 2,
+              bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
+            }}
+          >
+            <CardContent sx={{ 
+              p: 3, 
+              bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2' 
+            }}>
+              <Typography variant="h6" sx={{ 
+                fontWeight: 700, 
+                mb: 3, 
+                color: '#02BE6A' 
+              }}>
+                Drug Interaction Check
+              </Typography>
+              
+              {drugSelection.selectedDrug ? (
+                <Box>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    mb: 2 
+                  }}>
+                    <Typography variant="h6" sx={{ 
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#2c3e50',
+                      fontWeight: 600
+                    }}>
+                      Selected Drug: {drugSelection.selectedDrug.name}
+                    </Typography>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={clearDrugSelection}
+                      sx={{
+                        borderColor: theme.palette.mode === 'dark' ? "#444444" : "#e0e0e0",
+                        color: theme.palette.mode === 'dark' ? "#ffffff" : "#2c3e50",
+                        textTransform: 'none'
+                      }}
+                    >
+                      Clear
+                    </Button>
+                  </Box>
+                  
+                  {detailsLoading && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                      <CircularProgress size={16} />
+                      <Typography variant="body2" sx={{ 
+                        color: theme.palette.mode === 'dark' ? '#cccccc' : '#666666'
+                      }}>
+                        Loading drug details...
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {detailsError && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                      Failed to load drug details: {detailsError.message}
+                    </Alert>
+                  )}
+
+                  {drugDetails && (
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ 
+                        fontWeight: 600,
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#2c3e50',
+                        mb: 1
+                      }}>
+                        Drug Effect:
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: theme.palette.mode === 'dark' ? '#cccccc' : '#666666',
+                        mb: 2,
+                        p: 2,
+                        backgroundColor: theme.palette.mode === 'dark' ? '#111111' : '#f8f9fa',
+                        borderRadius: 1,
+                        border: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef"
+                      }}>
+                        {drugDetails.drug_effect || 'No drug effect information available.'}
+                      </Typography>
+
+                      <Typography variant="subtitle2" sx={{ 
+                        fontWeight: 600,
+                        color: theme.palette.mode === 'dark' ? '#ffffff' : '#2c3e50',
+                        mb: 1
+                      }}>
+                        Nutritional Implications:
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: theme.palette.mode === 'dark' ? '#cccccc' : '#666666',
+                        p: 2,
+                        backgroundColor: theme.palette.mode === 'dark' ? '#111111' : '#f8f9fa',
+                        borderRadius: 1,
+                        border: theme.palette.mode === 'dark' ? "1px solid #333333" : "1px solid #e9ecef"
+                      }}>
+                        {drugDetails.nutritional_implications || 'No nutritional implications information available.'}
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              ) : (
+                <Box sx={{ textAlign: 'center', py: 2 }}>
+                  <Typography variant="body2" sx={{ 
+                    color: theme.palette.mode === 'dark' ? '#cccccc' : '#666666',
+                    mb: 2
+                  }}>
+                    No drug selected. Click below to check for drug interactions with current medications.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    onClick={openDrugDialog}
+                    sx={{
+                      bgcolor: "#02BE6A",
+                      '&:hover': { bgcolor: "#02a85a" },
+                      textTransform: 'none',
+                      fontWeight: 600
+                    }}
+                  >
+                    Select Drug
+                  </Button>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
 
@@ -487,6 +999,14 @@ const Medication = () => {
         onDialogChange={handleDialogChange}
         onClose={handleCloseDialog}
         onSave={handleSaveMedication}
+      />
+
+      {/* Drug Selection Dialog */}
+      <DrugSelectionDialog
+        open={drugSelection.isDialogOpen}
+        onClose={closeDrugDialog}
+        onDrugSelect={selectDrug}
+        selectedDrug={drugSelection.selectedDrug}
       />
     </Box>
   );
