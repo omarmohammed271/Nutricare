@@ -55,89 +55,30 @@ class FollowUpSerializer(serializers.ModelSerializer):
 
         return follow_up
     def update(self, instance, validated_data):
-        print('-'*50)
-        print("Updating FollowUp - validated_data:", validated_data)
-        print('-'*50)
-        
         lab_results_data = validated_data.pop('lab_results', [])
         meds_data = validated_data.pop('medications', [])
-        
-        print('lab_results_data:', lab_results_data)
-        print('meds_data:', meds_data)
-        print('-'*50)
 
-        # تحديث بيانات FollowUp الأساسية
+        # تحديث بيانات المتابعة الأساسية
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
 
-        # تحديث أو إنشاء LabResults
+        # حذف التحاليل السابقة وإعادة إنشائها
+        instance.lab_results.all().delete()
         for lab_data in lab_results_data:
-            lab_id = lab_data.get('id', None)
-            
-            # إزالة follow_up من البيانات إذا كان موجوداً
             lab_data.pop('follow_up', None)
             lab_data.pop('client', None)
-            
-            if lab_id:
-                # تحديث LabResult موجود
-                try:
-                    lab_instance = LabResult.objects.get(
-                        id=lab_id, 
-                        client=instance.client, 
-                        follow_up=instance
-                    )
-                    for attr, value in lab_data.items():
-                        setattr(lab_instance, attr, value)
-                    lab_instance.save()
-                except LabResult.DoesNotExist:
-                    LabResult.objects.create(
-                        client=instance.client, 
-                        follow_up=instance, 
-                        **lab_data
-                    )
-            else:
-                # إنشاء LabResult جديد
-                LabResult.objects.create(
-                    client=instance.client, 
-                    follow_up=instance, 
-                    **lab_data
-                )
+            LabResult.objects.create(client=instance.client, follow_up=instance, **lab_data)
 
-        # تحديث أو إنشاء Medications
+        # حذف الأدوية السابقة وإعادة إنشائها
+        instance.medications.all().delete()
         for med_data in meds_data:
-            med_id = med_data.get('id', None)
-            
-            # إزالة follow_up و client من البيانات إذا كانا موجودين
             med_data.pop('follow_up', None)
             med_data.pop('client', None)
-            
-            if med_id:
-                # تحديث Medication موجود
-                try:
-                    med_instance = Medication.objects.get(
-                        id=med_id, 
-                        client=instance.client, 
-                        follow_up=instance
-                    )
-                    for attr, value in med_data.items():
-                        setattr(med_instance, attr, value)
-                    med_instance.save()
-                except Medication.DoesNotExist:
-                    Medication.objects.create(
-                        client=instance.client, 
-                        follow_up=instance, 
-                        **med_data
-                    )
-            else:
-                # إنشاء Medication جديد
-                Medication.objects.create(
-                    client=instance.client, 
-                    follow_up=instance, 
-                    **med_data
-                )
+            Medication.objects.create(client=instance.client, follow_up=instance, **med_data)
 
         return instance
+
 class ClientSerializer(serializers.ModelSerializer):
     lab_results = BiochemicalSerializer(many=True, required=False)   
     medications = MedicationSerializer(many=True, required=False) 
@@ -189,6 +130,8 @@ class ClientSerializer(serializers.ModelSerializer):
             Medication.objects.create(client=instance, **med_data)
 
         return instance
+
+
 class ClientNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
