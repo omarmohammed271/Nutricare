@@ -27,10 +27,11 @@ import {
 interface AssessmentFormProps {
   formData: AssessmentData;
   onInputChange: (field: keyof AssessmentData) => (event: any) => void;
+  onInputBlur: (field: keyof AssessmentData) => () => void;
   validationErrors?: Record<string, string>;
 }
 
-const AssessmentForm: React.FC<AssessmentFormProps> = ({ formData, onInputChange, validationErrors = {} }) => {
+const AssessmentForm: React.FC<AssessmentFormProps> = ({ formData, onInputChange, onInputBlur, validationErrors = {} }) => {
   const theme = useTheme();
   const { choices, loading, error } = useClientChoices();
 
@@ -151,6 +152,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ formData, onInputChange
             placeholder="Enter your Weight kg"
             value={formData.weight}
             onChange={onInputChange('weight')}
+            onBlur={onInputBlur('weight')}
             fullWidth
             size="small"
             sx={{
@@ -176,6 +178,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ formData, onInputChange
             placeholder="Enter your Height cm"
             value={formData.height}
             onChange={onInputChange('height')}
+            onBlur={onInputBlur('height')}
             fullWidth
             size="small"
             sx={{

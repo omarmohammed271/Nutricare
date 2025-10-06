@@ -29,9 +29,9 @@ export const biochemicalValidationSchema = yup.object({
     yup.object({
       test_name: yup.string().required("Test name is required"),
       result: yup.string().required("Result is required"),
-      reference_range: yup.string().optional(),
-      interpretation: yup.string().optional(),
-      file: yup.string().optional(),
+      reference_range: yup.string().nullable().optional(),
+      interpretation: yup.string().nullable().optional(),
+      file: yup.mixed().nullable().optional(),
       date: yup.string().required("Date is required"),
     })
   ),

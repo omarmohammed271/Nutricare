@@ -1,3 +1,18 @@
+import { Drug, DrugDetail } from '@src/services/nutritionApi';
+
+// Drug-related interfaces
+export interface DrugWithCategory extends Drug {
+  categoryName: string;
+  categoryId: number;
+  groupBy: string;
+}
+
+export interface DrugSelectionState {
+  selectedDrug: Drug | null;
+  drugDetails: DrugDetail | null;
+  isDialogOpen: boolean;
+}
+
 export interface Medication {
   id: string;
   name: string;

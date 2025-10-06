@@ -85,13 +85,6 @@ const MENU_ITEMS: MenuItemTypes[] = [
     url: "/clients/onboarding",
   },
   {
-    key: "clients-file",
-    label: "Client File",
-    isTitle: false,
-    icon: LuUsers,
-    url: "/client-file",
-  },
-  {
     key: "calendar",
     label: "Calendar",
     isTitle: false,

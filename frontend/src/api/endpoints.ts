@@ -103,6 +103,13 @@ export const getClients = async (): Promise<Client[]> => {
     });
 }
 
+export const createFollowUp = async (clientId: number, data: any) => {
+    console.log(`🌐 Making API call to /clients/${clientId}/follow-up/`);
+    return httpClient.post(`/clients/${clientId}/follow-up/`, data).then(res => {
+        console.log('📊 Follow-up API response received:', res.data);
+        return res.data;
+    });
+}
 // Appointments API
 interface Appointment {
   patient_name_id: number;
