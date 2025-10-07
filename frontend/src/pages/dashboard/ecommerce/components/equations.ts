@@ -13,7 +13,7 @@
 export const equationsConfig = [
   {
     "id": 1,
-    "code": "bmi",
+    "code": "Body Mass Index",
     "name": "Body Mass Index (BMI)",
     "system": { "name": "inputs_system", "label": "Inputs System", "type": "select", "options": ["Metric (kg, m)", "Imperial (lb, in)"] },
     "inputs": [
@@ -29,7 +29,7 @@ export const equationsConfig = [
   },
   {
     "id": 2,
-    "code": "ibw_hamwi",
+    "code": "Ideal Body Weight by Hamwi",
     "name": "Ideal Body Weight (Hamwi)",
     "inputs": [
       { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },
@@ -38,7 +38,7 @@ export const equationsConfig = [
   },
   {
     "id": 3,
-    "code": "ibw_lemmens",
+    "code": "Ideal Body Weight by Lemmens",
     "name": "Ideal Body Weight (Lemmens)",
     "inputs": [
       { "name": "height_m", "label": "Height (m)", "type": "number" },
@@ -46,27 +46,8 @@ export const equationsConfig = [
     ]
   },
   {
-    "id": 11,
-    "code": "demi_span_height",
-    "name": "Demi-Span Height Estimate",
-    "inputs": [
-      { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },
-      { "name": "demi_span_cm", "label": "Demi-Span (cm)", "type": "number" }
-    ]
-  },
-  {
-    "id": 12,
-    "code": "knee_height_estimate",
-    "name": "Knee Height Estimate",
-    "inputs": [
-      { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },
-      { "name": "knee_height_cm", "label": "Knee Height (cm)", "type": "number" },
-      { "name": "age_years", "label": "Age (years)", "type": "number" }
-    ]
-  },
-  {
     "id": 4,
-    "code": "percent_ibw",
+    "code": "percent ideal body weight",
     "name": "Percent of Ideal Body Weight",
     "inputs": [
       { "name": "weight_kg", "label": "Weight (kg)", "type": "number" },
@@ -76,7 +57,7 @@ export const equationsConfig = [
   },
   {
     "id": 5,
-    "code": "adjusted_body_weight",
+    "code": "adjusted body weight",
     "name": "Adjusted Body Weight",
     "inputs": [
       { "name": "weight_kg", "label": "Weight (kg)", "type": "number" },
@@ -86,7 +67,7 @@ export const equationsConfig = [
   },
   {
     "id": 6,
-    "code": "dry_weight",
+    "code": "dry weight",
     "name": "Dry Weight",
     "inputs": [
       { "name": "weight_kg", "label": "Weight (kg)", "type": "number" },
@@ -107,7 +88,7 @@ export const equationsConfig = [
   },
   {
     "id": 7,
-    "code": "ibw_amputation",
+    "code": "Ideal Body Weight amputation",
     "name": "Ideal Body Weight (Amputation)",
     "inputs": [
       { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },
@@ -117,7 +98,7 @@ export const equationsConfig = [
   },
   {
     "id": 8,
-    "code": "waist_height_ratio",
+    "code": "waist height ratio",
     "name": "Waist-to-Height Ratio",
     "inputs": [
       { "name": "waist_cm", "label": "Waist (cm)", "type": "number" },
@@ -127,7 +108,7 @@ export const equationsConfig = [
   },
   {
     "id": 9,
-    "code": "percent_ubw",
+    "code": "percent usual body weight",
     "name": "Percent of Usual Body Weight",
     "inputs": [
       { "name": "weight_kg", "label": "Weight (kg)", "type": "number" },
@@ -136,7 +117,7 @@ export const equationsConfig = [
   },
   {
     "id": 10,
-    "code": "percent_weight_change",
+    "code": "percent weight change",
     "name": "Percent Weight Change",
     "inputs": [
       { "name": "current_weight_kg", "label": "Current Weight (kg)", "type": "number" },
@@ -144,8 +125,37 @@ export const equationsConfig = [
     ]
   },
   {
+    "id": 11,
+    "code": "Ideal Body Weight for Spinal Cord Injury",
+    "name": "Ideal Body Weight (Spinal Cord Injury)",
+    "inputs": [
+      { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },
+      { "name": "height_in_inches", "label": "Height (inches)", "type": "number" },
+      { "name": "classification", "label": "Classification", "type": "select", "options": ["none", "paraplegia", "tetraplegia", "quadriplegia"] }
+    ]
+  },
+  {
+    "id": 12,
+    "code": "demi span height",
+    "name": "Demi-Span Height Estimate",
+    "inputs": [
+      { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },
+      { "name": "demi_span_cm", "label": "Demi-Span (cm)", "type": "number" }
+    ]
+  },
+  {
     "id": 13,
-    "code": "harris_benedict",
+    "code": "knee height estimate",
+    "name": "Knee Height Estimate",
+    "inputs": [
+      { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },
+      { "name": "knee_height_cm", "label": "Knee Height (cm)", "type": "number" },
+      { "name": "age_years", "label": "Age (years)", "type": "number" }
+    ]
+  },
+  {
+    "id": 14,
+    "code": "harris benedict",
     "name": "Harris-Benedict Equation",
     "inputs": [
       { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },
@@ -155,8 +165,8 @@ export const equationsConfig = [
     ]
   },
   {
-    "id": 14,
-    "code": "mifflin_st_jeor",
+    "id": 15,
+    "code": "mifflin st jeor",
     "name": "Mifflin-St Jeor Equation",
     "inputs": [
       { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },
@@ -166,8 +176,8 @@ export const equationsConfig = [
     ]
   },
   {
-    "id": 15,
-    "code": "total_energy_expenditure",
+    "id": 16,
+    "code": "total energy expenditure",
     "name": "Total Energy Expenditure",
     "inputs": [
       { "name": "hbe_kcal", "label": "HBE kcal/day", "type": "number" },
@@ -176,8 +186,8 @@ export const equationsConfig = [
     ]
   },
   {
-    "id": 16,
-    "code": "penn_state",
+    "id": 17,
+    "code": "Penn state",
     "name": "Penn State Equation",
     "inputs": [
       { "name": "mifflin_kcal", "label": "Mifflin-St Jeor kcal/day", "type": "number" },
@@ -192,7 +202,7 @@ export const equationsConfig = [
     ]
   },
   {
-    "id": 17,
+    "id": 18,
     "code": "cunningham",
     "name": "Cunningham Equation",
     "inputs": [
@@ -201,24 +211,24 @@ export const equationsConfig = [
     ]
   },
   {
-    "id": 18,
-    "code": "baseline_fluid_bsa",
+    "id": 19,
+    "code": "baseline fluid bsa",
     "name": "Baseline Fluid (BSA Method)",
     "inputs": [
       { "name": "weight_kg", "label": "Weight (kg)", "type": "number" }
     ]
   },
   {
-    "id": 19,
-    "code": "baseline_fluid_standard",
+    "id": 20,
+    "code": "baseline fluid standard",
     "name": "Baseline Fluid (Standard)",
     "inputs": [
       { "name": "weight_kg", "label": "Weight (kg)", "type": "number" }
     ]
   },
   {
-    "id": 20,
-    "code": "insulin_to_carb_ratio",
+    "id": 21,
+    "code": "insulin to carb ratio",
     "name": "Insulin-to-Carbohydrate Ratio",
     "inputs": [
       { "name": "total_daily_dose_iu", "label": "Total Daily Dose (IU)", "type": "number" },
@@ -226,8 +236,8 @@ export const equationsConfig = [
     ]
   },
   {
-    "id": 21,
-    "code": "insulin_sensitivity",
+    "id": 22,
+    "code": "insulin sensitivity",
     "name": "Insulin Sensitivity Factor",
     "inputs": [
       { "name": "total_daily_dose_iu", "label": "Total Daily Dose (IU)", "type": "number" },
@@ -235,8 +245,8 @@ export const equationsConfig = [
     ]
   },
   {
-    "id": 22,
-    "code": "insulin_initial_dose",
+    "id": 23,
+    "code": "insulin initial dose",
     "name": "Initial Insulin Dose",
     "inputs": [
       { "name": "weight_kg", "label": "Weight (kg)", "type": "number" },
@@ -244,8 +254,8 @@ export const equationsConfig = [
     ]
   },
   {
-    "id": 23,
-    "code": "free_water_deficit",
+    "id": 24,
+    "code": "free water deficit",
     "name": "Free Water Deficit",
     "inputs": [
       { "name": "weight_kg", "label": "Weight (kg)", "type": "number" },
@@ -255,8 +265,8 @@ export const equationsConfig = [
     ]
   },
   {
-    "id": 24,
-    "code": "nitrogen_balance",
+    "id": 25,
+    "code": "nitrogen balance",
     "name": "Nitrogen Balance",
     "inputs": [
       { "name": "protein_intake_g", "label": "Protein Intake (g)", "type": "number" },
@@ -264,8 +274,8 @@ export const equationsConfig = [
     ]
   },
   {
-    "id": 25,
-    "code": "nutrition_risk_index",
+    "id": 26,
+    "code": "nutrition risk index",
     "name": "Nutrition Risk Index",
     "inputs": [
       { "name": "albumin_g_dl", "label": "Albumin (g/dL)", "type": "number" },
@@ -275,8 +285,8 @@ export const equationsConfig = [
     ]
   },
   {
-    "id": 26,
-    "code": "total_lymphocyte_count",
+    "id": 27,
+    "code": "total lymphocyte count",
     "name": "Total Lymphocyte Count",
     "inputs": [
       { "name": "percent_lymphocytes", "label": "Lymphocytes (%)", "type": "number" },
@@ -284,18 +294,8 @@ export const equationsConfig = [
     ]
   },
   {
-    "id": 27,
-    "code": "ibw_sci",
-    "name": "Ideal Body Weight (Spinal Cord Injury)",
-    "inputs": [
-      { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },
-      { "name": "height_in_inches", "label": "Height (inches)", "type": "number" },
-      { "name": "classification", "label": "Classification", "type": "select", "options": ["none", "paraplegia", "tetraplegia", "quadriplegia"] }
-    ]
-  },
-  {
     "id": 28,
-    "code": "growth_velocity",
+    "code": "growth velocity",
     "name": "Growth Velocity",
     "inputs": [
       { "name": "weight_t1", "label": "Weight at T1 (kg)", "type": "number" },
@@ -313,31 +313,30 @@ export const equationsConfig = [
   },
   {
     "id": 29,
-    "code": "harris_benedict",
+    "code": "HBE",
     "name": "Harris–Benedict (HBE)",
     "inputs": [
       { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },
       { "name": "weight_kg", "label": "Weight (kg)", "type": "number" },
       { "name": "height_cm", "label": "Height (cm)", "type": "number" },
-      { "name": "age_years", "label": "Age (years)", "type": "number" }
+      { "name": "age", "label": "Age (years)", "type": "number" }
     ]
-  }
-  ,
+  },
   {
     "id": 30,
-    "code": "mifflin_st_jeor",
+    "code": "BMR",
     "name": "Mifflin-St Jeor",
     "inputs": [
       { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },
       { "name": "weight_kg", "label": "Weight (kg)", "type": "number" },
       { "name": "height_cm", "label": "Height (cm)", "type": "number" },
-      { "name": "age_years", "label": "Age (years)", "type": "number" }
+      { "name": "age", "label": "Age (years)", "type": "number" }
     ]
   },
   {
     "id": 31,
-    "code": "quick_method",
-    "name": "Quick Method",
+    "code": "Quick Method for Macronutrients & Fluid",
+    "name": "Quick Method for Macronutrients & Fluid",
     "inputs": [
       { "name": "weight_kg", "label": "Weight (kg)", "type": "number" },
       { "name": "min_factor", "label": "Min Factor", "type": "number" },
@@ -346,7 +345,7 @@ export const equationsConfig = [
   },
   {
     "id": 32,
-    "code": "macronutrient_distribution",
+    "code": "Macronutrients Distribution",
     "name": "Macronutrient Distribution",
     "inputs": [
       { "name": "calories", "label": "Calories (kcal)", "type": "number" },
@@ -357,8 +356,8 @@ export const equationsConfig = [
   },
   {
     "id": 33,
-    "code": "rda_calories",
-    "name": "RDA Calories",
+    "code": "RDA Calorie needs",
+    "name": "Recommended Dietary Allowance for Calories",
     "inputs": [
       { "name": "age", "label": "Age (years)", "type": "number" },
       { "name": "weight", "label": "Weight (kg)", "type": "number" },
@@ -367,8 +366,8 @@ export const equationsConfig = [
   },
   {
     "id": 34,
-    "code": "rda_protein",
-    "name": "RDA Protein",
+    "code": "RDA Protein needs",
+    "name": "Recommended Dietary Allowance for Protein",
     "inputs": [
       { "name": "age", "label": "Age (years)", "type": "number" },
       { "name": "weight", "label": "Weight (kg)", "type": "number" },
@@ -377,7 +376,7 @@ export const equationsConfig = [
   },
   {
     "id": 35,
-    "code": "schofield_bmr",
+    "code": "schofield bmr",
     "name": "Schofield BMR",
     "inputs": [
       { "name": "age", "label": "Age (years)", "type": "number" },
@@ -390,7 +389,7 @@ export const equationsConfig = [
   },
   {
     "id": 36,
-    "code": "catchup_growth",
+    "code": "catchup growth",
     "name": "Catch-up Growth",
     "inputs": [
       { "name": "age", "label": "Age (years)", "type": "number" },
@@ -401,8 +400,8 @@ export const equationsConfig = [
   },
   {
     "id": 37,
-    "code": "gestation_adjusted_age",
-    "name": "Gestation-Adjusted Age",
+    "code": "gestation adjusted age",
+    "name": "Gestation-Adjusted Age (Correction Age)",
     "inputs": [
       { "name": "gestational_age_weeks", "label": "Gestational Age (weeks)", "type": "number" },
       { "name": "chronological_age_weeks", "label": "Chronological Age (weeks)", "type": "number" }
@@ -410,7 +409,7 @@ export const equationsConfig = [
   },
   {
     "id": 38,
-    "code": "preterm_estimated_requirement",
+    "code": "preterm estimated requirement",
     "name": "Preterm Estimated Requirement",
     "inputs": [
       { "name": "weight_kg", "label": "Weight (kg)", "type": "number" }
@@ -418,7 +417,7 @@ export const equationsConfig = [
   },
   {
     "id": 39,
-    "code": "ireton_jones_ventilator",
+    "code": "ireton jones ventilator",
     "name": "Ireton-Jones (Ventilator-Dependent)",
     "inputs": [
       { "name": "age", "label": "Age (years)", "type": "number" },
@@ -430,7 +429,7 @@ export const equationsConfig = [
   },
   {
     "id": 40,
-    "code": "ireton_jones_spontaneous",
+    "code": "Ireton jones Spontaneous",
     "name": "Ireton-Jones (Spontaneous)",
     "inputs": [
       { "name": "age", "label": "Age (years)", "type": "number" },
@@ -440,7 +439,7 @@ export const equationsConfig = [
   },
   {
     "id": 41,
-    "code": "curreri_burn",
+    "code": "Curreri burn",
     "name": "Curreri Burn",
     "inputs": [
       { "name": "age", "label": "Age (years)", "type": "number" },
@@ -451,8 +450,8 @@ export const equationsConfig = [
   },
   {
     "id": 42,
-    "code": "pregnancy_energy_needs",
-    "name": "Pregnancy Energy Needs",
+    "code": "pregnancy energy needs",
+    "name": "Energy Needs in Pregnancy by Age & BMI group",
     "inputs": [
       { "name": "age", "label": "Age (years)", "type": "number" },
       { "name": "prepregnancy_weight_kg", "label": "Pre-pregnancy Weight (kg)", "type": "number" },
@@ -464,8 +463,8 @@ export const equationsConfig = [
   },
   {
     "id": 43,
-    "code": "pregnancy_simple_addition",
-    "name": "Pregnancy Simple Addition",
+    "code": "pregnancy simple addition",
+    "name": "Energy Needs in Pregnancy",
     "inputs": [
       { "name": "calorie_requirement", "label": "Base Calorie Requirement", "type": "number" },
       { "name": "trimester", "label": "Trimester", "type": "select", "options": ["first", "second", "third"] }
@@ -473,7 +472,7 @@ export const equationsConfig = [
   },
   {
     "id": 44,
-    "code": "lactation_energy_needs",
+    "code": "lactation energy needs",
     "name": "Energy Needs in Lactation",
     "inputs": [
       { "name": "calorie_requirement", "label": "Base Calorie Requirement (kcal/day)", "type": "number" },
@@ -482,8 +481,8 @@ export const equationsConfig = [
   },
   {
     "id": 45,
-    "code": "down_syndrome_calorie",
-    "name": "Down Syndrome Calorie Needs",
+    "code": "down syndrome calorie",
+    "name": "Down Syndrome Calorie Requirement (Ages 5–12)",
     "inputs": [
       { "name": "age", "label": "Age (years)", "type": "number" },
       { "name": "gender", "label": "Gender", "type": "select", "options": ["male", "female"] },
@@ -492,8 +491,8 @@ export const equationsConfig = [
   },
   {
     "id": 46,
-    "code": "cerebral_palsy_calorie",
-    "name": "Cerebral Palsy Calorie Needs",
+    "code": "cerebral palsy calorie",
+    "name": "Cerebral Palsy Calorie Requirement (Ages 5–12)",
     "inputs": [
       { "name": "age", "label": "Age (years)", "type": "number" },
       { "name": "height_cm", "label": "Height (cm)", "type": "number" },
@@ -502,8 +501,8 @@ export const equationsConfig = [
   },
   {
     "id": 47,
-    "code": "prader_willi_calorie",
-    "name": "Prader-Willi Calorie Needs",
+    "code": "Prader Willi calorie",
+    "name": "Prader-willi Syndrome Calorie Requirement (Ages 5–12)",
     "inputs": [
       { "name": "height_cm", "label": "Height (cm)", "type": "number" },
       { "name": "goal", "label": "Goal", "type": "select", "options": ["maintain", "weight_loss"] }
@@ -511,8 +510,19 @@ export const equationsConfig = [
   },
   {
     "id": 48,
-    "code": "prognostic_inflammatory_nutrition_index",
-    "name": "Prognostic Inflammatory and Nutritional Index (PINI)",
+    "code": "prognostic nutrition index",
+    "name": "Prognostic Nutrition Index (PNI)",
+    "inputs": [
+      { "name": "albumin", "label": "Albumin (g/dL)", "type": "number" },
+      { "name": "triceps_skin_fold", "label": "Triceps Skin Fold (mm)", "type": "number" },
+      { "name": "transferrin", "label": "Transferrin (mg/dL)", "type": "number" },
+      { "name": "delayed_skin_hypersensitivity", "label": "Delayed Skin Hypersensitivity (score)", "type": "number" }
+    ]
+  },
+  {
+    "id": 49,
+    "code": "prognostic inflammatory nutrition index",
+    "name": "Prognostic Inflammatory and Nutrition Index",
     "inputs": [
       { "name": "c_reactive_protein", "label": "C-Reactive Protein (mg/L)", "type": "number" },
       { "name": "alpha_1_acid_glycoprotein", "label": "Alpha-1 Acid Glycoprotein (g/L)", "type": "number" },
@@ -520,4 +530,5 @@ export const equationsConfig = [
       { "name": "albumin", "label": "Albumin (g/L)", "type": "number" }
     ]
   }
+  
 ];
