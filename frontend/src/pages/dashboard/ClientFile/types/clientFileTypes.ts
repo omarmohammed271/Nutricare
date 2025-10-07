@@ -14,6 +14,13 @@ export interface Medication {
   name: string;
   dosage: string;
   notes: string;
+  frequency?: string;
+  route?: string;
+  startDate?: string;
+  endDate?: string;
+  prescribedBy?: string;
+  indication?: string;
+  status?: string;
 }
 
 export interface ClientFileData {

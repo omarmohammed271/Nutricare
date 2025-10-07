@@ -77,6 +77,13 @@ interface Medication {
   name: string;
   dosage: string;
   notes: string;
+  frequency?: string;
+  route?: string;
+  startDate?: string;
+  endDate?: string;
+  prescribedBy?: string;
+  indication?: string;
+  status?: string;
 }
 
 interface Client {
@@ -119,6 +126,30 @@ export const createAppointment = async (data: any) => {
     });
 }
 
+export const getAppointments = async () => {
+    console.log('🌐 Making API call to /appointments/');
+    return httpClient.get('/appointments/').then(res => {
+        console.log('📊 Appointments API response received:', res.data);
+        return res.data;
+    });
+}
+
+export const deleteAppointment = async (id: number) => {
+    console.log('🌐 Making API call to delete appointment:', id);
+    return httpClient.delete(`/appointments/${id}/`).then(res => {
+        console.log('📊 Delete appointment API response received:', res.data);
+        return res.data;
+    });
+}
+
+export const patchAppointment = async (id: number, data: any) => {
+    console.log('🌐 Making API call to patch appointment:', id);
+    return httpClient.patch(`/appointments/${id}/`, data).then(res => {
+        console.log('📊 Patch appointment API response received:', res.data);
+        return res.data;
+    });
+}
+
 // Follow-up extended types and APIs
 export interface FollowUp {
   id: number;
@@ -129,6 +160,7 @@ export interface FollowUp {
   temperature?: number;
   status?: 'scheduled' | 'completed' | 'cancelled' | string;
   date?: string;
+  is_finished?: boolean;
   // nested copies for snapshotting at follow-up
   name?: string;
   gender?: string;
