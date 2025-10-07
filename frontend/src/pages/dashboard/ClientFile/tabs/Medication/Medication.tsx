@@ -14,6 +14,7 @@ import {
   Alert
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
+import { LuXCircle } from "react-icons/lu";
 import { Medication as MedicationInterface, AddMedicationDialogState } from './types';
 import { interactionAlerts } from './constants';
 import { AddMedicationDialog, DrugSelectionDialog } from './components';
@@ -74,19 +75,28 @@ const Medication = () => {
       }
     });
     
+    console.log('📊 ALL DRUGS WITH CATEGORY DATA:', drugs);
     return drugs;
   }, [drugCategories]);
 
   // Always show all drugs, but filter them when searching
   const availableDrugs = useMemo(() => {
+    console.log('🔍 SEARCH PROCESS STARTED');
+    console.log('🔍 Search Query:', searchQuery);
+    console.log('🔍 All Drug Categories:', drugCategories);
+
     if (searchQuery && searchQuery.length > 0) {
       const searchTerm = searchQuery.toLowerCase().trim();
+      console.log('🔍 Using local search, query:', searchTerm);
+      console.log('🔍 Available categories:', drugCategories.map(cat => cat.name));
+
       const results: any[] = [];
 
-      // Add all drugs from matching categories
+      // STEP 1: Add all drugs from matching categories
       drugCategories.forEach(category => {
         const categoryMatches = category.name.toLowerCase().includes(searchTerm);
         if (categoryMatches && category.drugs) {
+          console.log(`🔍 📂 Category match: "${category.name}" with ${category.drugs.length} drugs`);
           category.drugs.forEach(drug => {
             if (!results.some(d => d.id === drug.id)) {
               results.push({
@@ -95,12 +105,13 @@ const Medication = () => {
                 categoryId: category.id,
                 groupBy: category.name
               });
+              console.log(`🔍   💊 Added from category: "${drug.name}"`);
             }
           });
         }
       });
 
-      // Add drugs that match by name (even if category didn't match)
+      // STEP 2: Add drugs that match by name (even if category didn't match)
       drugCategories.forEach(category => {
         if (category.drugs) {
           category.drugs.forEach(drug => {
@@ -112,23 +123,32 @@ const Medication = () => {
                 categoryId: category.id,
                 groupBy: category.name
               });
+              console.log(`🔍 💊 Added by name: "${drug.name}" (Category: "${category.name}")`);
             }
           });
         }
       });
 
+      console.log('🔍 ✅ FINAL RESULTS:', results.length, 'drugs found');
       return results;
     }
 
     // No search query - show all drugs
+    console.log('🔍 No search query, showing all', allDrugsWithCategory.length, 'drugs');
     return allDrugsWithCategory;
   }, [searchQuery, allDrugsWithCategory, drugCategories]);
 
   // Prepare drugs for autocomplete options with grouped display
   const allDrugs = useMemo(() => {
+    console.log('🔍 PREPARING DRUGS FOR AUTOCOMPLETE');
+    console.log('   Available drugs count:', availableDrugs.length);
+    console.log('   Available drugs sample:', availableDrugs.slice(0, 3));
+    
+    // Use the drugs directly without adding extra properties
     const drugs = availableDrugs.map((drug: any) => {
       const mappedDrug = {
         ...drug,
+        // Ensure we have the required properties
         name: drug.name || 'Unknown Drug',
         id: drug.id || 0,
         categoryName: drug.categoryName || 'Other',
@@ -136,6 +156,17 @@ const Medication = () => {
       };
       
       return mappedDrug;
+    });
+    
+    console.log('🔍 PREPARED DRUGS FOR AUTOCOMPLETE:', drugs.length);
+    console.log('   Sample drug:', drugs[0]);
+    console.log('   All drugs structure check:', {
+      isArray: Array.isArray(drugs),
+      length: drugs.length,
+      hasName: drugs.length > 0 ? 'name' in drugs[0] : false,
+      hasId: drugs.length > 0 ? 'id' in drugs[0] : false,
+      hasCategoryName: drugs.length > 0 ? 'categoryName' in drugs[0] : false,
+      hasGroupBy: drugs.length > 0 ? 'groupBy' in drugs[0] : false
     });
     
     return drugs;
@@ -301,6 +332,7 @@ const Medication = () => {
   };
 
   const handleDrugSelect = (drug: Drug | null) => {
+    console.log('🔍 DRUG SELECTED:', drug);
     setSelectedDrug(drug);
     if (drug) {
       setAddMedicationDialog(prev => ({
@@ -340,6 +372,7 @@ const Medication = () => {
   };
 
   const handleClearSearch = () => {
+    console.log('🧹 CLEAR SEARCH BUTTON CLICKED');
     setSearchQuery("");
     setSearchInput("");
     setIsSearching(false);
@@ -350,6 +383,39 @@ const Medication = () => {
       clearTimeout(searchTimeoutRef.current);
     }
   };
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    console.log('🧹 CLEANUP EFFECT - Component mounted or about to unmount');
+    return () => {
+      console.log('🧹 CLEANUP EFFECT - Clearing timeout on unmount');
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Debug logging for drug selection
+  useEffect(() => {
+    console.log('💊 DRUG SELECTION EFFECT - Selected drug changed:', selectedDrug);
+    if (selectedDrug) {
+      console.log('💊 Drug selected, fetching details for drug:', selectedDrug.id);
+    }
+  }, [selectedDrug]);
+
+  // Debug logging for search state
+  useEffect(() => {
+    console.log('🔍 SEARCH STATE EFFECT - Search state changed');
+    console.log('   Search query:', searchQuery);
+    console.log('   Search input:', searchInput);
+    console.log('   Is searching:', isSearching);
+    console.log('   Available drugs count:', availableDrugs.length);
+    console.log('   All drugs for autocomplete:', allDrugs.length);
+    console.log('   First few options:', allDrugs.slice(0, 3).map(d => ({ name: d.name, category: d.categoryName })));
+    console.log('   Dropdown open condition:', searchInput.length > 0 && allDrugs.length > 0);
+    console.log('   Search query length:', searchQuery.length);
+    console.log('   All drugs length:', allDrugs.length);
+  }, [searchQuery, searchInput, isSearching, availableDrugs, allDrugs]);
 
   const handleCloseDialog = () => {
     setAddMedicationDialog(prev => ({ ...prev, open: false }));
@@ -469,18 +535,22 @@ const Medication = () => {
               options={allDrugs}
               value={selectedDrug}
               onChange={(event, newValue) => {
+                console.log('🔍 AUTOCOMPLETE - Drug selected:', newValue);
                 handleDrugSelect(newValue);
-                setIsOpen(false); // Close dropdown after selection
+                // Keep dropdown open after selection for continuous searching
                 setSearchInput(newValue ? newValue.name : "");
               }}
               getOptionLabel={(option) => {
+                console.log('🔍 AUTOCOMPLETE - Getting option label for:', option);
                 return option.name || 'Unknown';
               }}
               loading={searchLoading || categoriesLoading}
               disabled={searchLoading || categoriesLoading}
               inputValue={searchInput}
               onInputChange={(event, newInputValue, reason) => {
+                console.log('🔍 AUTOCOMPLETE - Input changed:', { newInputValue, reason });
                 if (reason === 'input') {
+                  console.log('🔍 AUTOCOMPLETE - User typing, setting 0.5 second delay before search');
                   setSearchInput(newInputValue);
                   
                   // Clear any existing timeout
@@ -488,18 +558,21 @@ const Medication = () => {
                     clearTimeout(searchTimeoutRef.current);
                   }
                   
-                  // Set a new timeout to trigger search after 2.5 seconds of inactivity
+                  // Set a new timeout to trigger search after 0.5 seconds of inactivity
                   if (newInputValue.trim().length > 0) {
                     searchTimeoutRef.current = setTimeout(() => {
+                      console.log('🔍 AUTOCOMPLETE - 0.5 seconds of inactivity, triggering search');
                       setSearchQuery(newInputValue);
                       setIsSearching(true);
                     }, 500);
                   } else {
                     // If input is cleared, reset search immediately
+                    console.log('🔍 AUTOCOMPLETE - Input cleared, resetting search immediately');
                     setSearchQuery("");
                     setIsSearching(false);
                   }
                 } else if (reason === 'clear') {
+                  console.log('🔍 AUTOCOMPLETE - Input cleared via clear button');
                   setSearchInput("");
                   setSearchQuery("");
                   setIsSearching(false);
@@ -510,19 +583,15 @@ const Medication = () => {
                   }
                 }
               }}
-              open={isOpen && allDrugs.length > 0}
+              // Keep dropdown open while typing, but close it when something is selected
+              open={(!selectedDrug && searchInput.length > 0 && allDrugs.length > 0) || isOpen}
               onOpen={() => {
-                if (allDrugs.length > 0) {
-                  setIsOpen(true);
-                }
-              }}
-              onFocus={() => {
-                if (allDrugs.length > 0) {
-                  setIsOpen(true);
-                }
+                console.log('🔍 AUTOCOMPLETE - Dropdown opened');
+                setIsOpen(true);
               }}
               onClose={(event, reason) => {
-                // Close dropdown when clicking outside or pressing escape
+                console.log('🔍 AUTOCOMPLETE - Dropdown closed:', reason);
+                // Only close on blur or escape, not on selection
                 if (reason === 'blur' || reason === 'escape') {
                   setIsOpen(false);
                 }
@@ -629,7 +698,7 @@ const Medication = () => {
                                   }
                                 }}
                               >
-                                <DeleteIcon fontSize="small" />
+                                <LuXCircle size={16} />
                               </IconButton>
                             )}
                           </Box>

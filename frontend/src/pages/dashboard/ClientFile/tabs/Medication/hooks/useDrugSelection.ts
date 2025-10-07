@@ -4,7 +4,7 @@ import { useDrugDetails } from '@src/hooks/useNutritionApi';
 
 export interface DrugSelectionState {
   selectedDrug: Drug | null;
-  drugDetails: DrugDetail | null;
+  drugDetails: DrugDetail | null | undefined;
   isDialogOpen: boolean;
 }
 
