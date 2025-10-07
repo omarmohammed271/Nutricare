@@ -21,6 +21,7 @@ import { useClientFile } from '../../context/ClientFileContext';
 import { useDrugCategories, useSearchDrugs, useDrugDetails } from '@src/hooks/useNutritionApi';
 import { Drug, DrugCategory, DrugDetail } from '@src/services/nutritionApi';
 import { useDrugSelection } from './hooks';
+import FollowUpPanel from '../../components/FollowUpPanel';
 
 const Medication = () => {
   const theme = useTheme();
@@ -37,12 +38,6 @@ const Medication = () => {
     open: false,
     name: '',
     dosage: '',
-    frequency: '',
-    route: '',
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: '',
-    prescribedBy: '',
-    indication: '',
     notes: ''
   });
 
@@ -279,13 +274,6 @@ const Medication = () => {
         id: Date.now().toString(),
         name: addMedicationDialog.name,
         dosage: addMedicationDialog.dosage,
-        frequency: addMedicationDialog.frequency,
-        route: addMedicationDialog.route,
-        startDate: addMedicationDialog.startDate,
-        endDate: addMedicationDialog.endDate || undefined,
-        prescribedBy: addMedicationDialog.prescribedBy,
-        indication: addMedicationDialog.indication,
-        status: 'Active',
         notes: addMedicationDialog.notes
       };
       
@@ -307,12 +295,6 @@ const Medication = () => {
         open: false,
         name: '',
         dosage: '',
-        frequency: '',
-        route: '',
-        startDate: '',
-        endDate: '',
-        prescribedBy: '',
-        indication: '',
         notes: ''
       });
     }
@@ -395,13 +377,18 @@ const Medication = () => {
     console.log('✅ Context updated with medications (replacement)');
   };
 
+  const isFollowUpMode = typeof window !== 'undefined' && localStorage.getItem('isFollowUpMode') === 'true';
+  const followUpClientId = typeof window !== 'undefined' ? Number(localStorage.getItem('followUpClientId') || 0) : 0;
+
   return (
-    <Box sx={{ width: '100%', p: 1 }}>
-      <Grid container spacing={3}>
+    <Box sx={{ width: '100%', p: 1, overflow: 'visible' }}>
+      {isFollowUpMode && followUpClientId > 0 && (
+        <FollowUpPanel clientId={followUpClientId} tab="medication" />
+      )}
+      <Grid container spacing={3} sx={{ alignItems: 'flex-start' }}>
         {/* Left Column - Main Content */}
         <Grid item sx={{ 
           bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2',
-          height:'100%', 
           p:2,
           borderRadius:'20px' 
         }} xs={12} lg={8}>
@@ -736,18 +723,6 @@ const Medication = () => {
                           }}>
                             <strong>Dosage:</strong> {medication.dosage}
                           </Typography>
-                          <Typography variant="body2" sx={{ 
-                            color: theme.palette.mode === 'dark' ? '#cccccc' : '#666',
-                            mb: 0.5
-                          }}>
-                            <strong>Frequency:</strong> {medication.frequency}
-                          </Typography>
-                          <Typography variant="body2" sx={{ 
-                            color: theme.palette.mode === 'dark' ? '#cccccc' : '#666',
-                            mb: 0.5
-                          }}>
-                            <strong>Route:</strong> {medication.route}
-                          </Typography>
                           {medication.notes && (
                             <Typography variant="body2" sx={{ 
                               color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
@@ -778,17 +753,23 @@ const Medication = () => {
         </Grid>
 
         {/* Right Column - ADIME Note Panel */}
-        <Grid item xs={12} lg={4}>
-          <Card 
-            sx={{ 
-              borderRadius: 3, 
-              boxShadow: 2, 
-              height: 'fit-content',
-              position: 'sticky',
-              top: 20,
-              bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#FFFFFF'
-            }}
-          >
+        <Grid item xs={12} lg={4} sx={{ alignSelf: 'flex-start' }}>
+          <Box sx={{ 
+            position: 'sticky',
+            top: 80,
+            zIndex: 1000,
+            height: 'fit-content'
+          }}>
+            <Card 
+              sx={{ 
+                borderRadius: 3, 
+                boxShadow: 2, 
+                maxHeight: 'calc(100vh - 40px)',
+                overflow: 'auto',
+                bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2',
+                width: '100%'
+              }}
+            >
             <CardContent sx={{ 
               p: 3, 
               bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2' 
@@ -990,6 +971,7 @@ const Medication = () => {
               )}
             </CardContent>
           </Card>
+          </Box>
         </Grid>
       </Grid>
 

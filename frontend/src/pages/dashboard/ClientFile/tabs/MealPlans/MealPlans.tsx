@@ -44,6 +44,7 @@ import { NoteDialogState, FoodDropdownDialogState, MealPlan } from './types';
 import { themeColors, mockMealPlans } from './constants';
 import { removeFromBasket, addToBasket } from './utils';
 import { useClientFile } from '../../context/ClientFileContext';
+import FollowUpPanel from '../../components/FollowUpPanel';
 
 const MealPlans: React.FC = () => {
   const theme = useTheme();
@@ -81,6 +82,11 @@ const MealPlans: React.FC = () => {
   useEffect(() => {
     updateMealPlan({ notes });
   }, [notes, updateMealPlan]);
+
+  // Memoize the data completeness check to prevent unnecessary re-renders
+  const isComplete = React.useMemo(() => {
+    return isDataComplete();
+  }, [isDataComplete]);
 
   // Custom hooks
   const { nutritionSummary, updateNutrition } = useNutritionCalculation();
@@ -176,12 +182,20 @@ const MealPlans: React.FC = () => {
     updateNutrition(basketItems);
   }, [basketItems, updateNutrition]);
 
+  const isFollowUpMode = typeof window !== 'undefined' && localStorage.getItem('isFollowUpMode') === 'true';
+  const followUpClientId = typeof window !== 'undefined' ? Number(localStorage.getItem('followUpClientId') || 0) : 0;
+
   return (
     <Box sx={{ 
       width: '100%', 
       bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : 'white', 
       minHeight: '100vh' 
     }}>
+      {isFollowUpMode && followUpClientId > 0 && (
+        <Box sx={{ p: 1 }}>
+          <FollowUpPanel clientId={followUpClientId} tab="meal" />
+        </Box>
+      )}
       <Grid container spacing={3} sx={{ p: 1 }}>
         {/* Left Column - Main Content */}
         <Grid item xs={12} lg={8}>
@@ -431,6 +445,12 @@ const MealPlans: React.FC = () => {
 
         {/* Right Column - Food Management and ADIME Note */}
         <Grid item xs={12} lg={4}>
+          <Box sx={{
+            position: 'sticky',
+            top: 20,
+            maxHeight: 'calc(100vh - 40px)',
+            overflow: 'auto'
+          }}>
           {/* Food Listing - Collapsible */}
           <Accordion 
             expanded={foodListingExpanded} 
@@ -584,7 +604,7 @@ const MealPlans: React.FC = () => {
                 />
               </Box>
 
-              {!isDataComplete() && (
+              {!isComplete && (
                 <Alert severity="warning" sx={{ mb: 2 }}>
                   <Typography variant="body2">
                     <strong>Incomplete Data:</strong> Please ensure all required fields are filled before marking as complete.
@@ -592,7 +612,7 @@ const MealPlans: React.FC = () => {
                 </Alert>
               )}
 
-              {isDataComplete() && !contextData.isComplete && (
+              {isComplete && !contextData.isComplete && (
                 <Alert severity="info" sx={{ mb: 2 }}>
                   <Typography variant="body2">
                     <strong>Ready to Complete:</strong> All required data is present. You can now mark this client file as complete.
@@ -618,7 +638,7 @@ const MealPlans: React.FC = () => {
               </Typography>
             </CardContent>
           </Card>
-
+          </Box>
         </Grid>
       </Grid>
 
