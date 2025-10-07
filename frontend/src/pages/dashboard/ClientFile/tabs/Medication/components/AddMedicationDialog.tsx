@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -7,9 +7,11 @@ import {
   TextField,
   Grid,
   Button,
+  Autocomplete,
   useTheme
 } from '@mui/material';
 import { AddMedicationDialogState } from '../types';
+import { medicationOptions } from '../constants';
 
 interface AddMedicationDialogProps {
   dialogState: AddMedicationDialogState;
@@ -25,6 +27,18 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
   onSave 
 }) => {
   const theme = useTheme();
+  const firstInputRef = useRef<HTMLInputElement>(null);
+
+  // Focus management for accessibility
+  useEffect(() => {
+    if (dialogState.open && firstInputRef.current) {
+      // Small delay to ensure dialog is fully rendered
+      const timer = setTimeout(() => {
+        firstInputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [dialogState.open]);
   
   return (
     <Dialog 
@@ -46,34 +60,42 @@ const AddMedicationDialog: React.FC<AddMedicationDialogProps> = ({
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
           <Grid item xs={12}>
-            <TextField
-              label="Medication Name"
+            <Autocomplete
+              freeSolo
+              options={medicationOptions}
               value={dialogState.name}
-              onChange={(e) => onDialogChange('name', e.target.value)}
-              fullWidth
-              size="small"
-              placeholder="e.g., Aspirin, Metformin"
-              required
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
-                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
-                },
-                '& .MuiFormLabel-root': {
-                  color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
-                }
-              }}
+              onChange={(event, newValue) => onDialogChange('name', newValue || '')}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  ref={firstInputRef}
+                  label="Medication Name *"
+                  size="small"
+                  fullWidth
+                  required
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',
+                      color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000'
+                    },
+                    '& .MuiFormLabel-root': {
+                      color: theme.palette.mode === 'dark' ? '#cccccc' : '#666'
+                    }
+                  }}
+                />
+              )}
             />
           </Grid>
           
           <Grid item xs={12}>
             <TextField
-              label="Dosage"
+              label="Dosage *"
               value={dialogState.dosage}
               onChange={(e) => onDialogChange('dosage', e.target.value)}
               fullWidth
               size="small"
-              placeholder="e.g., 100mg, 500mg twice daily"
+              required
+              placeholder="e.g., 500mg, 10mg"
               sx={{
                 '& .MuiOutlinedInput-root': {
                   backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#FFFFFF',

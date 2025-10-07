@@ -26,7 +26,7 @@ export const useDrugSelection = () => {
     setDrugSelection(prev => ({
       ...prev,
       selectedDrug: drug,
-      drugDetails: drug ? (drugDetails || null) : null
+      drugDetails: drug ? drugDetails : null
     }));
   }, [drugDetails]);
 

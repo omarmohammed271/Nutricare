@@ -34,7 +34,6 @@ import { LuEye, LuX, LuUserPlus, LuList, LuSquare, LuSearch, LuPlus, LuCalendar,
 import PageMetaData from "@src/components/PageMetaData";
 import { getClients, createFollowUp } from "@src/api/endpoints";
 import httpClient from "@src/helpers/httpClient";
-import AddEditEvent from "./componenets/AddEditEvent";
 
 interface LabResult {
   id: number;
@@ -126,7 +125,6 @@ const ClientOnboarding = () => {
   const [showViewDialog, setShowViewDialog] = useState(false);
   const [showFollowUpDialog, setShowFollowUpDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showAddEventDialog, setShowAddEventDialog] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
   // Removed edit mode states - now using ClientFile tabs for editing
@@ -186,18 +184,40 @@ const ClientOnboarding = () => {
   }, []);
 
   const handleAddClient = () => {
-    // Clear any existing modes from localStorage
-    localStorage.removeItem('isFollowUpMode');
-    localStorage.removeItem('followUpClientId');
-    localStorage.removeItem('followUpClientData');
-    localStorage.removeItem('editingFollowUpId');
-    
-    // Set new client mode
-    localStorage.setItem('isNewClient', 'true');
-    
-    // Redirect to client file page to create a new client
-    // Pass state to indicate this is a new client
-    navigate('/client-file', { state: { isNewClient: true } });
+    if (newClient.name && newClient.profession && newClient.email) {
+      // Create new client
+      const client: Client = {
+        id: clients.length + 1,
+        name: newClient.name,
+        profession: newClient.profession,
+        email: newClient.email,
+        phone: newClient.phone,
+        status: newClient.status as "Active" | "Inactive" | "Pending",
+        gender: "unknown",
+        date_of_birth: new Date().toISOString().split('T')[0],
+        weight: 0,
+        height: 0,
+        physical_activity: "sedentary",
+        ward_type: "outpatient",
+        stress_factor: "none",
+        feeding_type: "oral",
+        lab_results: [],
+        medications: [],
+        follow_ups: [],
+        is_finished: false
+      };
+      setClients([...clients, client]);
+      
+      // Reset form
+      setNewClient({ 
+        name: "", 
+        profession: "", 
+        email: "", 
+        phone: "", 
+        status: "Pending"
+      });
+      setShowAddForm(false);
+    }
   };
 
   const handleViewClient = (client: Client) => {
@@ -206,15 +226,6 @@ const ClientOnboarding = () => {
   };
 
   const handleEditClient = (client: Client) => {
-    console.log('✏️ Edit client clicked for:', client);
-    
-    // Clear any conflicting modes first
-    localStorage.removeItem('isFollowUpMode');
-    localStorage.removeItem('followUpClientId');
-    localStorage.removeItem('followUpClientData');
-    localStorage.removeItem('isNewClient');
-    localStorage.removeItem('editingFollowUpId');
-    
     // Store client data in localStorage to load in client file for editing
     const clientData = {
       assessment: {
@@ -259,27 +270,13 @@ const ClientOnboarding = () => {
     localStorage.setItem('clientId', client.id.toString());
     localStorage.setItem('isEditMode', 'true');
     
-    console.log('💾 Stored edit data in localStorage:');
-    console.log('📋 clientFileData:', clientData);
-    console.log('🆔 clientId:', client.id);
-    console.log('✏️ isEditMode:', 'true');
-    
     // Navigate to client file in edit mode
     console.log('🔄 Navigating to client file in edit mode with data:', clientData);
     navigate('/client-file');
   };
 
   const handleAddNewClient = () => {
-    // Clear any existing modes from localStorage
-    localStorage.removeItem('isFollowUpMode');
-    localStorage.removeItem('followUpClientId');
-    localStorage.removeItem('followUpClientData');
-    localStorage.removeItem('editingFollowUpId');
-    
-    // Set new client mode
-    localStorage.setItem('isNewClient', 'true');
-    
-    navigate('/client-file', { state: { isNewClient: true } });
+    navigate('/client-file');
   };
 
   const handleClientClick = (client: Client) => {
@@ -463,7 +460,7 @@ const ClientOnboarding = () => {
           <Button
             variant="contained"
             startIcon={<LuUserPlus size={16} />}
-            onClick={handleAddClient}
+            onClick={handleAddNewClient}
             sx={{
               backgroundColor: "#02BE6A",
               color: "white",
@@ -883,10 +880,6 @@ const ClientOnboarding = () => {
                           <LuPlus size={14} />
                         </IconButton>
                         <IconButton
-                          onClick={() => {
-                            setSelectedClient(client);
-                            setShowAddEventDialog(true);
-                          }}
                           sx={{
                             backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
@@ -1134,10 +1127,6 @@ const ClientOnboarding = () => {
                           <LuPlus size={14} />
                         </IconButton>
                         <IconButton
-                          onClick={() => {
-                            setSelectedClient(client);
-                            setShowAddEventDialog(true);
-                          }}
                           sx={{
                             backgroundColor: theme.palette.mode === 'dark' ? "#222222" : "#f8f9fa",
                             color: "#02BE6A",
@@ -1172,12 +1161,12 @@ const ClientOnboarding = () => {
                         </IconButton>
                       </Box>
                     </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
+                  </CardContent>
+                </Card>
+              </Grid>
             ))}
           </Grid>
-        )
+          )
         )}
 
         {/* Pagination */}
@@ -1983,7 +1972,6 @@ const ClientOnboarding = () => {
                           <Box sx={{ mt: 2 }}>
                             <Typography variant="body2" sx={{ 
                               color: theme.palette.mode === 'dark' ? "#cccccc" : "#7f8c8d", 
- 
                               mb: 1,
                               fontWeight: 600
                             }}>
@@ -2628,27 +2616,6 @@ const ClientOnboarding = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
-      {/* Add Event Dialog */}
-      <AddEditEvent
-        isOpen={showAddEventDialog}
-        onClose={() => setShowAddEventDialog(false)}
-        isEditable={false}
-        eventData={{}}
-        selectedClient={selectedClient}
-        onAddEvent={(data) => {
-          console.log('Adding new event:', data);
-          setShowAddEventDialog(false);
-        }}
-        onUpdateEvent={(data) => {
-          console.log('Updating event:', data);
-          setShowAddEventDialog(false);
-        }}
-        onRemoveEvent={() => {
-          console.log('Removing event');
-          setShowAddEventDialog(false);
-        }}
-      />
 
       {/* Delete Confirmation Dialog */}
       <Dialog

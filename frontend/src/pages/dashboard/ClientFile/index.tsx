@@ -4,9 +4,9 @@ import { Box, Tabs, Tab, useTheme, Button, Snackbar, Alert, Stepper, Step, StepL
 import { PageBreadcrumb } from '@src/components';
 import { Assessments, BiochemicalData, Medication, MealPlans } from './tabs';
 import { ClientFileProvider, useClientFile } from './context/ClientFileContext';
-import { submitClientFile, updateClientFile, updateClientFileData } from './api/clientFileApi';
+import { submitClientFile, updateClientFile, updateClientFileData, patchClientFile } from './api/clientFileApi';
 import { clientFileValidationSchema } from './validation/clientFileValidation';
-import { createFollowUp } from '@src/api/endpoints';
+import { createFollowUp, updateFollowUp, getClientById } from '@src/api/endpoints';
 
 function a11yProps(index: number) {
   return {
@@ -19,7 +19,7 @@ const ClientFileContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const theme = useTheme();
-  const { formData, clientId, getApiData, getFormData, isDataComplete, setCompletionStatus, setClientId, updateMedication, updateBiochemical, loadFromNavigationState, isEditMode: contextEditMode, setEditMode, exitEditMode } = useClientFile();
+  const { formData, clientId, getApiData, getFormData, isDataComplete, setCompletionStatus, setClientId, updateMedication, updateBiochemical, loadFromNavigationState, isEditMode: contextEditMode, setEditMode, exitEditMode, resetForm } = useClientFile();
   
   // Debug logging
   console.log('🔍 ClientFileContent rendered');
@@ -35,8 +35,14 @@ const ClientFileContent = () => {
                           new URLSearchParams(location.search).get('clientId') ||
                           localStorage.getItem('followUpClientId');
   
-  // Check if we're in edit mode
-  const isEditMode = localStorage.getItem('isEditMode') === 'true' || contextEditMode;
+  // Check if we're creating a new client
+  const isNewClient = location.state?.isNewClient || 
+                     new URLSearchParams(location.search).get('mode') === 'new' ||
+                     localStorage.getItem('isNewClient') === 'true';
+  
+  // Check if we're in edit mode - prioritize localStorage but also check context
+  const localStorageEditMode = localStorage.getItem('isEditMode') === 'true';
+  const isEditMode = localStorageEditMode || contextEditMode;
   const editClientId = localStorage.getItem('clientId') || clientId;
   
   console.log('🔄 Follow-up mode:', isFollowUpMode);
@@ -48,9 +54,10 @@ const ClientFileContent = () => {
   console.log('📍 Location state:', location.state);
   console.log('🔍 URL search params:', new URLSearchParams(location.search).toString());
   
-  // Track if we've already loaded follow-up data to prevent infinite loops
+  // Track if we've already loaded follow-up/new/edit data to prevent infinite loops
   const followUpDataLoaded = React.useRef(false);
   const editDataLoaded = React.useRef(false);
+  const newClientDataLoaded = React.useRef(false);
   
   // Load data from navigation state if in follow-up mode
   React.useEffect(() => {
@@ -58,17 +65,40 @@ const ClientFileContent = () => {
     console.log('🔄 isFollowUpMode:', isFollowUpMode);
     console.log('🔄 followUpDataLoaded.current:', followUpDataLoaded.current);
     
-    // Store follow-up mode info in localStorage for persistence across navigation
+    // Store follow-up mode info; if switching clients, clear stale cached data first
     if (location.state?.isFollowUp && location.state?.clientId) {
+      const incomingId = location.state.clientId.toString();
+      const prevFollowUpId = localStorage.getItem('followUpClientId');
+      if (prevFollowUpId && prevFollowUpId !== incomingId) {
+        console.log('🧹 Switching follow-up client. Clearing cached form data');
+        try {
+          localStorage.removeItem('clientFileData');
+          localStorage.removeItem('clientId');
+          localStorage.removeItem('isEditMode');
+          resetForm();
+        } catch {}
+      }
       localStorage.setItem('isFollowUpMode', 'true');
-      localStorage.setItem('followUpClientId', location.state.clientId.toString());
+      localStorage.setItem('followUpClientId', incomingId);
+      // Ensure we are not in new client mode
+      localStorage.removeItem('isNewClient');
       console.log('💾 Stored follow-up mode info in localStorage');
+    }
+    
+    // Store new client mode info in localStorage for persistence across navigation
+    if (location.state?.isNewClient) {
+      localStorage.setItem('isNewClient', 'true');
+      console.log('💾 Stored new client mode info in localStorage');
     }
     
     if (isFollowUpMode && !followUpDataLoaded.current) {
       if (location.state?.clientData) {
         try {
           console.log('🔄 Loading follow-up data from navigation state');
+          // Ensure a clean slate when loading new client data
+          resetForm();
+          localStorage.removeItem('clientFileData');
+          localStorage.removeItem('clientId');
           // Store client data in localStorage for persistence
           localStorage.setItem('followUpClientData', JSON.stringify(location.state.clientData));
           loadFromNavigationState(location.state.clientData);
@@ -82,11 +112,47 @@ const ClientFileContent = () => {
         if (savedClientData) {
           try {
             console.log('🔄 Loading follow-up data from localStorage');
+            resetForm();
             loadFromNavigationState(JSON.parse(savedClientData));
             followUpDataLoaded.current = true;
           } catch (error) {
             console.error('❌ Error loading follow-up data from localStorage:', error);
           }
+        } else if (followUpClientId) {
+          // Fallback: fetch client by ID to prefill basics
+          (async () => {
+            try {
+              console.log('🌐 Fetching client by ID for follow-up prefill:', followUpClientId);
+              const client = await getClientById(parseInt(String(followUpClientId)));
+              const snapshot = {
+                name: client.name,
+                gender: client.gender,
+                date_of_birth: client.date_of_birth,
+                assessment: {
+                  name: client.name || '',
+                  gender: client.gender || '',
+                  dateOfBirth: client.date_of_birth || '',
+                  weight: client.weight != null ? String(client.weight) : '',
+                  height: client.height != null ? String(client.height) : '',
+                  weightTypeSelection: '',
+                  physicalActivity: client.physical_activity || '',
+                  wardType: client.ward_type || '',
+                  stressFactor: client.stress_factor || '',
+                  feedingType: client.feeding_type || ''
+                },
+                biochemical: { labResults: [] },
+                medication: { medications: [] },
+                mealPlan: { notes: '' },
+                isComplete: false,
+              } as any;
+              try { localStorage.setItem('followUpClientData', JSON.stringify(snapshot)); } catch {}
+              loadFromNavigationState(snapshot);
+              followUpDataLoaded.current = true;
+              console.log('✅ Prefilled follow-up basics from fetched client');
+            } catch (e) {
+              console.error('❌ Failed to fetch client for follow-up prefill:', e);
+            }
+          })();
         }
       }
     } else if (!isFollowUpMode) {
@@ -96,14 +162,19 @@ const ClientFileContent = () => {
       console.log('ℹ️ Not loading follow-up data - already loaded or conditions not met');
     }
     
-    // Handle edit mode data loading
-    if (isEditMode && !editDataLoaded.current) {
+    // Handle edit mode data loading (but not in new client mode)
+    if (isEditMode && !editDataLoaded.current && !isNewClient) {
       const savedClientData = localStorage.getItem('clientFileData');
       const savedClientId = localStorage.getItem('clientId');
       console.log('✏️ Edit mode detected, checking localStorage...');
+      console.log('📋 isEditMode:', isEditMode);
+      console.log('📋 editDataLoaded.current:', editDataLoaded.current);
+      console.log('📋 isNewClient:', isNewClient);
       console.log('📋 savedClientData exists:', !!savedClientData);
       console.log('📋 savedClientId exists:', !!savedClientId);
       console.log('📋 savedClientId value:', savedClientId);
+      console.log('📋 localStorageEditMode:', localStorageEditMode);
+      console.log('📋 contextEditMode:', contextEditMode);
       
       if (savedClientData && savedClientId) {
         try {
@@ -130,12 +201,66 @@ const ClientFileContent = () => {
         console.error('📋 savedClientId exists:', !!savedClientId);
         console.error('📋 savedClientId value:', savedClientId);
       }
-    } else if (!isEditMode) {
-      // Reset the flag when not in edit mode
+    } else if (!isEditMode || isNewClient) {
+      // Reset the flag when not in edit mode or in new client mode
       editDataLoaded.current = false;
-      setEditMode(false); // Clear edit mode in context
+      if (isNewClient) {
+        setEditMode(false); // Clear edit mode in context for new client
+      }
     }
   }, [isFollowUpMode, location.state, isEditMode, editClientId, loadFromNavigationState, setClientId]);
+
+  // Removed path-change auto reload to prevent overwriting in-progress edits
+
+  // Load data for new client mode from localStorage (persist across tabs/refreshes)
+  React.useEffect(() => {
+    if (!isNewClient) {
+      newClientDataLoaded.current = false;
+      return;
+    }
+
+    if (newClientDataLoaded.current) return;
+
+    try {
+      // When creating a new client, ensure a clean slate (do NOT preload old data)
+      console.log('🆕 New client mode: clearing any previous form data and modes');
+      
+      // Clear follow-up and edit modes but preserve new client mode
+      localStorage.removeItem('isFollowUpMode');
+      localStorage.removeItem('followUpClientId');
+      localStorage.removeItem('followUpClientData');
+      localStorage.removeItem('clientFileData');
+      localStorage.removeItem('clientId');
+      localStorage.removeItem('isEditMode');
+      localStorage.removeItem('editingFollowUpId');
+      
+      setEditMode(false);
+      // Reset form in context by loading an empty state
+      loadFromNavigationState({
+        assessment: { name: '', gender: '', dateOfBirth: '', weight: '', height: '', weightTypeSelection: '', physicalActivity: '', wardType: '', stressFactor: '', feedingType: '' },
+        biochemical: { labResults: [] },
+        medication: { medications: [] },
+        mealPlan: { notes: '' },
+        isComplete: false
+      });
+      // Also clear existingData cache
+      try {
+        const cf = JSON.parse(localStorage.getItem('clientFileData') || '{}');
+        if (cf) {
+          localStorage.setItem('clientFileData', JSON.stringify({
+            assessment: { name: '', gender: '', dateOfBirth: '', weight: '', height: '', weightTypeSelection: '', physicalActivity: '', wardType: '', stressFactor: '', feedingType: '' },
+            biochemical: { labResults: [] },
+            medication: { medications: [] },
+            mealPlan: { notes: '' },
+            isComplete: false
+          }));
+        }
+      } catch {}
+      newClientDataLoaded.current = true;
+    } catch (error) {
+      console.error('❌ Error loading new client data from localStorage:', error);
+    }
+  }, [isNewClient, loadFromNavigationState]);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
@@ -199,10 +324,10 @@ const ClientFileContent = () => {
 
   // Define the tab routes and their corresponding components
   const tabRoutes = [
-    { path: '/client-file', label: 'Assessments', component: <Assessments /> },
-    { path: '/client-file/biochemical-data', label: 'Biochemical data', component: <BiochemicalData /> },
-    { path: '/client-file/medication', label: 'Medication', component: <Medication /> },
-    { path: '/client-file/meal-plans', label: 'Meal Plans', component: <MealPlans /> }
+    { path: '/client-file', label: 'Assessments', component: Assessments },
+    { path: '/client-file/biochemical-data', label: 'Biochemical data', component: BiochemicalData },
+    { path: '/client-file/medication', label: 'Medication', component: Medication },
+    { path: '/client-file/meal-plans', label: 'Meal Plans', component: MealPlans }
   ];
 
   // Determine current tab based on the URL
@@ -213,36 +338,37 @@ const ClientFileContent = () => {
   };
 
   const handleTabChange = async (event: React.SyntheticEvent, newValue: number) => {
-    // Check if there's meaningful data to save before allowing navigation
-    const hasAssessmentData = formData.assessment && 
-      Object.values(formData.assessment).some(value => value && value !== '');
-    const hasBiochemicalData = formData.biochemical && 
-      formData.biochemical.labResults && 
-      formData.biochemical.labResults.length > 0;
-    const hasMedicationData = formData.medication && 
-      formData.medication.medications && 
-      formData.medication.medications.length > 0;
-    const hasMealPlanData = formData.mealPlan && 
-      formData.mealPlan.notes && 
-      formData.mealPlan.notes.trim() !== '';
+    console.log('🔄 Tab change detected...');
+    console.log('🆕 Is new client mode:', isNewClient);
+    console.log('🔄 Is follow-up mode:', isFollowUpMode);
+    console.log('✏️ Is edit mode:', isEditMode);
     
-    const hasAnyData = hasAssessmentData || hasBiochemicalData || hasMedicationData || hasMealPlanData;
-    
-    // If there's data but no clientId, prevent navigation
-    if (hasAnyData && !clientId) {
-      console.log('⚠️ Cannot navigate: Data exists but no client ID found');
-      setSnackbar({
-        open: true,
-        message: 'Please save your data first before navigating to another tab.',
-        severity: 'warning'
-      });
-      return; // Prevent navigation
+    // Don't auto-save in new client mode - keep form empty
+    if (isNewClient) {
+      console.log('⏭️ Skipping auto-save in new client mode - keeping form empty');
+      navigate(tabRoutes[newValue].path);
+      return;
     }
     
-    // Auto-save current step data to localStorage before switching tabs
-    console.log('🔄 Tab change detected, auto-saving current step to localStorage...');
+    // Auto-save current step data to localStorage before switching tabs (only for edit/follow-up modes)
+    console.log('🔄 Auto-saving current step to localStorage...');
     setIsAutoSaving(true);
     try {
+      // Check if there's meaningful data to save
+      const hasAssessmentData = formData.assessment && 
+        Object.values(formData.assessment).some(value => value && value !== '');
+      const hasBiochemicalData = formData.biochemical && 
+        formData.biochemical.labResults && 
+        formData.biochemical.labResults.length > 0;
+      const hasMedicationData = formData.medication && 
+        formData.medication.medications && 
+        formData.medication.medications.length > 0;
+      const hasMealPlanData = formData.mealPlan && 
+        formData.mealPlan.notes && 
+        formData.mealPlan.notes.trim() !== '';
+      
+      const hasAnyData = hasAssessmentData || hasBiochemicalData || hasMedicationData || hasMealPlanData;
+      
       if (hasAnyData) {
         localStorage.setItem('clientFileData', JSON.stringify(formData));
         console.log('✅ Form data auto-saved to localStorage, navigating to new tab');
@@ -262,7 +388,10 @@ const ClientFileContent = () => {
       setIsAutoSaving(false);
     }
     
+    // Navigate to the new tab
     navigate(tabRoutes[newValue].path);
+    
+    // Removed post-navigation reload to avoid overwriting in-progress edits
   };
 
 
@@ -271,10 +400,6 @@ const ClientFileContent = () => {
     return getCurrentTab() === tabRoutes.length - 1;
   };
 
-  // Check if current tab is the first tab
-  const isFirstTab = () => {
-    return getCurrentTab() === 0;
-  };
 
   // Check if this is the first step (Assessments)
   const isFirstStep = () => {
@@ -285,8 +410,8 @@ const ClientFileContent = () => {
   const getCurrentComponent = () => {
     const currentPath = location.pathname;
     const currentRoute = tabRoutes.find(route => route.path === currentPath);
-    const component = currentRoute ? currentRoute.component : tabRoutes[0].component;
-    return component;
+    const Component = currentRoute ? currentRoute.component : tabRoutes[0].component;
+    return <Component />;
   };
 
   // Handle step-by-step submission
@@ -299,7 +424,9 @@ const ClientFileContent = () => {
       setIsSubmitting(true);
       
       // Set completion status
-      setCompletionStatus(isComplete);
+      // Once completed in edit mode, keep it completed without requiring re-checks
+      const desiredComplete = formData.isComplete || isComplete;
+      setCompletionStatus(desiredComplete);
       
       let response;
       
@@ -313,180 +440,153 @@ const ClientFileContent = () => {
           throw new Error('Follow-up client ID not found. Cannot create follow-up.');
         }
         
-        // Prepare follow-up data
-        const followUpData = {
-          notes: formData.mealPlan.notes || '',
-          weight: formData.assessment.weight ? parseFloat(formData.assessment.weight) : undefined,
-          height: formData.assessment.height ? parseFloat(formData.assessment.height) : undefined,
-          blood_pressure: '',
-          temperature: '',
-          status: isComplete ? 'completed' : 'scheduled',
+        // Prepare follow-up data: send only the updated section for current tab
+        const baseFollowUpData: any = {
+          status: (formData.isComplete || isComplete) ? 'completed' : 'scheduled',
           date: new Date().toISOString().split('T')[0],
-          // Complete client data
-        name: formData.assessment.name,
-        gender: formData.assessment.gender,
-          date_of_birth: formData.assessment.dateOfBirth,
-          physical_activity: formData.assessment.physicalActivity,
-          ward_type: formData.assessment.wardType,
-          stress_factor: formData.assessment.stressFactor,
-          feeding_type: formData.assessment.feedingType,
-          lab_results: formData.biochemical.labResults.map(lab => ({
-            test_name: lab.test_name,
-            result: lab.result,
-            reference_range: lab.reference_range,
-            interpretation: lab.interpretation,
-            file: lab.file,
-            date: lab.date
-          })),
-          medications: formData.medication.medications.map(med => ({
-            name: med.name,
-            dosage: med.dosage,
-            notes: med.notes
-          }))
+          is_finished: true,
         };
+
+        let followUpData: any = { ...baseFollowUpData };
+        const currentTabIndex = getCurrentTab();
+        if (currentTabIndex === 0) {
+          // Assessments tab: send assessment-only fields
+          followUpData = {
+            ...baseFollowUpData,
+            name: formData.assessment.name,
+            gender: formData.assessment.gender,
+            date_of_birth: formData.assessment.dateOfBirth,
+            weight: formData.assessment.weight ? parseFloat(formData.assessment.weight) : undefined,
+            height: formData.assessment.height ? parseFloat(formData.assessment.height) : undefined,
+            physical_activity: formData.assessment.physicalActivity,
+            ward_type: formData.assessment.wardType,
+            stress_factor: formData.assessment.stressFactor,
+            feeding_type: formData.assessment.feedingType,
+          };
+        } else if (currentTabIndex === 1) {
+          // Biochemical tab: send lab results only
+          followUpData = {
+            ...baseFollowUpData,
+            lab_results: formData.biochemical.labResults.map(lab => ({
+              test_name: lab.test_name,
+              result: lab.result,
+              reference_range: lab.reference_range,
+              interpretation: lab.interpretation,
+              file: lab.file,
+              date: lab.date
+            })),
+          };
+        } else if (currentTabIndex === 2) {
+          // Medication tab: send medications only
+          followUpData = {
+            ...baseFollowUpData,
+            medications: formData.medication.medications.map(med => ({
+              name: med.name,
+              dosage: med.dosage,
+              notes: med.notes
+            })),
+          };
+        } else if (currentTabIndex === 3) {
+          // Meal Plans tab: send notes only
+          followUpData = {
+            ...baseFollowUpData,
+            notes: formData.mealPlan.notes || '',
+          };
+        }
         
+        const editingFollowUpId = localStorage.getItem('editingFollowUpId');
         console.log('📤 Sending follow-up data:', followUpData);
-        response = await createFollowUp(parseInt(followUpClientId), followUpData);
+        if (editingFollowUpId) {
+          console.log('✏️ Updating existing follow-up ID:', editingFollowUpId);
+          response = await updateFollowUp(parseInt(followUpClientId), parseInt(editingFollowUpId), followUpData as any);
+        } else {
+          response = await createFollowUp(parseInt(followUpClientId), followUpData);
+        }
         
-        // Clear follow-up mode data from localStorage
-        localStorage.removeItem('isFollowUpMode');
-        localStorage.removeItem('followUpClientId');
-        localStorage.removeItem('followUpClientData');
-        
-        // Redirect back to client onboarding after follow-up submission
-        setTimeout(() => {
-          console.log('🔄 Redirecting to Client Onboarding after follow-up...');
-          // Clear localStorage data
-          localStorage.removeItem('clientFileData');
-          localStorage.removeItem('clientId');
-          localStorage.removeItem('isEditMode');
-          localStorage.removeItem('isFollowUpMode');
-          localStorage.removeItem('followUpClientId');
-          // Navigate back to Client Onboarding
-          navigate('/clients/onboarding');
-        }, 2000);
+        // Keep follow-up mode active after save; only clear transient edit id
+        localStorage.removeItem('editingFollowUpId');
         
         setSnackbar({
           open: true,
-          message: 'Follow-up data saved successfully! Redirecting to client onboarding...',
+          message: 'Follow-up data saved successfully!',
           severity: 'success'
         });
+        // Notify follow-up panels to refetch
+        try {
+          const evt = new CustomEvent('followup:updated', { detail: { clientId: parseInt(followUpClientId) } });
+          document.dispatchEvent(evt);
+        } catch {}
         
+        // Explicitly keep us in follow-up mode and not edit mode
+        // Ensure we do not set context edit mode
+        setEditMode(false);
         return; // Exit early for follow-up mode
         
       } else if (isEditMode) {
-        // Edit mode: Update existing client
-        console.log('✏️ Edit mode: Updating existing client');
-        console.log('📋 Current step:', getCurrentTab());
-        console.log('📋 Step name:', tabRoutes[getCurrentTab()]?.label || 'Unknown');
-        
+        // Edit mode: partial update (PATCH) only for current tab
+        console.log('✏️ Edit mode (PATCH): Updating only current tab');
         if (!editClientId) {
-          console.error('❌ Edit client ID not found!');
-          console.error('📋 localStorage clientId:', localStorage.getItem('clientId'));
-          console.error('📋 context clientId:', clientId);
-          console.error('📋 editClientId:', editClientId);
-          console.error('📋 isEditMode:', isEditMode);
-          console.error('📋 contextEditMode:', contextEditMode);
           throw new Error('Edit client ID not found. Cannot update client.');
         }
-        
-        // Prepare update data - split into basic info and nested data
-        // Calculate age from date of birth
-        const birthDate = new Date(formData.assessment.dateOfBirth);
-        const today = new Date();
-        const age = today.getFullYear() - birthDate.getFullYear();
-        
-        const basicUpdateData = {
-          name: formData.assessment.name,
-          gender: formData.assessment.gender as "male" | "female",
-          age: age,
-          date_of_birth: formData.assessment.dateOfBirth,
-          weight: formData.assessment.weight ? parseFloat(formData.assessment.weight) : 0,
-          height: formData.assessment.height ? parseFloat(formData.assessment.height) : 0,
-          physical_activity: formData.assessment.physicalActivity as any,
-          ward_type: formData.assessment.wardType as any,
-          stress_factor: formData.assessment.stressFactor as any,
-          feeding_type: formData.assessment.feedingType as any,
-          is_finished: isComplete
-        };
 
-        const medicationsData = formData.medication.medications.map(med => ({
-          id: med.id,
-          name: med.name,
-          dosage: med.dosage,
-          notes: med.notes
-        }));
+        const desiredComplete = formData.isComplete || isComplete;
+        const currentTabIndex = getCurrentTab();
+        let patchData: Record<string, any> = { is_finished: desiredComplete };
 
-        const labResultsData = formData.biochemical.labResults.map(lab => ({
-          id: lab.id,
-          test_name: lab.test_name,
-          result: lab.result,
-          reference_range: lab.reference_range,
-          interpretation: lab.interpretation,
-          file: lab.file,
-          date: lab.date
-        }));
-        
-        console.log('📤 Sending basic update data:', basicUpdateData);
-        console.log('📤 Sending medications data:', medicationsData);
-        console.log('📤 Sending lab results data:', labResultsData);
-        console.log('🔍 Update data details:', {
-          medications: medicationsData,
-          medicationsCount: medicationsData.length,
-          labResults: labResultsData,
-          labResultsCount: labResultsData.length,
-          clientId: editClientId
-        });
-        
-        // Additional debugging for duplication check
-        console.log('🔍 Duplication check:');
-        console.log('📋 Form data medications:', formData.medication.medications);
-        console.log('📋 Form data lab results:', formData.biochemical.labResults);
-        console.log('📋 Medications data:', medicationsData);
-        console.log('📋 Lab results data:', labResultsData);
-        console.log('🔍 Edit mode status:', isEditMode);
-        console.log('🔍 Context edit mode:', contextEditMode);
-        
-        // Use UPDATE method (PUT) to replace old data with new data
-        console.log('🔄 Using UPDATE method (PUT) to replace old data with new data...');
-        const updateData = {
-          ...basicUpdateData,
-          medications: medicationsData,
-          lab_results: labResultsData,
-          // Add flags to indicate this is replacement, not addition
-          _replace_medications: true,
-          _replace_lab_results: true
-        };
-        
-        console.log('📤 UPDATE data being sent:', JSON.stringify(updateData, null, 2));
-        console.log('📊 UPDATE data medications count:', updateData.medications.length);
-        console.log('📊 UPDATE data lab results count:', updateData.lab_results.length);
-        
-        response = await updateClientFileData(editClientId, updateData);
-        console.log('✅ UPDATE response:', response);
-        
-        // Don't clear edit mode data immediately - let user continue editing
-        // Only clear when they explicitly exit edit mode
-        
+        if (currentTabIndex === 0) {
+          patchData = {
+            ...patchData,
+            name: formData.assessment.name,
+            gender: (formData.assessment.gender === 'male' || formData.assessment.gender === 'female') ? formData.assessment.gender : 'male',
+            age: 0,
+            date_of_birth: formData.assessment.dateOfBirth,
+            weight: formData.assessment.weight ? parseFloat(formData.assessment.weight) : 0,
+            height: formData.assessment.height ? parseFloat(formData.assessment.height) : 0,
+            physical_activity: formData.assessment.physicalActivity || 'sedentary',
+            ward_type: formData.assessment.wardType || 'outpatient',
+            stress_factor: formData.assessment.stressFactor,
+            feeding_type: formData.assessment.feedingType || 'oral',
+          };
+        } else if (currentTabIndex === 1) {
+          patchData = {
+            ...patchData,
+            lab_results: formData.biochemical.labResults.map(lab => ({
+              id: lab.id,
+              test_name: lab.test_name,
+              result: lab.result,
+              reference_range: lab.reference_range,
+              interpretation: lab.interpretation,
+              file: lab.file,
+              date: lab.date,
+            })),
+          };
+        } else if (currentTabIndex === 2) {
+          patchData = {
+            ...patchData,
+            medications: formData.medication.medications.map(med => ({
+              id: med.id,
+              name: med.name,
+              dosage: med.dosage,
+              notes: med.notes,
+            })),
+          };
+        } else if (currentTabIndex === 3) {
+          patchData = {
+            ...patchData,
+            meal_plan: { notes: formData.mealPlan.notes },
+          };
+        }
+
+        console.log('📤 PATCH data being sent:', JSON.stringify(patchData, null, 2));
+        response = await patchClientFile(editClientId, patchData);
+        console.log('✅ PATCH response:', response);
+
         setSnackbar({
           open: true,
-          message: 'Client data updated successfully! Redirecting to Client Onboarding...',
+          message: 'Client data updated successfully!',
           severity: 'success'
         });
-        
-        // Redirect to Client Onboarding after successful update
-        setTimeout(() => {
-          console.log('🔄 Redirecting to Client Onboarding after successful update...');
-          // Clear localStorage data
-          localStorage.removeItem('clientFileData');
-          localStorage.removeItem('clientId');
-          localStorage.removeItem('isEditMode');
-          localStorage.removeItem('isFollowUpMode');
-          localStorage.removeItem('followUpClientId');
-          // Navigate back to Client Onboarding
-          navigate('/clients/onboarding');
-        }, 2000);
-        
+
         return; // Exit early for edit mode
         
       } else {
@@ -507,7 +607,40 @@ const ClientFileContent = () => {
               console.log('📤 Sending JSON data:', submissionData);
             }
 
-        if (isFirstStep() && !isFollowUpMode && !isEditMode) {
+        if (isNewClient) {
+          // Handle new client creation and updates
+          if (isFirstStep() || !clientId) {
+            // First step or no client ID yet: POST to create new client
+            console.log('🆕 Creating new client (POST)');
+            response = await submitClientFile(submissionData);
+            
+            // Extract client ID from response and store it
+            if (response && response.id) {
+              const newClientId = response.id.toString();
+              setClientId(newClientId);
+              // Immediately save to localStorage to ensure it's available
+              localStorage.setItem('clientId', newClientId);
+              console.log('✅ Client created with ID:', newClientId);
+              console.log('💾 Client ID immediately saved to localStorage:', newClientId);
+            }
+          } else {
+            // Subsequent steps: PUT to update the new client
+            console.log('🔄 Updating new client (PUT) with ID:', clientId);
+            response = await updateClientFile(clientId, submissionData);
+          }
+          
+          // For new clients, clear localStorage data but don't redirect
+          if (isComplete) {
+            console.log('✅ New client completed successfully!');
+            // Clear localStorage data but stay on the page
+            localStorage.removeItem('clientFileData');
+            localStorage.removeItem('clientId');
+            localStorage.removeItem('isEditMode');
+            localStorage.removeItem('isFollowUpMode');
+            localStorage.removeItem('followUpClientId');
+            localStorage.removeItem('isNewClient');
+          }
+        } else if (isFirstStep() && !isFollowUpMode && !isEditMode) {
           // First step: POST to create new client (only in regular mode, not edit mode)
           console.log('🆕 Creating new client (POST)');
           response = await submitClientFile(submissionData);
@@ -520,22 +653,6 @@ const ClientFileContent = () => {
             localStorage.setItem('clientId', newClientId);
             console.log('✅ Client created with ID:', newClientId);
             console.log('💾 Client ID immediately saved to localStorage:', newClientId);
-          }
-          
-          // For new clients, don't redirect immediately - let them continue with the form
-          // Only redirect if this is a complete submission
-          if (isComplete) {
-            setTimeout(() => {
-              console.log('🔄 Redirecting to Client Onboarding after completion...');
-              // Clear localStorage data
-              localStorage.removeItem('clientFileData');
-              localStorage.removeItem('clientId');
-              localStorage.removeItem('isEditMode');
-              localStorage.removeItem('isFollowUpMode');
-              localStorage.removeItem('followUpClientId');
-              // Navigate back to Client Onboarding
-              navigate('/clients/onboarding');
-            }, 2000); // 2 second delay to show success message
           }
         } else if (!isFollowUpMode) {
           // Subsequent steps: PUT to update existing client (only in regular mode)
@@ -553,11 +670,13 @@ const ClientFileContent = () => {
           open: true,
           message: isComplete 
             ? 'Client file completed and submitted successfully!' 
-            : isFirstStep() && !isFollowUpMode && !isEditMode
+            : isFirstStep() && !isFollowUpMode && !isEditMode && !isNewClient
               ? 'First step saved successfully! You can continue with the next steps.' 
               : isEditMode
                 ? 'Client data updated successfully!'
-                : 'Step saved successfully!',
+                : isNewClient
+                  ? 'Step saved locally! You can continue with the next steps.'
+                  : 'Step saved successfully!',
           severity: 'success'
         });
       }
@@ -673,7 +792,7 @@ const ClientFileContent = () => {
       )}
       
       {/* Client ID Status */}
-      {clientId && (
+      {(clientId || (isFollowUpMode && followUpClientId)) && (
         <Box sx={{ 
           mb: 2, 
           p: 2, 
@@ -687,9 +806,9 @@ const ClientFileContent = () => {
                 color: theme.palette.mode === 'dark' ? '#02BE6A' : '#02BE6A',
                 fontWeight: 600
               }}>
-                📋 Client ID: {clientId} - {isFirstStep() && !isFollowUpMode && !isEditMode ? 'Creating new client (POST)' : isFollowUpMode ? 'Follow-up mode' : isEditMode ? 'Edit mode (UPDATE/PUT - Replace)' : 'Updating existing client (PUT)'}
+                📋 Client ID: {isFollowUpMode ? followUpClientId : clientId} - {isFirstStep() && !isFollowUpMode && !isEditMode ? 'Creating new client (POST)' : isFollowUpMode ? 'Follow-up mode' : isEditMode ? 'Edit mode (UPDATE/PUT - Replace)' : 'Updating existing client (PUT)'}
               </Typography>
-              {formData.isComplete === false && (
+              {!isFollowUpMode && formData.isComplete === false && (
                 <Typography variant="body2" sx={{ 
                   color: theme.palette.mode === 'dark' ? '#f44336' : '#f44336',
                   fontWeight: 500,
@@ -828,82 +947,85 @@ const ClientFileContent = () => {
         {/* Render current component based on route */}
         <Box sx={{ p: 3 }}>
           {getCurrentComponent()}
-
-          {/* Save Step Button - Directly below form */}
-        <Box sx={{ 
-          display: 'flex', 
-            justifyContent: 'center', 
-          alignItems: 'center',
-            mt: 3, 
-            mb: 2
-          }}>
-          <Button
-            variant="outlined"
-              onClick={() => handleStepSubmit(false)}
-              disabled={isSubmitting}
-            sx={{
-              borderColor: '#02BE6A',
-              color: '#02BE6A',
-              px: 4,
-              py: 2,
-              borderRadius: 3,
-              fontWeight: 600,
-              textTransform: 'none',
-              fontSize: '16px',
-                minWidth: '140px',
-              '&:hover': {
-                borderColor: '#01A85A',
-                backgroundColor: '#02BE6A20',
-              },
-              '&:disabled': {
-                borderColor: '#cccccc',
-                color: '#cccccc',
-              }
-            }}
-          >
-              {isSubmitting ? 'Saving...' : 'Save Step'}
-          </Button>
-          </Box>
         </Box>
-        
-        {/* Back to Client Onboarding Button */}
+
+        {/* Navigation Buttons */}
         <Box sx={{ 
           display: 'flex', 
           justifyContent: 'center', 
-          mt: 2, 
-          mb: 2
+          alignItems: 'center',
+          gap: 2,
+          mt: 4, 
+          mb: 2,
+          p: 3,
+          borderTop: theme.palette.mode === 'dark' ? '1px solid #333333' : '1px solid #e0e0e0'
         }}>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              console.log('🔄 Navigating back to Client Onboarding...');
-              // Clear any stored data
-              localStorage.removeItem('clientFileData');
-              localStorage.removeItem('clientId');
-              localStorage.removeItem('isEditMode');
-              localStorage.removeItem('isFollowUpMode');
-              localStorage.removeItem('followUpClientId');
-              // Navigate back to Client Onboarding
-              navigate('/clients/onboarding');
-            }}
-            sx={{
-              borderColor: '#02BE6A',
-              color: '#02BE6A',
-              px: 4,
-              py: 1.5,
-              borderRadius: 2,
-              fontWeight: 600,
-              textTransform: 'none',
-              fontSize: '14px',
-              '&:hover': {
-                borderColor: '#029e56',
-                backgroundColor: '#f0f9f4',
-              }
-            }}
-          >
-            Back to Client Onboarding
-          </Button>
+          {/* Step Submit Button (normal/edit modes) or Save Follow-up (follow-up edit mode) */}
+          {(() => {
+            let isFollowUpEdit = false;
+            try {
+              isFollowUpEdit = localStorage.getItem('isFollowUpMode') === 'true' && !!localStorage.getItem('editingFollowUpId');
+            } catch {}
+            return (
+              <Button
+                variant="outlined"
+                onClick={() => handleStepSubmit(false)}
+                disabled={isSubmitting}
+                sx={{
+                  borderColor: '#02BE6A',
+                  color: '#02BE6A',
+                  px: 4,
+                  py: 2,
+                  borderRadius: 3,
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  fontSize: '16px',
+                  minWidth: '180px',
+                  '&:hover': {
+                    borderColor: '#01A85A',
+                    backgroundColor: '#02BE6A20',
+                  },
+                  '&:disabled': {
+                    borderColor: '#cccccc',
+                    color: '#cccccc',
+                  }
+                }}
+              >
+                {isSubmitting ? 'Saving...' : isFollowUpEdit ? 'Save Follow-up' : 'Save Step'}
+              </Button>
+            );
+          })()}
+
+          {/* Final Submit Button (only on last tab) */}
+          {isLastTab() && (
+            <Button
+              variant="contained"
+              onClick={handleFinalSubmit}
+              disabled={isSubmitting}
+              sx={{
+                backgroundColor: '#02BE6A',
+                color: 'white',
+                px: 6,
+                py: 2,
+                borderRadius: 3,
+                fontWeight: 700,
+                textTransform: 'none',
+                fontSize: '16px',
+                minWidth: '200px',
+                '&:hover': {
+                  backgroundColor: '#01A85A',
+                },
+                '&:disabled': {
+                  backgroundColor: '#cccccc',
+                  color: '#666666',
+                }
+              }}
+            >
+              {isSubmitting ? 'Submitting...' : 'Complete & Submit'}
+            </Button>
+          )}
         </Box>
+        
       </Box>
 
       {/* Snackbar for notifications */}
