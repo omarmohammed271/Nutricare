@@ -25,7 +25,7 @@ interface EquationInputData {
 const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) => {
   // store form values dynamically by field name
   const [formData, setFormData] = useState<{ [key: string]: string }>({
-    calculatorType: "bmi", // default selection
+    calculatorType: "Body Mass Index", // default selection
   });
 
   // toast for feedback
@@ -93,7 +93,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
     let availableInputs;
 
     // choose correct set for BMI
-    if (selectedEquation.code === "bmi") {
+    if (selectedEquation.code === "Body Mass Index") {
       availableInputs = selectedEquation.inputs[bmiInputSet];
     } else {
       availableInputs = selectedEquation.inputs;
@@ -269,7 +269,7 @@ const QuickCalculatorsPopup = ({ open, onClose }: QuickCalculatorsPopupProps) =>
 
           {/* DYNAMIC INPUTS */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            {selectedEquation?.code === "bmi" ? (
+            {selectedEquation?.code === "Body Mass Index" ? (
               <Box>
                 {/* BMI system toggle */}
                 <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 2 }}>

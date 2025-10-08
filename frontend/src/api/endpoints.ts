@@ -77,6 +77,13 @@ interface Medication {
   name: string;
   dosage: string;
   notes: string;
+  frequency?: string;
+  route?: string;
+  startDate?: string;
+  endDate?: string;
+  prescribedBy?: string;
+  indication?: string;
+  status?: string;
 }
 
 interface Client {
@@ -110,46 +117,82 @@ export const createFollowUp = async (clientId: number, data: any) => {
         return res.data;
     });
 }
-// Appointments API
-interface Appointment {
-  patient_name_id: number;
-  start_time: string;
-  end_time: string;
-  appointment_type: string;
-  status: string;
-  notes: string;
-}
 
-export const createAppointment = async (data: Appointment) => {
-    console.log('🌐 Making API call to create appointment:', data);
-    return httpClient.post("/clients/appointment/", data).then(res => {
-        console.log('📊 Appointment created successfully:', res.data);
+export const createAppointment = async (data: any) => {
+    console.log('🌐 Making API call to /appointments/');
+    return httpClient.post('/appointments/', data).then(res => {
+        console.log('📊 Appointment API response received:', res.data);
         return res.data;
     });
 }
 
-export const getAppointments = async (): Promise<Appointment[]> => {
+export const getAppointments = async () => {
     console.log('🌐 Making API call to /appointments/');
-    return httpClient.get<Appointment[]>("/clients/appointment/").then(res => {
+    return httpClient.get('/appointments/').then(res => {
         console.log('📊 Appointments API response received:', res.data);
         return res.data;
     });
 }
 
-// Add delete appointment function
 export const deleteAppointment = async (id: number) => {
     console.log('🌐 Making API call to delete appointment:', id);
-    return httpClient.delete(`/clients/appointment/${id}/`).then(res => {
-        console.log('📊 Appointment deleted successfully:', id);
+    return httpClient.delete(`/appointments/${id}/`).then(res => {
+        console.log('📊 Delete appointment API response received:', res.data);
         return res.data;
     });
 }
 
-// Add patch appointment function
-export const patchAppointment = async (id: number, data: Partial<Appointment>) => {
-    console.log('🌐 Making API call to patch appointment:', id, data);
-    return httpClient.patch(`/clients/appointment/${id}/`, data).then(res => {
-        console.log('📊 Appointment patched successfully:', id);
+export const patchAppointment = async (id: number, data: any) => {
+    console.log('🌐 Making API call to patch appointment:', id);
+    return httpClient.patch(`/appointments/${id}/`, data).then(res => {
+        console.log('📊 Patch appointment API response received:', res.data);
         return res.data;
     });
+}
+
+// Follow-up extended types and APIs
+export interface FollowUp {
+  id: number;
+  notes?: string;
+  weight?: number;
+  height?: number;
+  blood_pressure?: string;
+  temperature?: number;
+  status?: 'scheduled' | 'completed' | 'cancelled' | string;
+  date?: string;
+  is_finished?: boolean;
+  // nested copies for snapshotting at follow-up
+  name?: string;
+  gender?: string;
+  date_of_birth?: string;
+  physical_activity?: string;
+  ward_type?: string;
+  stress_factor?: string;
+  feeding_type?: string;
+  lab_results?: LabResult[];
+  medications?: Medication[];
+}
+
+export interface ClientWithFollowUps extends Client {
+  follow_ups?: FollowUp[];
+  is_finished?: boolean;
+}
+
+export const getClientById = async (clientId: number): Promise<ClientWithFollowUps> => {
+  console.log(`🌐 Making API call to /clients/${clientId}/`);
+  return httpClient.get<ClientWithFollowUps>(`/clients/${clientId}/`).then(res => res.data);
+}
+
+export const updateFollowUp = async (
+  clientId: number,
+  followUpId: number,
+  data: any
+) => {
+  console.log(`🌐 Updating follow-up ${followUpId} for client ${clientId}`);
+  return httpClient.put(`/clients/${clientId}/follow-up/${followUpId}/`, data).then(res => res.data);
+}
+
+export const deleteFollowUp = async (clientId: number, followUpId: number) => {
+  console.log(`🌐 Deleting follow-up ${followUpId} for client ${clientId}`);
+  return httpClient.delete(`/clients/${clientId}/follow-up/${followUpId}/`).then(res => res.data);
 }

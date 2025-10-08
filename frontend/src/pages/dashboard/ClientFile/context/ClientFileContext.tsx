@@ -229,7 +229,27 @@ export const ClientFileProvider: React.FC<{ children: ReactNode }> = ({ children
   };
 
   const setCompletionStatus = (isComplete: boolean) => {
-    dispatch({ type: "SET_COMPLETION_STATUS", payload: isComplete });
+    // Never downgrade from true to false implicitly
+    const next = formData.isComplete ? true : isComplete;
+    dispatch({ type: "SET_COMPLETION_STATUS", payload: next });
+    // Persist immediately to localStorage to avoid losing state during tab navigation
+    try {
+      const existing = localStorage.getItem('clientFileData');
+      if (existing) {
+        const parsed = JSON.parse(existing);
+        parsed.isComplete = next;
+        localStorage.setItem('clientFileData', JSON.stringify(parsed));
+      } else {
+        // Store a minimal object if nothing exists yet
+        localStorage.setItem('clientFileData', JSON.stringify({
+          assessment: formData.assessment,
+          biochemical: formData.biochemical,
+          medication: formData.medication,
+          mealPlan: formData.mealPlan,
+          isComplete: next,
+        }));
+      }
+    } catch {}
   };
 
   const setClientId = (id: string | null) => {
@@ -279,38 +299,76 @@ export const ClientFileProvider: React.FC<{ children: ReactNode }> = ({ children
       console.log('📋 Medication data:', data.medication);
       console.log('📋 Biochemical data:', data.biochemical);
       
-      // Set edit mode when loading from navigation state
-      setIsEditMode(true);
+      // Set edit mode when loading from navigation state unless in follow-up or new-client mode
+      const isFollowUp = (
+        (typeof window !== 'undefined' && localStorage.getItem('isFollowUpMode') === 'true') ||
+        Boolean((data && (data as any)._isFollowUp) || (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('mode') === 'followup'))
+      );
+      const isNewClient = typeof window !== 'undefined' && localStorage.getItem('isNewClient') === 'true';
+      if (!isFollowUp && !isNewClient) {
+        setIsEditMode(true);
+      } else {
+        console.log('ℹ️ Skipping edit mode because follow-up or new-client mode is active');
+      }
       
       // For edit mode, load ALL existing data including medications and lab results
-      const formData = {
-        assessment: data.assessment || initialState.assessment,
+      const nextIsComplete = (typeof data.isComplete === 'boolean') ? data.isComplete : (formData.isComplete ?? false);
+
+      // Build assessment, and when in follow-up mode, backfill from top-level client fields if missing
+      const baseAssessment = data.assessment || {};
+      const backfilledAssessment = isFollowUp ? {
+        name: baseAssessment.name ?? data.name ?? initialState.assessment.name,
+        gender: baseAssessment.gender ?? data.gender ?? initialState.assessment.gender,
+        dateOfBirth: baseAssessment.dateOfBirth ?? data.date_of_birth ?? initialState.assessment.dateOfBirth,
+        weight: baseAssessment.weight ?? initialState.assessment.weight,
+        height: baseAssessment.height ?? initialState.assessment.height,
+        weightTypeSelection: baseAssessment.weightTypeSelection ?? initialState.assessment.weightTypeSelection,
+        physicalActivity: baseAssessment.physicalActivity ?? initialState.assessment.physicalActivity,
+        wardType: baseAssessment.wardType ?? initialState.assessment.wardType,
+        stressFactor: baseAssessment.stressFactor ?? initialState.assessment.stressFactor,
+        feedingType: baseAssessment.feedingType ?? initialState.assessment.feedingType,
+      } : {
+        ...initialState.assessment,
+        ...baseAssessment,
+      };
+
+      const nextFormData = {
+        assessment: backfilledAssessment,
         biochemical: { labResults: data.biochemical?.labResults || [] }, // Load existing lab results
         medication: { medications: data.medication?.medications || [] }, // Load existing medications
         mealPlan: data.mealPlan || initialState.mealPlan,
-        isComplete: data.isComplete || false
+        isComplete: nextIsComplete
       };
       
-      console.log('📋 Form data to load:', formData);
-      console.log('📋 Medications count:', formData.medication.medications.length);
-      console.log('📋 Lab results count:', formData.biochemical.labResults.length);
+      console.log('📋 Form data to load:', nextFormData);
+      console.log('📋 Medications count:', nextFormData.medication.medications.length);
+      console.log('📋 Lab results count:', nextFormData.biochemical.labResults.length);
       
       // Load the client data into the form
-      dispatch({ type: "LOAD_DATA", payload: formData });
+      dispatch({ type: "LOAD_DATA", payload: nextFormData });
+      // Persist to localStorage so tab components that read from it can hydrate immediately
+      try {
+        localStorage.setItem('clientFileData', JSON.stringify(nextFormData));
+      } catch {}
       
       // Store existing medications and lab results separately for reference
-      if (data.biochemical?.labResults) {
-        setExistingData(prev => ({
-          ...prev,
-          labResults: data.biochemical.labResults
-        }));
-      }
-      
-      if (data.medication?.medications) {
-        setExistingData(prev => ({
-          ...prev,
-          medications: data.medication.medications
-        }));
+      // If new-client mode, ensure existingData is cleared; otherwise set from data
+      if (isNewClient) {
+        setExistingData({ medications: [], labResults: [] });
+      } else {
+        if (data.biochemical?.labResults) {
+          setExistingData(prev => ({
+            ...prev,
+            labResults: data.biochemical.labResults
+          }));
+        }
+        
+        if (data.medication?.medications) {
+          setExistingData(prev => ({
+            ...prev,
+            medications: data.medication.medications
+          }));
+        }
       }
       
       console.log('✅ Data loaded from navigation state successfully');
@@ -329,28 +387,21 @@ export const ClientFileProvider: React.FC<{ children: ReactNode }> = ({ children
     const { assessment, biochemical, medication } = formData;
     
     // Check assessment data
-    const hasRequiredAssessment = assessment.name && 
-      assessment.gender && 
-      assessment.dateOfBirth && 
-      assessment.weight && 
-      assessment.height && 
-      assessment.physicalActivity && 
-      assessment.wardType && 
-      assessment.stressFactor && 
-      assessment.feedingType;
+    const hasRequiredAssessment = Boolean(assessment.name) && 
+      Boolean(assessment.gender) && 
+      Boolean(assessment.dateOfBirth) && 
+      Boolean(assessment.weight) && 
+      Boolean(assessment.height) && 
+      Boolean(assessment.physicalActivity) && 
+      Boolean(assessment.wardType) && 
+      Boolean(assessment.stressFactor) && 
+      Boolean(assessment.feedingType);
     
     // Check if there's at least one lab result or medication (from both existing and new data)
     const hasLabResults = biochemical.labResults.length > 0 || existingData.labResults.length > 0;
     const hasMedications = medication.medications.length > 0 || existingData.medications.length > 0;
     
-    console.log('🔍 Data completeness check:', {
-      hasRequiredAssessment,
-      hasLabResults: { form: biochemical.labResults.length, existing: existingData.labResults.length },
-      hasMedications: { form: medication.medications.length, existing: existingData.medications.length },
-      isComplete: hasRequiredAssessment && (hasLabResults || hasMedications)
-    });
-    
-    return Boolean(hasRequiredAssessment && (hasLabResults || hasMedications));
+    return hasRequiredAssessment && (hasLabResults || hasMedications);
   };
 
   // Convert form data to API format

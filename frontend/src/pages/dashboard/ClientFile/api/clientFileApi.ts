@@ -52,6 +52,23 @@ export const updateClientFileData = async (clientId: string, data: ClientFileDat
   }
 };
 
+// Partially update existing client file data (PATCH for partial updates)
+export const patchClientFile = async (clientId: string, data: Record<string, any> | FormData) => {
+  try {
+    const config = {
+      headers: {
+        'Content-Type': data instanceof FormData ? 'multipart/form-data' : 'application/json',
+      },
+    };
+
+    const response = await httpClient.patch(`/clients/${clientId}/`, data, config);
+    return response.data;
+  } catch (error) {
+    console.error("Error partially updating client file:", error);
+    throw error;
+  }
+};
+
 // Get client file data (if needed for editing)
 export const getClientFile = async (clientId: string) => {
   try {

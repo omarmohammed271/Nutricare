@@ -5,15 +5,12 @@ import {
   CardContent,
   Grid,
   Button,
-  useTheme,
-  Collapse,
-  IconButton,
-  Typography
+  useTheme
 } from '@mui/material';
-import { ExpandMore, ExpandLess } from '@mui/icons-material';
 import { AssessmentData, CalculationResults, AdimeNote } from './types';
 import { defaultAssessmentData, defaultCalculations, defaultAdimeNote } from './constants';
 import { AssessmentForm, CalculationsPanel, AdimeNotePanel } from './components';
+import FollowUpPanel from '../../components/FollowUpPanel';
 import { useClientFile } from '../../context/ClientFileContext';
 import { assessmentValidationSchema } from '../../validation/clientFileValidation';
 
@@ -24,8 +21,6 @@ const Assessments = () => {
   const [calculations, setCalculations] = useState<CalculationResults>(defaultCalculations);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [editingFields, setEditingFields] = useState<Set<string>>(new Set());
-  const [calculationsExpanded, setCalculationsExpanded] = useState<boolean>(true);
-  const [adimeNoteExpanded, setAdimeNoteExpanded] = useState<boolean>(true);
 
   // Generate dynamic ADIME Note content based on form data
   const generateAdimeNote = () => {
@@ -103,11 +98,12 @@ const Assessments = () => {
   // Additional useEffect to check localStorage directly if context fails
   useEffect(() => {
     const isEditMode = localStorage.getItem('isEditMode') === 'true';
+    const isFollowUp = localStorage.getItem('isFollowUpMode') === 'true';
     const currentFormEmpty = !formData.name && !formData.gender && !formData.dateOfBirth;
     
-    if (isEditMode && currentFormEmpty) {
+    if ((isEditMode || isFollowUp) && currentFormEmpty) {
       console.log('🔍 Edit mode detected with empty form, checking localStorage directly...');
-      const savedData = localStorage.getItem('clientFileData');
+      const savedData = isFollowUp ? localStorage.getItem('followUpClientData') : localStorage.getItem('clientFileData');
       if (savedData) {
         try {
           const parsedData = JSON.parse(savedData);
@@ -182,8 +178,14 @@ const Assessments = () => {
     }));
   };
 
+  const isFollowUpMode = typeof window !== 'undefined' && localStorage.getItem('isFollowUpMode') === 'true';
+  const followUpClientId = typeof window !== 'undefined' ? Number(localStorage.getItem('followUpClientId') || 0) : 0;
+
   return (
     <Box sx={{ width: '100%', p: 1 }}>
+      {isFollowUpMode && followUpClientId > 0 && (
+        <FollowUpPanel clientId={followUpClientId} tab="assessment" />
+      )}
       <Grid container spacing={3}>
         {/* Left Side - Assessment Form */}
         <Grid item xs={12} md={7}>
@@ -230,61 +232,27 @@ const Assessments = () => {
             mb: 3,
             bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2'
           }}>
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'space-between',
-              p: 2,
-              borderBottom: calculationsExpanded ? '1px solid #e0e0e0' : 'none'
-            }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.mode === 'dark' ? '#fff' : '#333' }}>
-                Real-Time Auto Calculations
-              </Typography>
-              <IconButton 
-                onClick={() => setCalculationsExpanded(!calculationsExpanded)}
-                sx={{ color: theme.palette.mode === 'dark' ? '#fff' : '#333' }}
-              >
-                {calculationsExpanded ? <ExpandLess /> : <ExpandMore />}
-              </IconButton>
-            </Box>
-            <Collapse in={calculationsExpanded}>
-              <CardContent sx={{ p: 3 }}>
-                <CalculationsPanel 
-                  calculations={calculations}
-                  onMacroSliderChange={handleMacroSliderChange}
-                />
-              </CardContent>
-            </Collapse>
+            <CardContent sx={{ p: 3 }}>
+              <CalculationsPanel 
+                calculations={calculations}
+                onMacroSliderChange={handleMacroSliderChange}
+              />
+            </CardContent>
           </Card>
 
-          {/* ADIME Note */}
+          {/* ADIME Note - Sticky */}
           <Card sx={{ 
             borderRadius: 3, 
             boxShadow: 2,
-            bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2'
+            bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2',
+            position: 'sticky',
+            top: 20,
+            maxHeight: 'calc(100vh - 40px)',
+            overflow: 'auto'
           }}>
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'space-between',
-              p: 2,
-              borderBottom: adimeNoteExpanded ? '1px solid #e0e0e0' : 'none'
-            }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.mode === 'dark' ? '#fff' : '#333' }}>
-                ADIME Note
-              </Typography>
-              <IconButton 
-                onClick={() => setAdimeNoteExpanded(!adimeNoteExpanded)}
-                sx={{ color: theme.palette.mode === 'dark' ? '#fff' : '#333' }}
-              >
-                {adimeNoteExpanded ? <ExpandLess /> : <ExpandMore />}
-              </IconButton>
-            </Box>
-            <Collapse in={adimeNoteExpanded}>
-              <CardContent sx={{ p: 3 }}>
-                <AdimeNotePanel adimeNote={dynamicAdimeNote} />
-              </CardContent>
-            </Collapse>
+            <CardContent sx={{ p: 3 }}>
+              <AdimeNotePanel adimeNote={dynamicAdimeNote} />
+            </CardContent>
           </Card>
         </Grid>
       </Grid>

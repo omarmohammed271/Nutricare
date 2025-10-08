@@ -178,7 +178,7 @@ const MedicationTable: React.FC<MedicationTableProps> = ({ medications, onDelete
                 <Typography variant="body2" sx={{ 
                   color: theme.palette.mode === 'dark' ? '#cccccc' : '#666' 
                 }}>
-                  {new Date(medication.startDate).toLocaleDateString()}
+                  {medication.startDate ? new Date(medication.startDate).toLocaleDateString() : 'N/A'}
                 </Typography>
               </TableCell>
               <TableCell>

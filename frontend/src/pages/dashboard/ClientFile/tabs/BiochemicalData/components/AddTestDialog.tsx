@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -32,6 +32,18 @@ const AddTestDialog: React.FC<AddTestDialogProps> = ({
 }) => {
   const theme = useTheme();
   const [selectedFiles, setSelectedFiles] = useState<FileType[]>([]);
+  const firstInputRef = useRef<HTMLInputElement>(null);
+
+  // Focus management for accessibility
+  useEffect(() => {
+    if (dialogState.open && firstInputRef.current) {
+      // Small delay to ensure dialog is fully rendered
+      const timer = setTimeout(() => {
+        firstInputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [dialogState.open]);
 
   const handleFileUpload = (files: FileType[]) => {
     if (files.length > 0) {
@@ -74,6 +86,7 @@ const AddTestDialog: React.FC<AddTestDialogProps> = ({
               renderInput={(params) => (
                 <TextField
                   {...params}
+                  ref={firstInputRef}
                   label="Test Name"
                   size="small"
                   fullWidth

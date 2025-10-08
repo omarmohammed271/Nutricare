@@ -11,6 +11,7 @@ import { LabResult } from '../../types/clientFileTypes';
 import { AddTestDialogState, BiochemicalSummary } from './types';
 import { TestResultsTable, AddTestDialog } from './components';
 import { useClientFile } from '../../context/ClientFileContext';
+import FollowUpPanel from '../../components/FollowUpPanel';
 
 const BiochemicalData = () => {
   const theme = useTheme();
@@ -116,6 +117,8 @@ const BiochemicalData = () => {
     setAddTestDialog(prev => ({ ...prev, [field]: value }));
   };
 
+  const isFollowUpMode = typeof window !== 'undefined' && localStorage.getItem('isFollowUpMode') === 'true';
+
   const handleSaveTest = () => {
     if (addTestDialog.test_name && addTestDialog.result) {
       const newTest: LabResult = {
@@ -131,10 +134,15 @@ const BiochemicalData = () => {
       const updatedTests = [...tests, newTest];
       setTests(updatedTests);
       
-      // Only send NEW lab results to context (not existing ones from API)
-      const newTests = tests.filter(test => !test.id || test.id < 1000); // Existing tests have IDs from API (usually > 1000)
-      const contextTests = [...newTests, newTest];
-      updateBiochemical({ labResults: contextTests });
+      // In follow-up mode, send ALL visible tests; otherwise only send newly added tests
+      if (isFollowUpMode) {
+        updateBiochemical({ labResults: updatedTests });
+      } else {
+        // Only send NEW lab results to context (not existing ones from API)
+        const newTests = tests.filter(test => !test.id || test.id < 1000); // Existing tests have IDs from API (usually > 1000)
+        const contextTests = [...newTests, newTest];
+        updateBiochemical({ labResults: contextTests });
+      }
       
       setAddTestDialog({
         open: false,
@@ -156,13 +164,24 @@ const BiochemicalData = () => {
     const updatedTests = tests.filter(test => test.id !== id);
     setTests(updatedTests);
     
-    // Only send NEW lab results to context (not existing ones from API)
-    const newTests = updatedTests.filter(test => !test.id || test.id < 1000); // Existing tests have IDs from API (usually > 1000)
-    updateBiochemical({ labResults: newTests });
+    if (isFollowUpMode) {
+      // In follow-up mode, keep context in sync with full visible list
+      updateBiochemical({ labResults: updatedTests });
+    } else {
+      // Only send NEW lab results to context (not existing ones from API)
+      const newTests = updatedTests.filter(test => !test.id || test.id < 1000); // Existing tests have IDs from API (usually > 1000)
+      updateBiochemical({ labResults: newTests });
+    }
   };
+
+  // Use previously declared isFollowUpMode; only derive clientId here
+  const followUpClientId = typeof window !== 'undefined' ? Number(localStorage.getItem('followUpClientId') || 0) : 0;
 
   return (
     <Box sx={{ width: '100%', p: 1 }}>
+      {isFollowUpMode && followUpClientId > 0 && (
+        <FollowUpPanel clientId={followUpClientId} tab="biochemical" />
+      )}
       <Grid container spacing={3}>
         {/* Main Content - Left Side */}
         <Grid item xs={12} md={8}>
@@ -183,12 +202,16 @@ const BiochemicalData = () => {
 
         {/* Side Panel - Right Side */}
         <Grid item xs={12} md={4}>
-          {/* ADIME Note Panel */}
-          <Card sx={{ 
-            borderRadius: 3, 
-            boxShadow: 2,
-            bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2'
-          }}>
+           {/* ADIME Note Panel - Sticky */}
+           <Card sx={{ 
+             borderRadius: 3, 
+             boxShadow: 2,
+             bgcolor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#F9F4F2',
+             position: 'sticky',
+             top: 20,
+             maxHeight: 'calc(100vh - 40px)',
+             overflow: 'auto'
+           }}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={{ 
                 fontWeight: 700, 

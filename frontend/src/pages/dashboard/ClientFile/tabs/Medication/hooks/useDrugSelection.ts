@@ -4,7 +4,7 @@ import { useDrugDetails } from '@src/hooks/useNutritionApi';
 
 export interface DrugSelectionState {
   selectedDrug: Drug | null;
-  drugDetails: DrugDetail | null;
+  drugDetails: DrugDetail | null | undefined;
   isDialogOpen: boolean;
 }
 
@@ -26,7 +26,7 @@ export const useDrugSelection = () => {
     setDrugSelection(prev => ({
       ...prev,
       selectedDrug: drug,
-      drugDetails: drug ? (drugDetails || null) : null
+      drugDetails: drug ? drugDetails : null
     }));
   }, [drugDetails]);
 
