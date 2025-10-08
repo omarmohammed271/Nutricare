@@ -168,7 +168,8 @@ class PasswordResetDoneAPI(APIView):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response({'error':'No User with this email'},status=status.HTTP_400_BAD_REQUEST)               
-  
+        if not new_password:
+            return Response({'error':'New password is required'},status=status.HTTP_400_BAD_REQUEST)
         user.set_password(new_password)
         user.password_reset_code = None
         user.password_reset_code_created_at = None
