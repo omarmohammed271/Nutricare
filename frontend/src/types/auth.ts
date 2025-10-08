@@ -105,6 +105,6 @@ export type resetpasswordCode = {
 
 export type ResetPasswordDone ={
   email: string;
-  password: string;
+  new_password: string;
 
 };
