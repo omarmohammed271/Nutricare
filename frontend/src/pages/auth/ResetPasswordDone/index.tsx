@@ -71,7 +71,7 @@ const ResetPasswordDone = () => {
       
       const response = await AuthService.ResetPasswordDone({
         email: email,
-        password: data.password,
+        new_password: data.password,
       });
 
       console.log("console : ", response);
